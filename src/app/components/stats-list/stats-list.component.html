@@ -1,0 +1,41 @@
+<!-- stats-list.component.html -->
+<div class="title-container">
+  <h2>{{ title }} <span>({{ stats.numberOfActivities }} activité(s))</span></h2>
+</div>
+<div class="stats-grid">
+  <app-stats-card
+    title="Temps total"
+    [value]="stats.totalElapsedTime"
+    unit="h">
+  </app-stats-card>
+
+  <app-stats-card
+    title="Vitesse moyenne"
+    [value]="stats.averageSpeed"
+    unit="km/h">
+  </app-stats-card>
+
+  <app-stats-card
+    title="Distance totale"
+    [value]="stats.totalDistance"
+    unit="km">
+  </app-stats-card>
+
+  <app-stats-card
+    title="Distance moyenne/sortie"
+    [value]="stats.averageDistance"
+    unit="km">
+  </app-stats-card>
+
+  <app-stats-card
+    title="Dénivelé total"
+    [value]="stats.totalElevation"
+    unit="m">
+  </app-stats-card>
+
+  <app-stats-card
+    title="Dénivelé moyen/sortie"
+    [value]="stats.averageElevation"
+    unit="m">
+  </app-stats-card>
+</div>

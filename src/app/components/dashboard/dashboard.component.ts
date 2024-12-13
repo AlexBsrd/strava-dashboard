@@ -1,11 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {PeriodSelectorComponent} from '../period-selector/period-selector.component';
-import {StatsCardComponent} from '../stats-card/stats-card.component';
 import {ActivityChartComponent} from '../activity-chart/activity-chart.component';
 import {StravaService} from '../../services/strava.service';
 import {StatsService} from '../../services/stats.service';
 import {Stats} from "../../models/stats";
+import {StatsListComponent} from "../stats-list/stats-list.component";
 
 @Component({
   selector: 'app-dashboard',
@@ -13,8 +13,8 @@ import {Stats} from "../../models/stats";
   imports: [
     CommonModule,
     PeriodSelectorComponent,
-    StatsCardComponent,
-    ActivityChartComponent
+    ActivityChartComponent,
+    StatsListComponent
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
@@ -36,8 +36,10 @@ export class DashboardComponent implements OnInit {
     const emptyStat: Stats = {
       averageSpeed: 0,
       totalDistance: 0,
+      averageDistance: 0,
       totalElevation: 0,
       averageElevation: 0,
+      totalElapsedTime: 0,
       numberOfActivities: 0
     }
     this.runningStats = emptyStat;
@@ -59,7 +61,7 @@ export class DashboardComponent implements OnInit {
     this.stravaService.getActivities(this.selectedPeriod).subscribe(activities => {
       console.log(activities)
       this.runningActivityData = activities.filter(a => a.type.includes('Run'));
-      this.bikingActivityData = activities.filter(a => a.type.includes('Bike'));
+      this.bikingActivityData = activities.filter(a => a.type.includes('Ride'));
       this.walkingActivityData = activities.filter(a => a.type.includes('Hike') || a.type.includes('Walk'));
       this.runningStats = this.statsService.calculateStats(this.runningActivityData);
       console.log(this.runningStats)

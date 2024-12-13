@@ -1,0 +1,16 @@
+.stats-grid {
+  display: grid;
+  /*4 colonnes fixes au lieu de auto-fit pour un meilleur alignement*/
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px; /*Un peu moins d'espace pour que ce soit plus compact*/
+  margin: 16px 0;
+
+  /*Pour les petits écrans, repassez en mode responsive*/
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { Activity } from '../models/activity';
+import {Injectable} from '@angular/core';
+import {Activity} from '../models/activity';
 import {Stats} from "../models/stats";
 
 @Injectable({
@@ -11,19 +11,24 @@ export class StatsService {
       return {
         averageSpeed: 0,
         totalDistance: 0,
+        averageDistance: 0,
         totalElevation: 0,
         averageElevation: 0,
+        totalElapsedTime: 0,
         numberOfActivities: 0
       };
     }
-
-    // const activities = activities.filter(a => a.type.includes(filter));
 
     const totalDistance = activities.reduce((sum, activity) =>
       sum + activity.distance, 0);
 
     const totalElevation = activities.reduce((sum, activity) =>
       sum + activity.total_elevation_gain, 0);
+
+    const totalElapsedTime = activities.reduce((sum, activity) =>
+      sum + activity.elapsed_time, 0) / 3600;
+
+    const averageDistance = totalDistance / activities.length;
 
     const averageSpeed = activities.reduce((sum, activity) =>
       sum + activity.average_speed, 0) / activities.length;
@@ -33,7 +38,9 @@ export class StatsService {
     return {
       averageSpeed: Number(averageSpeed.toFixed(1)),
       totalDistance: Number(totalDistance.toFixed(1)),
+      averageDistance: Number(averageDistance.toFixed(1)),
       totalElevation: Number(totalElevation.toFixed(0)),
+      totalElapsedTime: Number(totalElapsedTime.toFixed(0)),
       averageElevation: Number(averageElevation.toFixed(0)),
       numberOfActivities: activities.length
     };
