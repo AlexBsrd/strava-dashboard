@@ -1,0 +1,29 @@
+.period-selector {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.period-button {
+  padding: 8px 16px;
+  border: 1px solid #2196F3;
+  background: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+}
+
+.period-button.active {
+  background: #2196F3;
+  color: white;
+}
+
+.period-button:hover {
+  background: #E3F2FD;
+}
+
+.period-button.active:hover {
+  background: #1976D2;
+}

@@ -1,0 +1,107 @@
+<div class="dashboard-container">
+  <app-period-selector
+    [selectedPeriod]="selectedPeriod"
+    (periodChange)="onPeriodChange($event)">
+  </app-period-selector>
+
+  <div class="activity-type-container">
+    <div class="title-container">
+      <h2>Run <span>({{ runningActivityData.length + ' activité(s)' }})</span></h2>
+    </div>
+    <div class="stats-grid">
+      <app-stats-card
+        title="Vitesse moyenne"
+        [value]="runningStats.averageSpeed"
+        unit="km/h">
+      </app-stats-card>
+
+      <app-stats-card
+        title="Distance totale"
+        [value]="runningStats.totalDistance"
+        unit="km">
+      </app-stats-card>
+
+      <app-stats-card
+        title="Dénivelé total"
+        [value]="runningStats.totalElevation"
+        unit="m">
+      </app-stats-card>
+
+      <app-stats-card
+        title="Dénivelé moyen/sortie"
+        [value]="runningStats.averageElevation"
+        unit="m">
+      </app-stats-card>
+    </div>
+
+    <div class="title-container">
+      <h2>Walk <span>({{ walkingActivityData.length + ' activité(s)' }})</span></h2>
+    </div>
+    <div class="stats-grid">
+      <app-stats-card
+        title="Vitesse moyenne"
+        [value]="walkingStats.averageSpeed"
+        unit="km/h">
+      </app-stats-card>
+
+      <app-stats-card
+        title="Distance totale"
+        [value]="walkingStats.totalDistance"
+        unit="km">
+      </app-stats-card>
+
+      <app-stats-card
+        title="Dénivelé total"
+        [value]="walkingStats.totalElevation"
+        unit="m">
+      </app-stats-card>
+
+      <app-stats-card
+        title="Dénivelé moyen/sortie"
+        [value]="walkingStats.averageElevation"
+        unit="m">
+      </app-stats-card>
+    </div>
+
+    <div class="title-container">
+      <h2>Bike <span>({{ bikingActivityData.length + ' activité(s)' }})</span></h2>
+    </div>
+    <div class="stats-grid">
+      <app-stats-card
+        title="Vitesse moyenne"
+        [value]="bikingStats.averageSpeed"
+        unit="km/h">
+      </app-stats-card>
+
+      <app-stats-card
+        title="Distance totale"
+        [value]="bikingStats.totalDistance"
+        unit="km">
+      </app-stats-card>
+
+      <app-stats-card
+        title="Dénivelé total"
+        [value]="bikingStats.totalElevation"
+        unit="m">
+      </app-stats-card>
+
+      <app-stats-card
+        title="Dénivelé moyen/sortie"
+        [value]="bikingStats.averageElevation"
+        unit="m">
+      </app-stats-card>
+    </div>
+
+    <h2>Running</h2>
+    <app-activity-chart
+      [data]="runningActivityData"
+      [period]="selectedPeriod">
+    </app-activity-chart>
+
+    <h2>Biking</h2>
+    <app-activity-chart
+      [data]="bikingActivityData"
+      [period]="selectedPeriod">
+    </app-activity-chart>
+  </div>
+</div>

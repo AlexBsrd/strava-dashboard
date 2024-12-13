@@ -1,0 +1,15 @@
+/* Import de polices modernes de Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* Style global */
+:host {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Style pour le titre */
+.h1 {
+  font-weight: 600;
+  letter-spacing: -0.5px;
+}

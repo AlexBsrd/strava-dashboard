@@ -1,0 +1,9 @@
+<div class="period-selector">
+  <button
+    *ngFor="let period of periods"
+    [class.active]="selectedPeriod === period.value"
+    (click)="onChange(period.value)"
+    class="period-button">
+    {{ period.label }}
+  </button>
+</div>
