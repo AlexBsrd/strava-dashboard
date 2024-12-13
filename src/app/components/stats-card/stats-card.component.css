@@ -1,10 +1,17 @@
 .stats-card {
   background: white;
   border-radius: 8px;
-  padding: 20px;
+  padding: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   text-align: center;
   transition: transform 0.3s;
+  font-family: 'Inter', sans-serif;
+
+  /* Assurez-vous que la carte s'étire pour remplir les lignes attribuées */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%; /* Prend toute la hauteur définie par la grille */
 }
 
 .stats-card:hover {

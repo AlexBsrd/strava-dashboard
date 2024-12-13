@@ -1,11 +1,10 @@
 .stats-grid {
   display: grid;
-  /*4 colonnes fixes au lieu de auto-fit pour un meilleur alignement*/
   grid-template-columns: repeat(4, 1fr);
-  gap: 16px; /*Un peu moins d'espace pour que ce soit plus compact*/
+  gap: 16px;
   margin: 16px 0;
 
-  /*Pour les petits écrans, repassez en mode responsive*/
+  /* Les petits écrans restent en mode responsive */
   @media (max-width: 1024px) {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -14,3 +13,31 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Style pour les titres d'activités (Run, Walk, Bike) */
+h2 {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2d2d2d;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+/* Style pour le nombre d'activités entre parenthèses */
+h2 span {
+  font-weight: 400;
+  font-size: 1.1rem;
+  color: #666;
+  margin-left: 0.5rem;
+}
+
+
+/* Les cartes double-row prennent deux lignes */
+.double-row {
+  grid-row: span 2; /* Prend deux lignes */
+}
+
+
