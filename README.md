@@ -4,11 +4,13 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 ## Setup
 
-Create a file src/app/services/strava-credentials.ts containing you credentials (see https://developers.strava.com/docs/getting-started/#account to know how to get a token):
+Create a file .env at project root containing you credentials (see https://developers.strava.com/docs/getting-started/#account to know how to get a token):
 
-```typescript
-export const clientId = '<your_client_id>';
-export const clientSecret = '<your_client_secret>';
+```env
+STRAVA_CLIENT_ID=<your_strava_client_id>
+STRAVA_CLIENT_SECRET=<your_strava_client_secret>
+REDIRECT_URI=http://localhost:4200/callback
+IS_PRODUCTION=false
 ```
 
 ## Development server

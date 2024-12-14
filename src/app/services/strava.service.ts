@@ -1,18 +1,18 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {Observable, from} from 'rxjs';
+import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {Activity} from '../models/activity';
-import {clientId, clientSecret} from './strava-credentials'
+import {environment} from "../environments/environment";
 
 @Injectable({
   providedIn: 'root'
 })
 export class StravaService {
   private apiUrl = 'https://www.strava.com/api/v3';
-  private clientId = clientId;
-  private clientSecret = clientSecret;
-  private redirectUri = 'http://localhost:4200/callback';
+  private clientId = environment.stravaClientId;
+  private clientSecret = environment.stravaClientSecret;
+  private redirectUri = environment.redirectUri;
 
   constructor(private http: HttpClient) {
   }
