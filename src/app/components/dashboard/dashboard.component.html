@@ -2,19 +2,23 @@
 <div class="dashboard-container">
   <app-spinner *ngIf="isLoading"></app-spinner>
 
-  <div *ngIf="error" class="error-container" @fadeInOut>
+  <div *ngIf="error" class="error-container">
     <div class="error-message">
-      <div class="error-icon">⚠️</div>
-      <p>{{ error }}</p>
-      <button class="retry-button" (click)="retryLoad()">Réessayer</button>
+      {{ error }}
+      <button class="retry-button" (click)="loadData()">Réessayer</button>
     </div>
   </div>
 
-  <div *ngIf="!isLoading && !error" @fadeInOut>
+  <div *ngIf="!isLoading && !error">
     <app-period-selector
       [selectedPeriod]="selectedPeriod"
       (periodChange)="onPeriodChange($event)">
     </app-period-selector>
+
+    <!-- Ajout du nouveau composant de performances -->
+    <app-performance-dashboard
+      [activities]="runningActivityData">
+    </app-performance-dashboard>
 
     <div class="activity-type-container">
       <app-stats-list

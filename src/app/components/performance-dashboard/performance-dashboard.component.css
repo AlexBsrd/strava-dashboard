@@ -1,0 +1,139 @@
+/* src/app/components/performance-dashboard/performance-dashboard.component.css */
+.performance-container {
+  padding: 1.5rem;
+}
+
+.section {
+  margin-bottom: 2rem;
+  background: white;
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+}
+
+h2 {
+  color: var(--gray-800);
+  font-size: 1.25rem;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.records-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.record-card {
+  background: linear-gradient(to bottom right, var(--primary-light), white);
+  padding: 1.5rem;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s;
+}
+
+.record-card:hover {
+  transform: translateY(-2px);
+}
+
+.record-title {
+  font-weight: 600;
+  color: var(--primary-color);
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.record-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--gray-800);
+  margin-bottom: 0.5rem;
+}
+
+.record-details {
+  font-size: 0.875rem;
+  color: var(--gray-600);
+}
+
+.record-details small {
+  display: block;
+  margin-top: 0.25rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.stat-card {
+  background: var(--gray-100);
+  padding: 1rem;
+  border-radius: var(--radius-sm);
+  text-align: center;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: var(--gray-600);
+  margin-bottom: 0.5rem;
+}
+
+.stat-value {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--gray-800);
+}
+
+.trends-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.trend-card {
+  background: var(--gray-100);
+  padding: 1rem;
+  border-radius: var(--radius-sm);
+  text-align: center;
+}
+
+.trend-label {
+  font-size: 0.875rem;
+  color: var(--gray-600);
+  margin-bottom: 0.5rem;
+}
+
+.trend-value {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--success-color);
+}
+
+.record-pace {
+  font-size: 0.9rem;
+  color: var(--gray-600);
+  margin-bottom: 0.75rem;
+  font-weight: 500;
+}
+
+.record-value {
+  margin-bottom: 0.25rem; /* Réduit la marge pour rapprocher le pace */
+}
+
+
+@media (max-width: 768px) {
+  .performance-container {
+    padding: 1rem;
+  }
+
+  .section {
+    padding: 1rem;
+  }
+
+  .records-grid,
+  .stats-grid,
+  .trends-grid {
+    grid-template-columns: 1fr;
+  }
+}
