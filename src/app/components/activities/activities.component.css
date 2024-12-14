@@ -1,0 +1,143 @@
+/* src/app/components/activities/activities.component.css */
+.activities-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.activities-header {
+  margin-bottom: 2rem;
+}
+
+.activities-header h1 {
+  font-size: 2rem;
+  color: var(--gray-800);
+  margin-bottom: 1rem;
+}
+
+.activities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  padding: 1rem 0;
+}
+
+.activity-card {
+  background: white;
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.activity-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.activity-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.activity-type {
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.activity-type.run {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.activity-type.ride {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.activity-type.walk, .activity-type.hike {
+  background-color: #fff3e0;
+  color: #f57c00;
+}
+
+.activity-type.weighttraining {
+  background-color: #f3e5f5;
+  color: #7b1fa2;
+}
+
+.activity-type.alpineski, .activity-type.backcountryski {
+  background-color: #e1f5fe;
+  color: #0288d1;
+}
+
+.activity-date {
+  font-size: 0.875rem;
+  color: var(--gray-600);
+}
+
+.activity-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--gray-800);
+  margin-bottom: 1rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.activity-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.stat-full-width {
+  grid-column: 1 / -1;
+  text-align: center;
+  background-color: #f5f5f5;
+  padding: 1rem;
+  border-radius: var(--radius-sm);
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--gray-600);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-value {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--gray-800);
+}
+
+.error-message {
+  text-align: center;
+  padding: 2rem;
+  color: var(--danger-color);
+  background-color: #ffebee;
+  border-radius: var(--radius-md);
+  margin: 2rem 0;
+}
+
+@media (max-width: 768px) {
+  .activities-container {
+    padding: 1rem;
+  }
+
+  .activities-grid {
+    grid-template-columns: 1fr;
+  }
+}

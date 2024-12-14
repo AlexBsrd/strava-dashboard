@@ -1,3 +1,4 @@
+// src/app/components/period-selector/period-selector.component.ts
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {CommonModule} from '@angular/common';
 

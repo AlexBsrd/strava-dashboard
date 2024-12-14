@@ -1,0 +1,62 @@
+<div class="activities-container">
+  <app-spinner *ngIf="isLoading"></app-spinner>
+
+  <div *ngIf="error" class="error-message">
+    {{ error }}
+  </div>
+
+  <div *ngIf="!isLoading && !error">
+    <header class="activities-header">
+      <h1>Mes Activités</h1>
+      <app-period-selector
+        [selectedPeriod]="selectedPeriod"
+        (periodChange)="onPeriodChange($event)">
+      </app-period-selector>
+    </header>
+
+    <div class="activities-grid">
+      <div *ngFor="let activity of activities" class="activity-card">
+        <div class="activity-header">
+          <div class="activity-type" [ngClass]="activity.type.toLowerCase()">
+            {{ activity.type }}
+          </div>
+          <div class="activity-date">
+            {{ formatDate(activity.start_date) }}
+          </div>
+        </div>
+
+        <h2 class="activity-name">{{ activity.name }}</h2>
+
+        <div class="activity-stats">
+          <!-- Stats pour les activités de type cardio (Run, Ride, etc.) -->
+          <ng-container *ngIf="isCardioActivity(activity.type)">
+            <div class="stat">
+              <span class="stat-label">Distance</span>
+              <span class="stat-value">{{ activity.distance.toFixed(1) }} km</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Durée</span>
+              <span class="stat-value">{{ formatDuration(activity.elapsed_time) }}</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Vitesse moy.</span>
+              <span class="stat-value">{{ activity.average_speed.toFixed(1) }} km/h</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Dénivelé</span>
+              <span class="stat-value">{{ activity.total_elevation_gain }}m</span>
+            </div>
+          </ng-container>
+
+          <!-- Stats pour les activités de type musculation -->
+          <ng-container *ngIf="!isCardioActivity(activity.type)">
+            <div class="stat stat-full-width">
+              <span class="stat-label">Durée de séance</span>
+              <span class="stat-value">{{ formatDuration(activity.elapsed_time) }}</span>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

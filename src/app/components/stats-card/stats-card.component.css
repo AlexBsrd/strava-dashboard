@@ -1,38 +1,52 @@
+/* src/app/components/stats-card/stats-card.component.css */
 .stats-card {
   background: white;
-  border-radius: 8px;
-  padding: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
   text-align: center;
-  transition: transform 0.3s;
-  font-family: 'Inter', sans-serif;
-
-  /* Assurez-vous que la carte s'étire pour remplir les lignes attribuées */
+  transition: transform 0.3s, box-shadow 0.3s;
+  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  height: 100%; /* Prend toute la hauteur définie par la grille */
+  border: 1px solid var(--gray-200);
 }
 
 .stats-card:hover {
   transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .stats-title {
-  margin-bottom: 10px;
-  font-weight: 400;
-  color: #666;
+  color: var(--gray-600);
   font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.75rem;
 }
 
 .stats-value {
-  color: #2196F3;
-  font-weight: 500;
-  font-size: 1.75rem;
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  line-height: 1.2;
+  margin-bottom: 0.25rem;
 }
 
 .stats-unit {
-  font-size: 14px;
-  color: #666;
-  margin-left: 4px;
+  font-size: 0.875rem;
+  color: var(--gray-600);
+  margin-left: 0.25rem;
+}
+
+@media (max-width: 768px) {
+  .stats-card {
+    padding: 1rem;
+  }
+
+  .stats-value {
+    font-size: 1.5rem;
+  }
 }
