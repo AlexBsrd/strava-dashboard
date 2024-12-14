@@ -2,13 +2,14 @@
 import {Component, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {PeriodSelectorComponent} from '../period-selector/period-selector.component';
-import {ActivityChartComponent} from '../activity-chart/activity-chart.component';
 import {StravaService} from '../../services/strava.service';
 import {StatsService} from '../../services/stats.service';
 import {Stats} from "../../models/stats";
 import {StatsListComponent} from "../stats-list/stats-list.component";
 import {SpinnerComponent} from "../spinner/spinner.component";
 import {PerformanceDashboardComponent} from "../performance-dashboard/performance-dashboard.component";
+import {ModernActivityChartComponent} from "../modern-activity-chart/modern-activity-chart.component";
+import {Activity} from "../../models/activity";
 
 @Component({
   selector: 'app-dashboard',
@@ -16,10 +17,10 @@ import {PerformanceDashboardComponent} from "../performance-dashboard/performanc
   imports: [
     CommonModule,
     PeriodSelectorComponent,
-    ActivityChartComponent,
     StatsListComponent,
     SpinnerComponent,
-    PerformanceDashboardComponent
+    PerformanceDashboardComponent,
+    ModernActivityChartComponent
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
@@ -33,6 +34,7 @@ export class DashboardComponent implements OnInit {
   bikingStats: Stats;
   walkingStats: Stats;
 
+  allActivities: Activity[] = [];
   runningActivityData: any[] = [];
   bikingActivityData: any[] = [];
   walkingActivityData: any[] = [];
@@ -70,6 +72,7 @@ export class DashboardComponent implements OnInit {
 
     this.stravaService.getActivities(this.selectedPeriod).subscribe({
       next: (activities) => {
+        this.allActivities = activities;
         this.runningActivityData = activities.filter(a => a.type.includes('Run'));
         this.bikingActivityData = activities.filter(a => a.type.includes('Ride'));
         this.walkingActivityData = activities.filter(a => a.type.includes('Hike') || a.type.includes('Walk'));

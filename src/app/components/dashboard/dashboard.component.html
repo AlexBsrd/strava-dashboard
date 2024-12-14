@@ -36,17 +36,10 @@
         [stats]="bikingStats">
       </app-stats-list>
 
-      <h2>Running</h2>
-      <app-activity-chart
-        [data]="runningActivityData"
+      <app-modern-activity-chart
+        [activities]="allActivities"
         [period]="selectedPeriod">
-      </app-activity-chart>
-
-      <h2>Biking</h2>
-      <app-activity-chart
-        [data]="bikingActivityData"
-        [period]="selectedPeriod">
-      </app-activity-chart>
+      </app-modern-activity-chart>
     </div>
   </div>
 </div>
