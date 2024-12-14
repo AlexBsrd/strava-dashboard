@@ -1,35 +1,48 @@
+<!-- src/app/components/dashboard/dashboard.component.html -->
 <div class="dashboard-container">
-  <app-period-selector
-    [selectedPeriod]="selectedPeriod"
-    (periodChange)="onPeriodChange($event)">
-  </app-period-selector>
+  <app-spinner *ngIf="isLoading"></app-spinner>
 
-  <div class="activity-type-container">
-    <app-stats-list
-      title="Run"
-      [stats]="runningStats">
-    </app-stats-list>
+  <div *ngIf="error" class="error-container" @fadeInOut>
+    <div class="error-message">
+      <div class="error-icon">⚠️</div>
+      <p>{{ error }}</p>
+      <button class="retry-button" (click)="retryLoad()">Réessayer</button>
+    </div>
+  </div>
 
-    <app-stats-list
-      title="Walk"
-      [stats]="walkingStats">
-    </app-stats-list>
+  <div *ngIf="!isLoading && !error" @fadeInOut>
+    <app-period-selector
+      [selectedPeriod]="selectedPeriod"
+      (periodChange)="onPeriodChange($event)">
+    </app-period-selector>
 
-    <app-stats-list
-      title="Bike"
-      [stats]="bikingStats">
-    </app-stats-list>
+    <div class="activity-type-container">
+      <app-stats-list
+        title="Run"
+        [stats]="runningStats">
+      </app-stats-list>
 
-    <h2>Running</h2>
-    <app-activity-chart
-      [data]="runningActivityData"
-      [period]="selectedPeriod">
-    </app-activity-chart>
+      <app-stats-list
+        title="Walk"
+        [stats]="walkingStats">
+      </app-stats-list>
 
-    <h2>Biking</h2>
-    <app-activity-chart
-      [data]="bikingActivityData"
-      [period]="selectedPeriod">
-    </app-activity-chart>
+      <app-stats-list
+        title="Bike"
+        [stats]="bikingStats">
+      </app-stats-list>
+
+      <h2>Running</h2>
+      <app-activity-chart
+        [data]="runningActivityData"
+        [period]="selectedPeriod">
+      </app-activity-chart>
+
+      <h2>Biking</h2>
+      <app-activity-chart
+        [data]="bikingActivityData"
+        [period]="selectedPeriod">
+      </app-activity-chart>
+    </div>
   </div>
 </div>
