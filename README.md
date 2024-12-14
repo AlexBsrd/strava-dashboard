@@ -10,7 +10,7 @@ Create a file .env at project root containing you credentials (see https://devel
 STRAVA_CLIENT_ID=<your_strava_client_id>
 STRAVA_CLIENT_SECRET=<your_strava_client_secret>
 REDIRECT_URI=http://localhost:4200/callback
-
+IS_PRODUCTION=false
 ```
 
 ## Development server
