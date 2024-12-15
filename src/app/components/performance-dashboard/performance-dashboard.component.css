@@ -1,14 +1,70 @@
-/* src/app/components/performance-dashboard/performance-dashboard.component.css */
 .performance-container {
-  padding: 1.5rem;
+  padding: 0.75rem;
 }
 
 .section {
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   background: white;
   border-radius: var(--radius-md);
-  padding: 1.5rem;
+  padding: 1rem;
   box-shadow: var(--shadow-sm);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-state-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  max-width: 100%;
+}
+
+.empty-state-icon {
+  font-size: 2rem;
+  margin: 0;
+}
+
+.empty-state-text {
+  text-align: left;
+}
+
+.empty-state h2 {
+  color: var(--gray-800);
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+  color: var(--gray-600);
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.empty-state ul {
+  list-style: none;
+  padding: 0;
+  color: var(--gray-600);
+  margin: 0;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.empty-state li {
+  margin: 0;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.empty-state li:not(:last-child)::after {
+  content: "•";
+  margin-left: 1rem;
 }
 
 h2 {
@@ -47,7 +103,14 @@ h2 {
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--gray-800);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.record-pace {
+  font-size: 0.9rem;
+  color: var(--gray-600);
+  margin-bottom: 0.75rem;
+  font-weight: 500;
 }
 
 .record-details {
@@ -60,68 +123,6 @@ h2 {
   margin-top: 0.25rem;
 }
 
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-}
-
-.stat-card {
-  background: var(--gray-100);
-  padding: 1rem;
-  border-radius: var(--radius-sm);
-  text-align: center;
-}
-
-.stat-label {
-  font-size: 0.875rem;
-  color: var(--gray-600);
-  margin-bottom: 0.5rem;
-}
-
-.stat-value {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--gray-800);
-}
-
-.trends-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-}
-
-.trend-card {
-  background: var(--gray-100);
-  padding: 1rem;
-  border-radius: var(--radius-sm);
-  text-align: center;
-}
-
-.trend-label {
-  font-size: 0.875rem;
-  color: var(--gray-600);
-  margin-bottom: 0.5rem;
-}
-
-.trend-value {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--success-color);
-}
-
-.record-pace {
-  font-size: 0.9rem;
-  color: var(--gray-600);
-  margin-bottom: 0.75rem;
-  font-weight: 500;
-}
-
-.record-value {
-  margin-bottom: 0.25rem; /* Réduit la marge pour rapprocher le pace */
-}
-
-
 @media (max-width: 768px) {
   .performance-container {
     padding: 1rem;
@@ -131,9 +132,11 @@ h2 {
     padding: 1rem;
   }
 
-  .records-grid,
-  .stats-grid,
-  .trends-grid {
+  .records-grid {
     grid-template-columns: 1fr;
+  }
+
+  .empty-state {
+    padding: 2rem 1rem;
   }
 }

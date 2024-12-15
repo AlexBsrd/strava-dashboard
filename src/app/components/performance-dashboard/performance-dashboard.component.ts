@@ -1,4 +1,3 @@
-// src/app/components/performance-dashboard/performance-dashboard.component.ts
 import {Component, Input, OnChanges} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {Activity} from '../../models/activity';
@@ -22,6 +21,16 @@ export class PerformanceDashboardComponent implements OnChanges {
     if (this.activities.length) {
       this.metrics = this.performanceService.analyzePerformances(this.activities);
     }
+  }
+
+  hasRecords(): boolean {
+    if (!this.metrics?.bestRaces) return false;
+
+    return !!(
+      this.metrics.bestRaces.tenKm.value ||
+      this.metrics.bestRaces.semi.value ||
+      this.metrics.bestRaces.trail30.value
+    );
   }
 
   formatTime(seconds: number): string {
