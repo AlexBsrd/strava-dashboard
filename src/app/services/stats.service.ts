@@ -26,7 +26,7 @@ export class StatsService {
       sum + activity.total_elevation_gain, 0);
 
     const totalElapsedTime = activities.reduce((sum, activity) =>
-      sum + activity.elapsed_time, 0) / 3600;
+      sum + activity.elapsed_time, 0);
 
     const averageDistance = totalDistance / activities.length;
 
@@ -40,7 +40,7 @@ export class StatsService {
       totalDistance: Number(totalDistance.toFixed(1)),
       averageDistance: Number(averageDistance.toFixed(1)),
       totalElevation: Number(totalElevation.toFixed(0)),
-      totalElapsedTime: Number(totalElapsedTime.toFixed(0)),
+      totalElapsedTime: Number(totalElapsedTime),
       averageElevation: Number(averageElevation.toFixed(0)),
       numberOfActivities: activities.length
     };

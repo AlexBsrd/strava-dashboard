@@ -1,7 +1,19 @@
 <div class="stats-card">
   <div class="stats-title">{{ title }}</div>
   <div class="stats-value">
-    {{ formattedValue }}
-    <span class="stats-unit">{{ unit }}</span>
+    <ng-container *ngIf="isTime; else defaultValue">
+      <div class="time-display">
+        <div class="time-group" *ngIf="timeValues.hours > 0">
+          <span class="time-number">{{ timeValues.hours }}</span><span class="time-unit">h</span>
+        </div>
+        <div class="time-group">
+          <span class="time-number">{{ timeValues.minutes }}</span><span class="time-unit">min</span>
+        </div>
+      </div>
+    </ng-container>
+    <ng-template #defaultValue>
+      {{ formattedValue }}
+      <span class="stats-unit">{{ unit }}</span>
+    </ng-template>
   </div>
 </div>

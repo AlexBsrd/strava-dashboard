@@ -1,13 +1,20 @@
-<!-- stats-list.component.html -->
-<div class="title-container">
-  <h2>{{ title }} <span>({{ stats.numberOfActivities }} activité(s))</span></h2>
+<div class="activity-header">
+  <div class="activity-icon" [ngClass]="activityType.toLowerCase()">
+    <i class="icon"></i>
+  </div>
+  <div class="activity-info">
+    <h2>{{ title }}</h2>
+    <span class="activity-count">{{ stats.numberOfActivities }} activité(s)</span>
+  </div>
 </div>
+
 <div class="stats-grid">
   <app-stats-card
     class="double-row"
     title="Temps total"
     [value]="stats.totalElapsedTime"
-    unit="h">
+    unit=""
+    [isTime]="true">
   </app-stats-card>
 
   <app-stats-card

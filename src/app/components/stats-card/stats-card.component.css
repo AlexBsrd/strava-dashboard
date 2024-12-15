@@ -1,52 +1,97 @@
 /* src/app/components/stats-card/stats-card.component.css */
+
+/* Card Container */
 .stats-card {
   background: white;
+  border: 1px solid var(--gray-200);
   border-radius: var(--radius-md);
-  padding: 1.5rem;
   box-shadow: var(--shadow-sm);
-  text-align: center;
-  transition: transform 0.3s, box-shadow 0.3s;
-  height: 100%;
   display: flex;
   flex-direction: column;
+  height: 100%;
   justify-content: center;
-  border: 1px solid var(--gray-200);
+  padding: 1.5rem;
+  text-align: center;
+  transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .stats-card:hover {
-  transform: translateY(-2px);
   box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
 
+/* Card Title */
 .stats-title {
   color: var(--gray-600);
   font-size: 0.875rem;
   font-weight: 500;
-  text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 0.75rem;
+  text-transform: uppercase;
 }
 
+/* Regular Value Display */
 .stats-value {
+  color: var(--primary-color);
   font-size: 2rem;
   font-weight: 600;
-  color: var(--primary-color);
   line-height: 1.2;
   margin-bottom: 0.25rem;
 }
 
 .stats-unit {
-  font-size: 0.875rem;
   color: var(--gray-600);
+  font-size: 0.875rem;
   margin-left: 0.25rem;
 }
 
+/* Time Display */
+.time-display {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.time-group {
+  display: flex;
+  align-items: baseline;
+  gap: 0.15rem;
+}
+
+.time-number {
+  color: var(--primary-color);
+  font-size: 2.25rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.time-unit {
+  color: var(--gray-600);
+  font-size: 1.25rem;
+  font-weight: 400;
+}
+
+/* Special Cases */
+.time-display:not(:has(.hours)) .time-number {
+  color: var(--primary-color);
+}
+
+/* Media Queries */
 @media (max-width: 768px) {
-  .stats-card {
-    padding: 1rem;
+  .time-display {
+    gap: 0.5rem;
   }
 
-  .stats-value {
-    font-size: 1.5rem;
+  .time-number {
+    font-size: 1.75rem;
+  }
+
+  .time-unit {
+    font-size: 1rem;
+  }
+
+  .stats-card {
+    padding: 1rem;
   }
 }

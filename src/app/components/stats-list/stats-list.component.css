@@ -1,10 +1,9 @@
+/* src/app/components/stats-list/stats-list.component.css */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 16px;
-  margin: 16px 0;
 
-  /* Les petits écrans restent en mode responsive */
   @media (max-width: 1024px) {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -14,30 +13,148 @@
   }
 }
 
-/* Style pour les titres d'activités (Run, Walk, Bike) */
-h2 {
+/* Style pour les titres d'activités */
+.activity-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  margin-top: 2rem;
+}
+
+/* On retire la marge du premier header */
+.activity-header:first-child {
+  margin-top: 0;
+}
+
+.activity-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.activity-icon::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  opacity: 0.15;
+}
+
+.activity-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.activity-info h2 {
   font-family: 'Inter', sans-serif;
   font-size: 1.5rem;
   font-weight: 600;
   color: #2d2d2d;
-  margin-top: 2rem;
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid #f0f0f0;
+  margin: 0;
+  padding: 0;
 }
 
-/* Style pour le nombre d'activités entre parenthèses */
-h2 span {
-  font-weight: 400;
-  font-size: 1.1rem;
-  color: #666;
-  margin-left: 0.5rem;
+.activity-count {
+  font-size: 0.9rem;
+  color: var(--gray-600);
 }
 
+/* Styles des icônes d'activités */
+.activity-icon .icon {
+  width: 24px;
+  height: 24px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
 
-/* Les cartes double-row prennent deux lignes */
+.activity-icon.run {
+  color: #FF5722;
+}
+
+.activity-icon.run::before {
+  background-color: #FF5722;
+}
+
+.activity-icon.run .icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23FF5722'%3E%3Cpath d='M13.49 5.48c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-3.6 13.9l1-4.4 2.1 2v6h2v-7.5l-2.1-2 .6-3c1.3 1.5 3.3 2.5 5.5 2.5v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1l-5.2 2.2v4.7h2v-3.4l1.8-.7-1.6 8.1-4.9-1-.4 2 7 1.4z'/%3E%3C/svg%3E");
+}
+
+.activity-icon.walk {
+  color: #4CAF50;
+}
+
+.activity-icon.walk::before {
+  background-color: #4CAF50;
+}
+
+.activity-icon.walk .icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%234CAF50' viewBox='0 0 24 24'%3E%3Cpath d='M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7'/%3E%3C/svg%3E");
+}
+
+.activity-icon.bike {
+  color: #2196F3;
+}
+
+.activity-icon.bike::before {
+  background-color: #2196F3;
+}
+
+.activity-icon.bike .icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%232196F3' viewBox='0 0 24 24'%3E%3Cpath d='M15.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM5 12c-2.8 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zm0 8.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5zm5.8-10l2.4-2.4.8.8c1.3 1.3 3 2.1 5.1 2.1V9c-1.5 0-2.7-.6-3.6-1.5l-1.9-1.9c-.5-.4-1-.6-1.6-.6s-1.1.2-1.4.6L7.8 8.4c-.4.4-.6.9-.6 1.4 0 .6.2 1.1.6 1.4L11 14v5h2v-6.2l-2.2-2.3zM19 12c-2.8 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zm0 8.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5z'/%3E%3C/svg%3E");
+}
+
+/* Ajustements responsifs */
+@media (max-width: 768px) {
+  .activity-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .activity-info h2 {
+    font-size: 1.25rem;
+  }
+
+  .activity-count {
+    font-size: 0.8rem;
+  }
+}
+
+/* Ajout des styles pour la grille */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+/* Style pour les cartes double taille */
 .double-row {
-  grid-row: span 2; /* Prend deux lignes */
+  grid-row: span 2;
+  grid-column: span 1;
 }
 
+@media (max-width: 1024px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 
+  .double-row {
+    grid-row: span 2;
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 640px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .double-row {
+    grid-row: span 1;
+  }
+}
