@@ -22,6 +22,7 @@
     "@angular/router": "^18.2.0",
     "@types/chart.js": "^2.9.41",
     "chart.js": "^4.4.6",
+    "chartjs-plugin-zoom": "^2.0.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.10"

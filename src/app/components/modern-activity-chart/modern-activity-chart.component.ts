@@ -15,6 +15,7 @@ import {
   Title,
   Tooltip
 } from 'chart.js';
+import zoomPlugin from 'chartjs-plugin-zoom';
 import {Activity} from '../../models/activity';
 
 Chart.register(
@@ -26,7 +27,8 @@ Chart.register(
   Title,
   Tooltip,
   Legend,
-  Filler
+  Filler,
+  zoomPlugin
 );
 
 @Component({
@@ -75,6 +77,24 @@ export class ModernActivityChartComponent implements OnChanges {
 
   isMetricSelected(metric: string): boolean {
     return this.selectedMetrics.includes(metric);
+  }
+
+  zoomIn() {
+    if (this.chart) {
+      this.chart.zoom(1.2);
+    }
+  }
+
+  zoomOut() {
+    if (this.chart) {
+      this.chart.zoom(0.8);
+    }
+  }
+
+  resetZoom() {
+    if (this.chart) {
+      this.chart.resetZoom();
+    }
   }
 
   private getMetricValue(activity: Activity | null | undefined, metricType: string): number | null {
@@ -271,6 +291,26 @@ export class ModernActivityChartComponent implements OnChanges {
                   month: 'long'
                 });
               }
+            }
+          },
+          zoom: {
+            pan: {
+              enabled: true,
+              mode: 'x',
+              modifierKey: 'ctrl',
+            },
+            zoom: {
+              wheel: {
+                enabled: true,
+                modifierKey: 'ctrl',
+              },
+              pinch: {
+                enabled: true
+              },
+              mode: 'x',
+            },
+            limits: {
+              x: {min: 'original', max: 'original'},
             }
           }
         },
