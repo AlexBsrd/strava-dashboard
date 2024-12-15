@@ -44,7 +44,7 @@ export class ModernActivityChartComponent implements OnChanges {
   selectedMetrics: string[] = ['speed'];
   chart: Chart | null = null;
 
-  activityTypes: string[] = ['Run', 'Ride', 'Walk', 'Hike'];
+  activityTypes: string[] = ['Run', 'Ride', 'Walk/Hike'];
   metrics = [
     {value: 'speed', label: 'Vitesse (km/h)', color: '#2196F3'},
     {value: 'distance', label: 'Distance (km)', color: '#4CAF50'},
@@ -53,7 +53,7 @@ export class ModernActivityChartComponent implements OnChanges {
   ];
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['activities'] && this.activities) {
+    if ((changes['activities'] || changes['period']) && this.activities) {
       this.updateChart();
     }
   }
@@ -77,7 +77,9 @@ export class ModernActivityChartComponent implements OnChanges {
     return this.selectedMetrics.includes(metric);
   }
 
-  private getMetricValue(activity: Activity, metricType: string): number {
+  private getMetricValue(activity: Activity | null | undefined, metricType: string): number | null {
+    if (!activity) return null;
+
     switch (metricType) {
       case 'speed':
         return activity.average_speed;
@@ -88,8 +90,43 @@ export class ModernActivityChartComponent implements OnChanges {
       case 'duration':
         return activity.elapsed_time / 3600;
       default:
-        return 0;
+        return null;
     }
+  }
+
+  private generateDateLabels(): Date[] {
+    const today = new Date();
+    const dates: Date[] = [];
+    let startDate: Date;
+
+    switch (this.period) {
+      case 'week':
+        startDate = new Date(today);
+        startDate.setDate(today.getDate() - 6);
+        for (let i = 0; i <= 6; i++) {
+          const date = new Date(startDate);
+          date.setDate(startDate.getDate() + i);
+          dates.push(date);
+        }
+        break;
+      case 'month':
+        startDate = new Date(today);
+        startDate.setDate(today.getDate() - 29);
+        for (let i = 0; i <= 29; i++) {
+          const date = new Date(startDate);
+          date.setDate(startDate.getDate() + i);
+          dates.push(date);
+        }
+        break;
+      case 'current_year':
+        startDate = new Date(today.getFullYear(), 0, 1);
+        const endDate = new Date();
+        for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+          dates.push(new Date(d));
+        }
+        break;
+    }
+    return dates;
   }
 
   private handleLegendClick(e: ChartEvent, legendItem: LegendItem) {
@@ -99,25 +136,22 @@ export class ModernActivityChartComponent implements OnChanges {
     }
   }
 
-  private getFilteredActivities(activities: Activity[]): Activity[] {
-    let cutoffDate = new Date();
+  private getFilteredActivities(): Activity[] {
+    let filteredActivities = this.activities;
 
-    switch (this.period) {
-      case 'week':
-        cutoffDate.setDate(cutoffDate.getDate() - 7);
+    switch (this.selectedActivityType) {
+      case 'Run':
+        filteredActivities = this.activities.filter(a => a.type === 'Run');
         break;
-      case 'month':
-        cutoffDate.setDate(cutoffDate.getDate() - 30);
+      case 'Ride':
+        filteredActivities = this.activities.filter(a => a.type === 'Ride');
         break;
-      case 'current_year':
-        cutoffDate = new Date(cutoffDate.getFullYear(), 0, 1);
+      case 'Walk/Hike':
+        filteredActivities = this.activities.filter(a => a.type === 'Walk' || a.type === 'Hike');
         break;
     }
 
-    return activities
-      .filter(a => a.type === this.selectedActivityType)
-      .filter(a => new Date(a.start_date) >= cutoffDate)
-      .sort((a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime());
+    return filteredActivities.sort((a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime());
   }
 
   private updateChart() {
@@ -128,25 +162,47 @@ export class ModernActivityChartComponent implements OnChanges {
     const canvas = document.getElementById('activityChart') as HTMLCanvasElement;
     if (!canvas) return;
 
-    const filteredActivities = this.getFilteredActivities(this.activities);
+    const dateLabels = this.generateDateLabels();
+    const filteredActivities = this.getFilteredActivities();
+
+    // Map activities to dates
+    const activityMap = new Map<string, Activity>();
+    filteredActivities.forEach(activity => {
+      const activityDate = new Date(activity.start_date);
+      activityMap.set(activityDate.toISOString().split('T')[0], activity);
+    });
 
     const datasets = this.selectedMetrics.map(metricType => {
       const metric = this.metrics.find(m => m.value === metricType)!;
+      const data = dateLabels.map(date => {
+        const dateKey = date.toISOString().split('T')[0];
+        const activity = activityMap.get(dateKey);
+        return this.getMetricValue(activity, metricType);
+      });
+
       return {
         label: metric.label,
-        data: filteredActivities.map(a => this.getMetricValue(a, metricType)),
+        data: data,
         borderColor: metric.color,
         backgroundColor: `${metric.color}33`,
         borderWidth: 2,
-        tension: 0.4,
-        fill: true,
-        yAxisID: metricType
+        tension: 0.1,
+        fill: false,
+        yAxisID: metricType,
+        spanGaps: true,
+        pointRadius: data.map(value => value === null ? 0 : 3),
+        segment: {
+          borderDash: (ctx: any) => {
+            const range = ctx.p1.parsed.x - ctx.p0.parsed.x;
+            return range > 1 ? [6, 6] : undefined;
+          }
+        }
       };
     });
 
     const data = {
-      labels: filteredActivities.map(a =>
-        new Date(a.start_date).toLocaleDateString('fr-FR', {
+      labels: dateLabels.map(date =>
+        date.toLocaleDateString('fr-FR', {
           month: 'short',
           day: 'numeric'
         })
@@ -203,15 +259,17 @@ export class ModernActivityChartComponent implements OnChanges {
             callbacks: {
               beforeTitle: (tooltipItems) => {
                 const dataIndex = tooltipItems[0].dataIndex;
-                return filteredActivities[dataIndex].name;
+                const dateKey = dateLabels[dataIndex].toISOString().split('T')[0];
+                const activity = activityMap.get(dateKey);
+                return activity ? activity.name : 'Pas d\'activité';
               },
               title: (tooltipItems) => {
-                return new Date(filteredActivities[tooltipItems[0].dataIndex].start_date)
-                  .toLocaleDateString('fr-FR', {
-                    weekday: 'long',
-                    day: 'numeric',
-                    month: 'long'
-                  });
+                const dataIndex = tooltipItems[0].dataIndex;
+                return dateLabels[dataIndex].toLocaleDateString('fr-FR', {
+                  weekday: 'long',
+                  day: 'numeric',
+                  month: 'long'
+                });
               }
             }
           }

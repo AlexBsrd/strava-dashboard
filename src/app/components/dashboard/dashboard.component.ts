@@ -73,6 +73,7 @@ export class DashboardComponent implements OnInit {
     this.stravaService.getActivities(this.selectedPeriod).subscribe({
       next: (activities) => {
         this.allActivities = activities;
+        console.log(activities);
         this.runningActivityData = activities.filter(a => a.type.includes('Run'));
         this.bikingActivityData = activities.filter(a => a.type.includes('Ride'));
         this.walkingActivityData = activities.filter(a => a.type.includes('Hike') || a.type.includes('Walk'));
