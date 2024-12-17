@@ -6,7 +6,6 @@ require('dotenv').config({
   path: '.env'
 });
 
-
 const envFile = `export const environment = {
   production: ${process.env.IS_PRODUCTION},
   stravaClientId: '${process.env.STRAVA_CLIENT_ID}',
@@ -14,12 +13,15 @@ const envFile = `export const environment = {
   redirectUri: '${process.env.REDIRECT_URI}',
 };`
 
-const targetPath = path.join(__dirname, `/src/app/environments/environment.ts`);
-fs.writeFile(targetPath, envFile, (err) => {
-  if (err) {
-    console.error(err);
-    throw err;
-  } else {
-    console.log(successColor, `${checkSign} Successfully generated environment file`);
-  }
-});
+const environmentsPath = path.join(__dirname, 'src/app/environments');
+const targetPath = path.join(environmentsPath, 'environment.ts');
+
+// Créer le dossier environments s'il n'existe pas
+if (!fs.existsSync(environmentsPath)) {
+  fs.mkdirSync(environmentsPath, {recursive: true});
+  console.log(successColor, `${checkSign} Created environments directory`);
+}
+
+// Écrire le fichier environment.ts
+fs.writeFileSync(targetPath, envFile);
+console.log(successColor, `${checkSign} Successfully generated environment file at ${targetPath}`);

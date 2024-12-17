@@ -40,4 +40,4 @@ jobs:
         with:
           folder: dist/strava-dashboard/browser
           branch: gh-pages
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.DEPLOY_TOKEN }}
