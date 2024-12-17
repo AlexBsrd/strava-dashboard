@@ -1,0 +1,95 @@
+<div class="challenge-detail-container">
+  <app-spinner *ngIf="isLoading"></app-spinner>
+
+  <div *ngIf="error" class="error-message">
+    {{ error }}
+  </div>
+
+  <div *ngIf="challenge && !isLoading" class="challenge-content">
+    <header class="challenge-header">
+      <div class="challenge-title">
+        <h1>{{ challenge.title }}</h1>
+        <span class="challenge-status" [ngClass]="challenge.status.toLowerCase()">
+          {{ challenge.status }}
+        </span>
+      </div>
+
+      <div class="challenge-actions">
+        <button *ngIf="!hasJoined"
+                (click)="joinChallenge()"
+                class="btn-primary">
+          Rejoindre le challenge
+        </button>
+        <button (click)="shareChallenge()"
+                class="btn-secondary">
+          Partager
+        </button>
+      </div>
+    </header>
+
+    <div class="challenge-info-grid">
+      <div class="info-card">
+        <h3>Objectif</h3>
+        <div class="objective">
+          <span class="value">{{ challenge.goal }}</span>
+          <span class="unit">{{ challenge.metric }}</span>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <h3>Temps restant</h3>
+        <div class="time-left">{{ formatTimeLeft() }}</div>
+      </div>
+
+      <div class="info-card">
+        <h3>Participants</h3>
+        <div class="participants-count">
+          {{ challenge.participants.length }}
+        </div>
+      </div>
+
+      <div class="info-card">
+        <h3>Type</h3>
+        <div class="challenge-type">{{ challenge.type }}</div>
+      </div>
+    </div>
+
+    <section class="leaderboard-section">
+      <h2>Classement</h2>
+      <div class="leaderboard">
+        <div class="participant-row header">
+          <span>Position</span>
+          <span>Participant</span>
+          <span>Progression</span>
+          <span>Dernière mise à jour</span>
+        </div>
+
+        <div *ngFor="let participant of challenge.participants; let i = index"
+             class="participant-row">
+          <span class="position">{{ i + 1 }}</span>
+          <span class="participant-name">{{ participant.userId }}</span>
+          <span class="progress">
+            <div class="progress-bar">
+              <div class="progress-fill"
+                   [style.width.%]="getProgressPercentage(participant.currentProgress)">
+              </div>
+            </div>
+            <span class="progress-text">
+              {{ participant.currentProgress }} / {{ challenge.goal }}
+            </span>
+          </span>
+          <span class="last-update">
+            {{ participant.lastUpdate | date:'short' }}
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <section class="description-section">
+      <h2>Description</h2>
+      <p class="challenge-description">
+        {{ challenge.description }}
+      </p>
+    </section>
+  </div>
+</div>

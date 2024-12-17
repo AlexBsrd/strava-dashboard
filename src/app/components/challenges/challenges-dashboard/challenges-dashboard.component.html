@@ -1,0 +1,43 @@
+<div class="challenges-dashboard">
+  <div class="challenges-header">
+    <h2>Mes Challenges</h2>
+    <button (click)="createNewChallenge()" class="new-challenge-btn">
+      Nouveau Challenge
+    </button>
+  </div>
+
+  <div class="challenges-filters">
+    <button
+      *ngFor="let filter of filters"
+      [class.active]="currentFilter === filter"
+      (click)="setFilter(filter)"
+      class="filter-btn">
+      {{ filter }}
+    </button>
+  </div>
+
+  <div class="challenges-grid">
+    <div *ngFor="let challenge of filteredChallenges" class="challenge-card">
+      <h3>{{ challenge.title }}</h3>
+      <div class="challenge-progress">
+        <div class="progress-bar">
+          <div class="progress-fill"
+               [style.width.%]="challenge.participants.length ? (challenge.participants[0].currentProgress / challenge.goal) * 100 : 0">
+          </div>
+        </div>
+        <span class="progress-text">
+          {{ challenge.participants.length > 0 ? challenge.participants[0].currentProgress : 0 }} / {{ challenge.goal }}
+          {{ challenge.metric }}
+        </span>
+      </div>
+      <div class="challenge-footer">
+        <span class="time-remaining">
+          {{ challenge.endDate | date:'shortDate' }}
+        </span>
+        <button (click)="viewChallenge(challenge)" class="view-btn">
+          Voir détails
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

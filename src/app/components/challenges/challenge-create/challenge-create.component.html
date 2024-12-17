@@ -1,0 +1,102 @@
+<div class="challenge-create-container">
+  <div class="challenge-create-card">
+    <h2>Créer un nouveau challenge</h2>
+
+    <form [formGroup]="challengeForm" (ngSubmit)="onSubmit()" class="challenge-form">
+      <div class="form-group">
+        <label for="title">Titre du challenge</label>
+        <input
+          id="title"
+          type="text"
+          formControlName="title"
+          placeholder="Ex: Challenge 100km en une semaine"
+          [class.error]="challengeForm.get('title')?.invalid && challengeForm.get('title')?.touched">
+        <div class="error-message" *ngIf="challengeForm.get('title')?.invalid && challengeForm.get('title')?.touched">
+          Le titre doit contenir au moins 3 caractères
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea
+          id="description"
+          formControlName="description"
+          placeholder="Décrivez votre challenge..."
+          rows="4">
+        </textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="type">Type de challenge</label>
+          <select id="type" formControlName="type">
+            <option *ngFor="let type of challengeTypes" [value]="type">
+              {{ type }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="metric">Unité de mesure</label>
+          <select id="metric" formControlName="metric">
+            <option *ngFor="let metric of challengeMetrics" [value]="metric">
+              {{ metric }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="goal">Objectif</label>
+        <input
+          id="goal"
+          type="number"
+          formControlName="goal"
+          min="1">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="startDate">Date de début</label>
+          <input
+            id="startDate"
+            type="date"
+            formControlName="startDate">
+        </div>
+
+        <div class="form-group">
+          <label for="endDate">Date de fin</label>
+          <input
+            id="endDate"
+            type="date"
+            formControlName="endDate">
+        </div>
+      </div>
+
+      <div class="form-group checkbox-group">
+        <label>
+          <input
+            type="checkbox"
+            formControlName="isPrivate">
+          Challenge privé
+        </label>
+        <span class="helper-text">Les challenges privés nécessitent une invitation pour participer</span>
+      </div>
+
+      <div class="form-actions">
+        <button
+          type="button"
+          class="btn-secondary"
+          (click)="router.navigate(['/challenges'])">
+          Annuler
+        </button>
+        <button
+          type="submit"
+          class="btn-primary"
+          [disabled]="!challengeForm.valid || isSubmitting">
+          {{ isSubmitting ? 'Création...' : 'Créer le challenge' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

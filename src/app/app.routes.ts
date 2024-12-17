@@ -21,6 +21,32 @@ export const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
+    path: 'challenges',
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./components/challenges/challenges-dashboard/challenges-dashboard.component')
+            .then(m => m.ChallengesDashboardComponent),
+        canActivate: [AuthGuard]
+      },
+      {
+        path: 'create',
+        loadComponent: () =>
+          import('./components/challenges/challenge-create/challenge-create.component')
+            .then(m => m.ChallengeCreateComponent),
+        canActivate: [AuthGuard]
+      },
+      {
+        path: ':id',
+        loadComponent: () =>
+          import('./components/challenges/challenge-detail/challenge-detail.component')
+            .then(m => m.ChallengeDetailComponent),
+        canActivate: [AuthGuard]
+      }
+    ]
+  },
+  {
     path: 'callback',
     loadComponent: () =>
       import('./components/auth-callback/auth-callback.component').then(m => m.AuthCallbackComponent)
