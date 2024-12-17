@@ -1,9 +1,10 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {Observable} from 'rxjs';
+import {Observable, of, tap} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {Activity} from '../models/activity';
 import {environment} from "../environments/environment";
+import {ActivityCacheService} from "./activity-cache.service";
 
 @Injectable({
   providedIn: 'root'
@@ -14,12 +15,21 @@ export class StravaService {
   private clientSecret = environment.stravaClientSecret;
   private redirectUri = environment.redirectUri;
 
-  constructor(private http: HttpClient) {
+  constructor(
+    private http: HttpClient,
+    private activityCache: ActivityCacheService
+  ) {
   }
 
   getActivities(period: 'week' | 'month' | 'current_year'): Observable<Activity[]> {
+    // Vérifier si nous avons besoin de rafraîchir les données
+    if (!this.activityCache.needsRefresh(period)) {
+      return of(this.activityCache.getFilteredActivities(period));
+    }
+
     let after = new Date();
 
+    // Ajuster la date de début selon la période
     switch (period) {
       case 'week':
         after.setDate(after.getDate() - 7);
@@ -37,7 +47,14 @@ export class StravaService {
       `Bearer ${localStorage.getItem('strava_token')}`
     );
 
-    return this.getAllActivities(after, headers);
+    return this.getAllActivities(after, headers).pipe(
+      tap(activities => {
+        this.activityCache.setActivities(activities, period);
+      }),
+      map(activities => {
+        return this.activityCache.getFilteredActivities(period);
+      })
+    );
   }
 
   authenticate(): void {

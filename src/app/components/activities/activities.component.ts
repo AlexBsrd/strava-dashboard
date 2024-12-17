@@ -18,6 +18,7 @@ import {SpinnerComponent} from '../spinner/spinner.component';
 })
 export class ActivitiesComponent implements OnInit {
   activities: Activity[] = [];
+  groupedActivities: { [key: string]: Activity[] } = {};
   isLoading = false;
   error: string | null = null;
   selectedPeriod: 'week' | 'month' | 'current_year' = 'week';
@@ -49,13 +50,23 @@ export class ActivitiesComponent implements OnInit {
     return `${minutes}min`;
   }
 
-  formatDate(date: Date): string {
+  formatDayHeader(date: string): string {
     return new Date(date).toLocaleDateString('fr-FR', {
       weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+      day: 'numeric',
+      month: 'long'
     });
+  }
+
+  formatTime(date: Date | string): string {
+    return new Date(date).toLocaleTimeString('fr-FR', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  reverseOrder = (a: any, b: any) => {
+    return a.key > b.key ? -1 : 1;
   }
 
   private loadActivities() {
@@ -65,6 +76,7 @@ export class ActivitiesComponent implements OnInit {
     this.stravaService.getActivities(this.selectedPeriod).subscribe({
       next: (activities) => {
         this.activities = activities;
+        this.groupActivitiesByDay();
         this.isLoading = false;
       },
       error: (error) => {
@@ -73,5 +85,28 @@ export class ActivitiesComponent implements OnInit {
         this.error = 'Une erreur est survenue lors du chargement des activités.';
       }
     });
+  }
+
+  private groupActivitiesByDay() {
+    this.groupedActivities = this.activities.reduce((groups: { [key: string]: Activity[] }, activity) => {
+      const date = new Date(activity.start_date);
+      const day = date.toISOString().split('T')[0];
+
+      if (!groups[day]) {
+        groups[day] = [];
+      }
+
+      groups[day].push({
+        ...activity,
+        start_date: new Date(activity.start_date)
+      });
+
+      // Trier les activités de chaque jour par heure
+      groups[day].sort((a, b) =>
+        new Date(b.start_date).getTime() - new Date(a.start_date).getTime()
+      );
+
+      return groups;
+    }, {});
   }
 }
