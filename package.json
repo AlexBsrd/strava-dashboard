@@ -8,7 +8,8 @@
     "build:prod": "npm run config && ng build",
     "config": "node generate-env.cjs",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "deploy": "ng deploy --base-href=/strava-dashboard/"
   },
   "private": true,
   "dependencies": {
