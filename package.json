@@ -9,7 +9,7 @@
     "config": "node generate-env.cjs",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "deploy": "ng deploy --base-href=/strava-dashboard/"
+    "deploy": "ng deploy --base-href=/strava-dashboard/ --message=\"Auto-deploy from commit $GITHUB_SHA 🚀\""
   },
   "private": true,
   "dependencies": {
