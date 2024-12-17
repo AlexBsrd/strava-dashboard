@@ -5,6 +5,12 @@ on:
     branches:
       - master
 
+# Ajout des permissions nécessaires pour le deploy
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -39,7 +45,7 @@ jobs:
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
-          
+
       - name: Deploy
         run: npm run deploy
         env:
