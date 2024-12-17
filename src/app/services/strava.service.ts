@@ -6,6 +6,58 @@ import {Activity} from '../models/activity';
 import {environment} from "../environments/environment";
 import {ActivityCacheService} from "./activity-cache.service";
 
+interface TokenResponse {
+  access_token: string;
+  refresh_token: string;
+  expires_at: number;
+  athlete: {
+    id: number;
+    username: string | null;
+    resource_state: number;
+    firstname: string;
+    lastname: string;
+    bio: string;
+    city: string;
+    state: string;
+    country: string;
+    sex: string;
+    premium: boolean;
+    summit: boolean;
+    created_at: string;
+    updated_at: string;
+    badge_type_id: number;
+    weight: number;
+    profile_medium: string;
+    profile: string;
+    friend: null;
+    follower: null;
+    blocked: boolean;
+    can_follow: boolean;
+    follower_count: number;
+    friend_count: number;
+    mutual_friend_count: number;
+    athlete_type: number;
+    date_preference: string;
+    measurement_preference: string;
+    clubs: any[];
+    ftp: number | null;
+    bikes: Array<{
+      id: string;
+      primary: boolean;
+      name: string;
+      resource_state: number;
+      distance: number;
+    }>;
+    shoes: Array<{
+      id: string;
+      primary: boolean;
+      name: string;
+      resource_state: number;
+      distance: number;
+    }>;
+  };
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -64,13 +116,20 @@ export class StravaService {
       `&redirect_uri=${this.redirectUri}&response_type=code&scope=${scope}`;
   }
 
-  handleAuthCallback(code: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/oauth/token`, {
+  handleAuthCallback(code: string): Observable<TokenResponse> {
+    return this.http.post<TokenResponse>(`${this.apiUrl}/oauth/token`, {
       client_id: this.clientId,
       client_secret: this.clientSecret,
       code,
       grant_type: 'authorization_code'
-    });
+    }).pipe(
+      tap(response => {
+        localStorage.setItem('strava_token', response.access_token);
+        localStorage.setItem('strava_refresh_token', response.refresh_token);
+        localStorage.setItem('strava_token_expires_at', response.expires_at.toString());
+        localStorage.setItem('strava_athlete_id', response.athlete.id.toString());
+      })
+    );
   }
 
   private getActivitiesPage(after: Date, page: number = 1, headers: HttpHeaders): Observable<Activity[]> {

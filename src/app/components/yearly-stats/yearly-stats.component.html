@@ -1,0 +1,26 @@
+<div class="yearly-stats">
+  <h2>{{ year }}</h2>
+  <div class="stats-grid">
+    <div class="stats-card" *ngFor="let stat of stats">
+      <h3>{{ stat.type }}</h3>
+      <div class="stats-details">
+        <div class="stat">
+          <span class="label">Distance</span>
+          <span class="value">{{ formatDistance(stat.distance) }}</span>
+        </div>
+        <div class="stat">
+          <span class="label">Temps total</span>
+          <span class="value">{{ formatDuration(stat.movingTime) }}</span>
+        </div>
+        <div class="stat">
+          <span class="label">Dénivelé</span>
+          <span class="value">{{ formatElevation(stat.elevationGain) }}</span>
+        </div>
+        <div class="stat">
+          <span class="label">Nombre de sorties</span>
+          <span class="value">{{ stat.count }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,166 @@
+<!-- src/app/components/profile/profile.component.html -->
+<div class="profile-container">
+  <app-spinner *ngIf="isLoading"></app-spinner>
+
+  <div *ngIf="error" class="error-message">
+    {{ error }}
+  </div>
+
+  <div *ngIf="!isLoading && !error && profile" class="profile-content">
+    <!-- Header du profil -->
+    <div class="profile-card">
+      <div class="profile-avatar">
+        <img [src]="profile.profile || '/assets/images/default-avatar.png'" [alt]="profile.firstname">
+      </div>
+      <div class="profile-info">
+        <h1>{{ profile.firstname }} {{ profile.lastname }}</h1>
+        <div class="profile-details">
+          <span *ngIf="profile.city || profile.country" class="detail-item">
+            <i class="icon">📍</i>
+            {{ profile.city }}, {{ profile.country }}
+          </span>
+          <span class="detail-item">
+            <i class="icon">🎯</i>
+            Membre depuis {{ profile.created_at | date:'MMMM yyyy' }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Grid des statistiques totales -->
+    <div class="stats-container" *ngIf="summary">
+      <div class="stats-card total-running">
+        <div class="stats-header">
+          <div class="stats-icon running">🏃</div>
+          <h3>Course à pied - Total</h3>
+        </div>
+        <div class="stats-body">
+          <div class="metric">
+            <span class="metric-value">{{ formatDistance(summary.all_run_totals.distance) }}</span>
+            <span class="metric-label">distance totale</span>
+          </div>
+          <div class="metric">
+            <span class="metric-value">{{ formatDuration(summary.all_run_totals.moving_time) }}</span>
+            <span class="metric-label">temps total</span>
+          </div>
+          <div class="metric">
+            <span class="metric-value">{{ summary.all_run_totals.count }}</span>
+            <span class="metric-label">sorties</span>
+          </div>
+          <div class="metric">
+            <span class="metric-value">{{ formatElevation(summary.all_run_totals.elevation_gain) }}</span>
+            <span class="metric-label">dénivelé total</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats-card total-cycling">
+        <div class="stats-header">
+          <div class="stats-icon cycling">🚴</div>
+          <h3>Vélo - Total</h3>
+        </div>
+        <div class="stats-body">
+          <div class="metric">
+            <span class="metric-value">{{ formatDistance(summary.all_ride_totals.distance) }}</span>
+            <span class="metric-label">distance totale</span>
+          </div>
+          <div class="metric">
+            <span class="metric-value">{{ formatDuration(summary.all_ride_totals.moving_time) }}</span>
+            <span class="metric-label">temps total</span>
+          </div>
+          <div class="metric">
+            <span class="metric-value">{{ summary.all_ride_totals.count }}</span>
+            <span class="metric-label">sorties</span>
+          </div>
+          <div class="metric">
+            <span class="metric-value">{{ formatElevation(summary.all_ride_totals.elevation_gain) }}</span>
+            <span class="metric-label">dénivelé total</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Records -->
+      <div class="stats-card">
+        <div class="stats-header">
+          <div class="stats-icon trophy">🏆</div>
+          <h3>Records (Course/Marche uniquement)</h3>
+        </div>
+        <div class="stats-body">
+          <div class="record-item">
+            <div class="record-info">
+              <span class="record-title">Plus grand dénivelé</span>
+              <span class="record-value">{{ formatElevation(summary.all_time_records.biggest_climb.value) }}</span>
+              <span class="record-details">
+                {{ summary.all_time_records.biggest_climb.activity_name }}
+                ({{ summary.all_time_records.biggest_climb.activity_type }})
+              </span>
+              <span class="record-date">{{ formatDate(summary.all_time_records.biggest_climb.activity_date) }}</span>
+            </div>
+          </div>
+          <div class="record-item">
+            <div class="record-info">
+              <span class="record-title">Plus longue sortie</span>
+              <span class="record-value">{{ formatDistance(summary.all_time_records.longest_run.value) }}</span>
+              <span class="record-details">
+                {{ summary.all_time_records.longest_run.activity_name }}
+                ({{ summary.all_time_records.longest_run.activity_type }})
+              </span>
+              <span class="record-date">{{ formatDate(summary.all_time_records.longest_run.activity_date) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Statistiques de l'année en cours -->
+      <div class="stats-card ytd-running">
+        <div class="stats-header">
+          <div class="stats-icon running">🏃</div>
+          <h3>Course à pied - Cette année</h3>
+        </div>
+        <div class="stats-body">
+          <div class="metric">
+            <span class="metric-value">{{ formatDistance(summary.ytd_run_totals.distance) }}</span>
+            <span class="metric-label">distance parcourue</span>
+          </div>
+          <div class="metric">
+            <span class="metric-value">{{ formatDuration(summary.ytd_run_totals.moving_time) }}</span>
+            <span class="metric-label">temps total</span>
+          </div>
+          <div class="metric">
+            <span class="metric-value">{{ summary.ytd_run_totals.count }}</span>
+            <span class="metric-label">sorties</span>
+          </div>
+          <div class="metric">
+            <span class="metric-value">{{ formatElevation(summary.ytd_run_totals.elevation_gain) }}</span>
+            <span class="metric-label">dénivelé total</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats-card ytd-cycling">
+        <div class="stats-header">
+          <div class="stats-icon cycling">🚴</div>
+          <h3>Vélo - Cette année</h3>
+        </div>
+        <div class="stats-body">
+          <div class="metric">
+            <span class="metric-value">{{ formatDistance(summary.ytd_ride_totals.distance) }}</span>
+            <span class="metric-label">distance parcourue</span>
+          </div>
+          <div class="metric">
+            <span class="metric-value">{{ formatDuration(summary.ytd_ride_totals.moving_time) }}</span>
+            <span class="metric-label">temps total</span>
+          </div>
+          <div class="metric">
+            <span class="metric-value">{{ summary.ytd_ride_totals.count }}</span>
+            <span class="metric-label">sorties</span>
+          </div>
+          <div class="metric">
+            <span class="metric-value">{{ formatElevation(summary.ytd_ride_totals.elevation_gain) }}</span>
+            <span class="metric-label">dénivelé total</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
