@@ -164,3 +164,12 @@
     </div>
   </div>
 </div>
+<div *ngIf="error" class="error-container">
+  <div class="error-message">
+    <div class="error-icon">⚠️</div>
+    <p>{{ error }}</p>
+    <button class="reconnect-button" (click)="reconnect()">
+      Se reconnecter à Strava
+    </button>
+  </div>
+</div>

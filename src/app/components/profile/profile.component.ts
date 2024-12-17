@@ -5,6 +5,7 @@ import {AthleteProfile, AthleteService, AthleteSummary} from '../../services/ath
 import {SpinnerComponent} from '../spinner/spinner.component';
 import {ProfileCacheService} from '../../services/profile-cache.service';
 import {Subject, takeUntil} from 'rxjs';
+import {StravaService} from "../../services/strava.service";
 
 @Component({
   selector: 'app-profile',
@@ -22,9 +23,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   constructor(
     private athleteService: AthleteService,
-    private profileCache: ProfileCacheService
+    private profileCache: ProfileCacheService,
+    private stravaService: StravaService
   ) {
   }
+
 
   ngOnInit() {
     // S'abonner aux changements du cache
@@ -67,6 +70,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
       month: 'long',
       day: 'numeric'
     });
+  }
+
+  reconnect() {
+    this.profileCache.clear(); // Vider le cache
+    this.stravaService.authenticate(); // Rediriger vers la page d'authentification Strava
   }
 
   private loadProfile() {
