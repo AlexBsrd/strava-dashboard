@@ -8,8 +8,6 @@ on:
 # Ajout des permissions nécessaires pour le deploy
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 jobs:
   build-and-deploy:
@@ -47,6 +45,8 @@ jobs:
           git config --global user.name "github-actions[bot]"
 
       - name: Deploy
-        run: npm run deploy
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: dist/strava-dashboard/browser
+          branch: gh-pages
+          token: ${{ secrets.GITHUB_TOKEN }}
