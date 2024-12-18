@@ -12,6 +12,18 @@
           </option>
         </select>
 
+        <!-- Nouveau contrôle pour le groupement -->
+        <div class="grouping-control" *ngIf="period === 'current_year'">
+          <label class="grouping-label">
+            <input
+              type="checkbox"
+              [checked]="isGroupedByWeek"
+              (change)="onGroupingChange($event)"
+            >
+            Grouper par semaine
+          </label>
+        </div>
+
         <div class="metrics-toggles">
           <button
             *ngFor="let metric of metrics"

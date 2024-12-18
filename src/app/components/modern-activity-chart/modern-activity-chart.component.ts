@@ -31,6 +31,18 @@ Chart.register(
   zoomPlugin
 );
 
+interface WeeklyData {
+  weekLabel: string;
+  weekStart: Date;
+  weekEnd: Date;
+  totalDistance: number;
+  totalDuration: number;
+  averageSpeed: number;
+  totalElevation: number;
+  activitiesCount: number;
+  activities: Array<{ name: string, date: Date }>;
+}
+
 @Component({
   selector: 'app-modern-activity-chart',
   standalone: true,
@@ -45,6 +57,7 @@ export class ModernActivityChartComponent implements OnChanges {
   selectedActivityType = 'Run';
   selectedMetrics: string[] = ['speed'];
   chart: Chart | null = null;
+  isGroupedByWeek = false;
 
   activityTypes: string[] = ['Run', 'Ride', 'Walk/Hike'];
   metrics = [
@@ -62,6 +75,12 @@ export class ModernActivityChartComponent implements OnChanges {
 
   onActivityTypeChange(value: string) {
     this.selectedActivityType = value;
+    this.updateChart();
+  }
+
+  onGroupingChange(event: Event) {
+    const checkbox = event.target as HTMLInputElement;
+    this.isGroupedByWeek = checkbox.checked;
     this.updateChart();
   }
 
@@ -97,56 +116,167 @@ export class ModernActivityChartComponent implements OnChanges {
     }
   }
 
-  private getMetricValue(activity: Activity | null | undefined, metricType: string): number | null {
-    if (!activity) return null;
-
-    switch (metricType) {
-      case 'speed':
-        return activity.average_speed;
-      case 'distance':
-        return activity.distance;
-      case 'elevation':
-        return activity.total_elevation_gain;
-      case 'duration':
-        return activity.elapsed_time / 3600;
-      default:
-        return null;
-    }
+  private getWeekNumber(date: Date): number {
+    const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+    const pastDaysOfYear = (date.getTime() - firstDayOfYear.getTime()) / 86400000;
+    return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
   }
 
-  private generateDateLabels(): Date[] {
-    const today = new Date();
-    const dates: Date[] = [];
-    let startDate: Date;
+  private getWeekRange(date: Date): { start: Date; end: Date } {
+    const start = new Date(date);
+    start.setDate(date.getDate() - date.getDay() + 1);
+    const end = new Date(start);
+    end.setDate(start.getDate() + 6);
+    return {start, end};
+  }
 
-    switch (this.period) {
-      case 'week':
-        startDate = new Date(today);
-        startDate.setDate(today.getDate() - 6);
-        for (let i = 0; i <= 6; i++) {
-          const date = new Date(startDate);
-          date.setDate(startDate.getDate() + i);
-          dates.push(date);
-        }
+  private groupActivitiesByWeek(activities: Activity[]): WeeklyData[] {
+    if (!activities.length) return [];
+
+    const weeklyMap = new Map<string, WeeklyData>();
+
+    activities.forEach(activity => {
+      const activityDate = new Date(activity.start_date);
+      const weekNumber = this.getWeekNumber(activityDate);
+      const weekRange = this.getWeekRange(activityDate);
+      const weekLabel = `S${weekNumber}`;
+
+      if (!weeklyMap.has(weekLabel)) {
+        weeklyMap.set(weekLabel, {
+          weekLabel,
+          weekStart: weekRange.start,
+          weekEnd: weekRange.end,
+          totalDistance: 0,
+          totalDuration: 0,
+          averageSpeed: 0,
+          totalElevation: 0,
+          activitiesCount: 0,
+          activities: [] // Initialisation du tableau des activités
+        });
+      }
+
+      const existingData = weeklyMap.get(weekLabel)!;
+      existingData.totalDistance += activity.distance;
+      existingData.totalDuration += activity.elapsed_time;
+      existingData.totalElevation += activity.total_elevation_gain;
+      existingData.activitiesCount += 1;
+      // Ajouter l'activité à la liste des activités de la semaine
+      existingData.activities.push({
+        name: activity.name,
+        date: new Date(activity.start_date)
+      });
+    });
+
+    // Calculer les moyennes et trier les activités par date
+    weeklyMap.forEach(week => {
+      week.averageSpeed = (week.totalDistance / (week.totalDuration / 3600)) || 0;
+      week.activities.sort((a, b) => b.date.getTime() - a.date.getTime());
+    });
+
+    return Array.from(weeklyMap.values()).sort((a, b) =>
+      a.weekStart.getTime() - b.weekStart.getTime()
+    );
+  }
+
+
+  private getFilteredActivities(): Activity[] {
+    if (!this.activities) return [];
+
+    let filteredActivities = [...this.activities];
+
+    switch (this.selectedActivityType) {
+      case 'Run':
+        filteredActivities = filteredActivities.filter(a => a.type === 'Run');
         break;
-      case 'month':
-        startDate = new Date(today);
-        startDate.setDate(today.getDate() - 29);
-        for (let i = 0; i <= 29; i++) {
-          const date = new Date(startDate);
-          date.setDate(startDate.getDate() + i);
-          dates.push(date);
-        }
+      case 'Ride':
+        filteredActivities = filteredActivities.filter(a => a.type === 'Ride');
         break;
-      case 'current_year':
-        startDate = new Date(today.getFullYear(), 0, 1);
-        const endDate = new Date();
-        for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-          dates.push(new Date(d));
-        }
+      case 'Walk/Hike':
+        filteredActivities = filteredActivities.filter(a => a.type === 'Walk' || a.type === 'Hike');
         break;
     }
-    return dates;
+
+    return filteredActivities.sort((a, b) =>
+      new Date(a.start_date).getTime() - new Date(b.start_date).getTime()
+    );
+  }
+
+  private generateDateLabels(): [Date[], Activity[] | WeeklyData[]] {
+    const today = new Date();
+    const dates: Date[] = [];
+    let data: Activity[] | WeeklyData[] = [];
+
+    if (this.period === 'current_year' && this.isGroupedByWeek) {
+      const filteredActivities = this.getFilteredActivities();
+      const weeklyData = this.groupActivitiesByWeek(filteredActivities);
+      weeklyData.forEach(week => {
+        dates.push(week.weekStart);
+      });
+      data = weeklyData;
+    } else {
+      let startDate: Date;
+      let endDate = new Date(today);
+
+      switch (this.period) {
+        case 'week':
+          startDate = new Date(today);
+          startDate.setDate(today.getDate() - 6);
+          break;
+        case 'month':
+          startDate = new Date(today);
+          startDate.setDate(today.getDate() - 29);
+          break;
+        case 'current_year':
+          startDate = new Date(today.getFullYear(), 0, 1); // 1er janvier de l'année en cours
+          startDate.setHours(0, 0, 0, 0);
+          break;
+      }
+
+      // Générer toutes les dates dans l'intervalle
+      const currentDate = new Date(startDate);
+      while (currentDate <= endDate) {
+        dates.push(new Date(currentDate));
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+
+      data = this.getFilteredActivities();
+    }
+
+    return [dates, data];
+  }
+
+  private getMetricValue(item: Activity | WeeklyData | undefined | null, metricType: string): number | null {
+    if (!item) return null;
+
+    if ('weekLabel' in item) {
+      const weekData = item as WeeklyData;
+      switch (metricType) {
+        case 'speed':
+          return weekData.averageSpeed;
+        case 'distance':
+          return weekData.totalDistance;
+        case 'elevation':
+          return weekData.totalElevation;
+        case 'duration':
+          return weekData.totalDuration / 3600;
+        default:
+          return null;
+      }
+    } else {
+      const activityData = item as Activity;
+      switch (metricType) {
+        case 'speed':
+          return activityData.average_speed;
+        case 'distance':
+          return activityData.distance;
+        case 'elevation':
+          return activityData.total_elevation_gain;
+        case 'duration':
+          return activityData.elapsed_time / 3600;
+        default:
+          return null;
+      }
+    }
   }
 
   private handleLegendClick(e: ChartEvent, legendItem: LegendItem) {
@@ -156,22 +286,11 @@ export class ModernActivityChartComponent implements OnChanges {
     }
   }
 
-  private getFilteredActivities(): Activity[] {
-    let filteredActivities = this.activities;
-
-    switch (this.selectedActivityType) {
-      case 'Run':
-        filteredActivities = this.activities.filter(a => a.type === 'Run');
-        break;
-      case 'Ride':
-        filteredActivities = this.activities.filter(a => a.type === 'Ride');
-        break;
-      case 'Walk/Hike':
-        filteredActivities = this.activities.filter(a => a.type === 'Walk' || a.type === 'Hike');
-        break;
-    }
-
-    return filteredActivities.sort((a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime());
+  private formatDuration(hours: number): string {
+    const totalMinutes = Math.round(hours * 60);
+    const h = Math.floor(totalMinutes / 60);
+    const m = totalMinutes % 60;
+    return `${h}h${m > 0 ? ` ${m}min` : ''}`;
   }
 
   private updateChart() {
@@ -182,22 +301,38 @@ export class ModernActivityChartComponent implements OnChanges {
     const canvas = document.getElementById('activityChart') as HTMLCanvasElement;
     if (!canvas) return;
 
-    const dateLabels = this.generateDateLabels();
-    const filteredActivities = this.getFilteredActivities();
+    const [dateLabels, rawData] = this.generateDateLabels();
+    const dataMap = new Map<string, Activity | WeeklyData>();
 
-    // Map activities to dates
-    const activityMap = new Map<string, Activity>();
-    filteredActivities.forEach(activity => {
-      const activityDate = new Date(activity.start_date);
-      activityMap.set(activityDate.toISOString().split('T')[0], activity);
-    });
+    if (this.period === 'current_year' && this.isGroupedByWeek) {
+      (rawData as WeeklyData[]).forEach(week => {
+        if (week.weekStart) {
+          dataMap.set(week.weekStart.toISOString(), week);
+        }
+      });
+    } else {
+      // Pour les données non groupées, on utilise la date de l'activité comme clé
+      (rawData as Activity[]).forEach(activity => {
+        const activityDate = new Date(activity.start_date);
+        const dateKey = activityDate.toISOString().split('T')[0];
+        dataMap.set(dateKey, activity);
+      });
+    }
 
     const datasets = this.selectedMetrics.map(metricType => {
       const metric = this.metrics.find(m => m.value === metricType)!;
       const data = dateLabels.map(date => {
-        const dateKey = date.toISOString().split('T')[0];
-        const activity = activityMap.get(dateKey);
-        return this.getMetricValue(activity, metricType);
+        if (!date) return null;
+
+        if (this.period === 'current_year' && this.isGroupedByWeek) {
+          const key = date.toISOString();
+          const item = dataMap.get(key);
+          return this.getMetricValue(item, metricType);
+        } else {
+          const key = date.toISOString().split('T')[0];
+          const item = dataMap.get(key);
+          return this.getMetricValue(item, metricType);
+        }
       });
 
       return {
@@ -211,22 +346,16 @@ export class ModernActivityChartComponent implements OnChanges {
         yAxisID: metricType,
         spanGaps: true,
         pointRadius: data.map(value => value === null ? 0 : 3),
-        segment: {
-          borderDash: (ctx: any) => {
-            const range = ctx.p1.parsed.x - ctx.p0.parsed.x;
-            return range > 1 ? [6, 6] : undefined;
-          }
-        }
       };
     });
 
     const data = {
-      labels: dateLabels.map(date =>
-        date.toLocaleDateString('fr-FR', {
-          month: 'short',
-          day: 'numeric'
-        })
-      ),
+      labels: dateLabels.map(date => {
+        if (!date) return '';
+        return this.period === 'current_year' && this.isGroupedByWeek
+          ? `Sem. ${this.getWeekNumber(date)}`
+          : date.toLocaleDateString('fr-FR', {month: 'short', day: 'numeric'});
+      }),
       datasets
     };
 
@@ -235,7 +364,7 @@ export class ModernActivityChartComponent implements OnChanges {
         type: 'category',
         grid: {
           color: 'rgba(0, 0, 0, 0.05)'
-        }
+        },
       }
     };
 
@@ -258,7 +387,15 @@ export class ModernActivityChartComponent implements OnChanges {
 
     this.chart = new Chart(canvas, {
       type: 'line',
-      data: data,
+      data: {
+        labels: dateLabels.map(date => {
+          if (!date) return '';
+          return this.period === 'current_year' && this.isGroupedByWeek
+            ? `Sem. ${this.getWeekNumber(date)}`
+            : date.toLocaleDateString('fr-FR', {month: 'short', day: 'numeric'});
+        }),
+        datasets
+      },
       options: {
         responsive: true,
         maintainAspectRatio: false,
@@ -277,19 +414,37 @@ export class ModernActivityChartComponent implements OnChanges {
             borderColor: '#ddd',
             borderWidth: 1,
             callbacks: {
-              beforeTitle: (tooltipItems) => {
-                const dataIndex = tooltipItems[0].dataIndex;
-                const dateKey = dateLabels[dataIndex].toISOString().split('T')[0];
-                const activity = activityMap.get(dateKey);
-                return activity ? activity.name : 'Pas d\'activité';
-              },
               title: (tooltipItems) => {
                 const dataIndex = tooltipItems[0].dataIndex;
-                return dateLabels[dataIndex].toLocaleDateString('fr-FR', {
+                if (!dateLabels[dataIndex]) return '';
+
+                if (this.period === 'current_year' && this.isGroupedByWeek) {
+                  const weekData = (rawData as WeeklyData[])[dataIndex];
+                  if (!weekData) return '';
+
+                  let title = `Semaine ${this.getWeekNumber(dateLabels[dataIndex])}\n`;
+                  title += `Du ${weekData.weekStart.toLocaleDateString('fr-FR')} au ${weekData.weekEnd.toLocaleDateString('fr-FR')}\n\n`;
+                  title += 'Activités de la semaine:\n';
+                  weekData.activities.forEach(activity => {
+                    title += `- ${activity.date.toLocaleDateString('fr-FR')}: ${activity.name}\n`;
+                  });
+                  return title;
+                }
+
+                const date = dateLabels[dataIndex];
+                return date.toLocaleDateString('fr-FR', {
                   weekday: 'long',
                   day: 'numeric',
                   month: 'long'
                 });
+              },
+              label: (context) => {
+                const value = context.raw as number;
+                const metricType = context.dataset.yAxisID as string;
+                if (metricType === 'duration') {
+                  return `${context.dataset.label}: ${this.formatDuration(value)}`;
+                }
+                return `${context.dataset.label}: ${value.toFixed(1)}`;
               }
             }
           },
