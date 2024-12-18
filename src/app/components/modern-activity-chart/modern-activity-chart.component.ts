@@ -206,12 +206,67 @@ export class ModernActivityChartComponent implements OnChanges {
     let data: Activity[] | WeeklyData[] = [];
 
     if (this.period === 'current_year' && this.isGroupedByWeek) {
+      // Générer toutes les semaines de l'année
+      const currentYear = today.getFullYear();
+      const firstDayOfYear = new Date(currentYear, 0, 1);
+      const lastDayOfYear = new Date(currentYear, 11, 31);
+
+      // Ajuster au premier lundi de l'année
+      const firstMonday = new Date(firstDayOfYear);
+      firstMonday.setDate(firstMonday.getDate() + (8 - firstMonday.getDay()) % 7);
+
+      // Créer un tableau de toutes les semaines
+      const allWeeks: WeeklyData[] = [];
+      let currentDate = new Date(firstMonday);
+
+      while (currentDate <= lastDayOfYear) {
+        const weekNumber = this.getWeekNumber(currentDate);
+        const weekRange = this.getWeekRange(currentDate);
+
+        allWeeks.push({
+          weekNumber,
+          weekLabel: `S${weekNumber}`,
+          weekStart: new Date(weekRange.start),
+          weekEnd: new Date(weekRange.end),
+          totalDistance: 0,
+          totalDuration: 0,
+          averageSpeed: 0,
+          totalElevation: 0,
+          activitiesCount: 0,
+          activities: []
+        });
+
+        // Passer à la semaine suivante
+        currentDate.setDate(currentDate.getDate() + 7);
+      }
+
+      // Intégrer les données d'activités dans les semaines correspondantes
       const filteredActivities = this.getFilteredActivities();
-      const weeklyData = this.groupActivitiesByWeek(filteredActivities);
-      weeklyData.forEach(week => {
-        dates.push(week.weekStart);
+      filteredActivities.forEach(activity => {
+        const activityDate = new Date(activity.start_date);
+        const weekNumber = this.getWeekNumber(activityDate);
+        const weekData = allWeeks.find(w => w.weekNumber === weekNumber);
+
+        if (weekData) {
+          weekData.totalDistance += activity.distance;
+          weekData.totalDuration += activity.elapsed_time;
+          weekData.totalElevation += activity.total_elevation_gain;
+          weekData.activitiesCount += 1;
+          weekData.activities.push({
+            name: activity.name,
+            date: new Date(activity.start_date)
+          });
+        }
       });
-      data = weeklyData;
+
+      // Calculer les moyennes et trier les activités
+      allWeeks.forEach(week => {
+        week.averageSpeed = (week.totalDistance / (week.totalDuration / 3600)) || 0;
+        week.activities.sort((a, b) => b.date.getTime() - a.date.getTime());
+      });
+
+      dates.push(...allWeeks.map(week => week.weekStart));
+      data = allWeeks;
     } else {
       let startDate: Date;
       let endDate = new Date(today);
@@ -241,6 +296,24 @@ export class ModernActivityChartComponent implements OnChanges {
     }
 
     return [dates, data];
+  }
+
+  private createDataMap(dates: Date[], rawData: Activity[] | WeeklyData[]): Map<string, Activity | WeeklyData> {
+    const dataMap = new Map<string, Activity | WeeklyData>();
+
+    if (this.period === 'current_year' && this.isGroupedByWeek) {
+      (rawData as WeeklyData[]).forEach(week => {
+        dataMap.set(week.weekNumber.toString(), week);
+      });
+    } else {
+      (rawData as Activity[]).forEach(activity => {
+        const activityDate = new Date(activity.start_date);
+        const dateKey = activityDate.toISOString().split('T')[0];
+        dataMap.set(dateKey, activity);
+      });
+    }
+
+    return dataMap;
   }
 
   private formatDuration(hours: number): string {
@@ -300,19 +373,7 @@ export class ModernActivityChartComponent implements OnChanges {
     if (!canvas) return;
 
     const [dateLabels, rawData] = this.generateDateLabels();
-    const dataMap = new Map<string, Activity | WeeklyData>();
-
-    if (this.period === 'current_year' && this.isGroupedByWeek) {
-      (rawData as WeeklyData[]).forEach(week => {
-        dataMap.set(week.weekNumber.toString(), week);
-      });
-    } else {
-      (rawData as Activity[]).forEach(activity => {
-        const activityDate = new Date(activity.start_date);
-        const dateKey = activityDate.toISOString().split('T')[0];
-        dataMap.set(dateKey, activity);
-      });
-    }
+    const dataMap = this.createDataMap(dateLabels, rawData);
 
     const datasets = this.selectedMetrics.map(metricType => {
       const metric = this.metrics.find(m => m.value === metricType)!;
