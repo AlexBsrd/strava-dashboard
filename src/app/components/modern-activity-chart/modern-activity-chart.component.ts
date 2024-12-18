@@ -32,6 +32,7 @@ Chart.register(
 );
 
 interface WeeklyData {
+  weekNumber: number;
   weekLabel: string;
   weekStart: Date;
   weekEnd: Date;
@@ -133,17 +134,17 @@ export class ModernActivityChartComponent implements OnChanges {
   private groupActivitiesByWeek(activities: Activity[]): WeeklyData[] {
     if (!activities.length) return [];
 
-    const weeklyMap = new Map<string, WeeklyData>();
+    const weeklyMap = new Map<number, WeeklyData>();
 
     activities.forEach(activity => {
       const activityDate = new Date(activity.start_date);
       const weekNumber = this.getWeekNumber(activityDate);
       const weekRange = this.getWeekRange(activityDate);
-      const weekLabel = `S${weekNumber}`;
 
-      if (!weeklyMap.has(weekLabel)) {
-        weeklyMap.set(weekLabel, {
-          weekLabel,
+      if (!weeklyMap.has(weekNumber)) {
+        weeklyMap.set(weekNumber, {
+          weekNumber,
+          weekLabel: `S${weekNumber}`,
           weekStart: weekRange.start,
           weekEnd: weekRange.end,
           totalDistance: 0,
@@ -151,16 +152,15 @@ export class ModernActivityChartComponent implements OnChanges {
           averageSpeed: 0,
           totalElevation: 0,
           activitiesCount: 0,
-          activities: [] // Initialisation du tableau des activités
+          activities: []
         });
       }
 
-      const existingData = weeklyMap.get(weekLabel)!;
+      const existingData = weeklyMap.get(weekNumber)!;
       existingData.totalDistance += activity.distance;
       existingData.totalDuration += activity.elapsed_time;
       existingData.totalElevation += activity.total_elevation_gain;
       existingData.activitiesCount += 1;
-      // Ajouter l'activité à la liste des activités de la semaine
       existingData.activities.push({
         name: activity.name,
         date: new Date(activity.start_date)
@@ -174,10 +174,9 @@ export class ModernActivityChartComponent implements OnChanges {
     });
 
     return Array.from(weeklyMap.values()).sort((a, b) =>
-      a.weekStart.getTime() - b.weekStart.getTime()
+      a.weekNumber - b.weekNumber
     );
   }
-
 
   private getFilteredActivities(): Activity[] {
     if (!this.activities) return [];
@@ -227,12 +226,11 @@ export class ModernActivityChartComponent implements OnChanges {
           startDate.setDate(today.getDate() - 29);
           break;
         case 'current_year':
-          startDate = new Date(today.getFullYear(), 0, 1); // 1er janvier de l'année en cours
+          startDate = new Date(today.getFullYear(), 0, 1);
           startDate.setHours(0, 0, 0, 0);
           break;
       }
 
-      // Générer toutes les dates dans l'intervalle
       const currentDate = new Date(startDate);
       while (currentDate <= endDate) {
         dates.push(new Date(currentDate));
@@ -245,10 +243,17 @@ export class ModernActivityChartComponent implements OnChanges {
     return [dates, data];
   }
 
+  private formatDuration(hours: number): string {
+    const totalMinutes = Math.round(hours * 60);
+    const h = Math.floor(totalMinutes / 60);
+    const m = totalMinutes % 60;
+    return `${h}h${m > 0 ? ` ${m}min` : ''}`;
+  }
+
   private getMetricValue(item: Activity | WeeklyData | undefined | null, metricType: string): number | null {
     if (!item) return null;
 
-    if ('weekLabel' in item) {
+    if ('weekNumber' in item) {
       const weekData = item as WeeklyData;
       switch (metricType) {
         case 'speed':
@@ -286,13 +291,6 @@ export class ModernActivityChartComponent implements OnChanges {
     }
   }
 
-  private formatDuration(hours: number): string {
-    const totalMinutes = Math.round(hours * 60);
-    const h = Math.floor(totalMinutes / 60);
-    const m = totalMinutes % 60;
-    return `${h}h${m > 0 ? ` ${m}min` : ''}`;
-  }
-
   private updateChart() {
     if (this.chart) {
       this.chart.destroy();
@@ -306,12 +304,9 @@ export class ModernActivityChartComponent implements OnChanges {
 
     if (this.period === 'current_year' && this.isGroupedByWeek) {
       (rawData as WeeklyData[]).forEach(week => {
-        if (week.weekStart) {
-          dataMap.set(week.weekStart.toISOString(), week);
-        }
+        dataMap.set(week.weekNumber.toString(), week);
       });
     } else {
-      // Pour les données non groupées, on utilise la date de l'activité comme clé
       (rawData as Activity[]).forEach(activity => {
         const activityDate = new Date(activity.start_date);
         const dateKey = activityDate.toISOString().split('T')[0];
@@ -325,8 +320,8 @@ export class ModernActivityChartComponent implements OnChanges {
         if (!date) return null;
 
         if (this.period === 'current_year' && this.isGroupedByWeek) {
-          const key = date.toISOString();
-          const item = dataMap.get(key);
+          const weekNum = this.getWeekNumber(date);
+          const item = dataMap.get(weekNum.toString());
           return this.getMetricValue(item, metricType);
         } else {
           const key = date.toISOString().split('T')[0];
@@ -352,9 +347,11 @@ export class ModernActivityChartComponent implements OnChanges {
     const data = {
       labels: dateLabels.map(date => {
         if (!date) return '';
-        return this.period === 'current_year' && this.isGroupedByWeek
-          ? `Sem. ${this.getWeekNumber(date)}`
-          : date.toLocaleDateString('fr-FR', {month: 'short', day: 'numeric'});
+        if (this.period === 'current_year' && this.isGroupedByWeek) {
+          const weekNum = this.getWeekNumber(date);
+          return `Sem. ${weekNum}`;
+        }
+        return date.toLocaleDateString('fr-FR', {month: 'short', day: 'numeric'});
       }),
       datasets
     };
@@ -387,15 +384,7 @@ export class ModernActivityChartComponent implements OnChanges {
 
     this.chart = new Chart(canvas, {
       type: 'line',
-      data: {
-        labels: dateLabels.map(date => {
-          if (!date) return '';
-          return this.period === 'current_year' && this.isGroupedByWeek
-            ? `Sem. ${this.getWeekNumber(date)}`
-            : date.toLocaleDateString('fr-FR', {month: 'short', day: 'numeric'});
-        }),
-        datasets
-      },
+      data: data,
       options: {
         responsive: true,
         maintainAspectRatio: false,
@@ -422,7 +411,7 @@ export class ModernActivityChartComponent implements OnChanges {
                   const weekData = (rawData as WeeklyData[])[dataIndex];
                   if (!weekData) return '';
 
-                  let title = `Semaine ${this.getWeekNumber(dateLabels[dataIndex])}\n`;
+                  let title = `Semaine ${weekData.weekNumber}\n`;
                   title += `Du ${weekData.weekStart.toLocaleDateString('fr-FR')} au ${weekData.weekEnd.toLocaleDateString('fr-FR')}\n\n`;
                   title += 'Activités de la semaine:\n';
                   weekData.activities.forEach(activity => {
