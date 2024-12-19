@@ -16,10 +16,10 @@
   display: flex;
   align-items: center;
   gap: 2rem;
-  background: white;
+  background: var(--bg-primary);
   padding: 2rem;
   border-radius: 16px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
 }
 
 .profile-avatar {
@@ -38,7 +38,7 @@
 
 .profile-info h1 {
   font-size: 2rem;
-  color: var(--gray-800);
+  color: var(--text-primary);
   margin-bottom: 1rem;
 }
 
@@ -52,7 +52,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: var(--gray-600);
+  color: var(--text-secondary);
   font-size: 0.95rem;
 }
 
@@ -69,10 +69,10 @@
 
 /* Carte de statistiques */
 .stats-card {
-  background: white;
-  border-radius: 12px;
+  background: var(--bg-primary);
+  border-radius: var(--radius-md);
   padding: 1.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -115,7 +115,7 @@
 
 .stats-header h3 {
   font-size: 1.1rem;
-  color: var(--gray-800);
+  color: var(--text-primary);
   margin: 0;
 }
 
@@ -134,12 +134,12 @@
 .metric-value {
   font-size: 1.25rem;
   font-weight: 600;
-  color: var(--gray-800);
+  color: var(--text-primary);
 }
 
 .metric-label {
   font-size: 0.85rem;
-  color: var(--gray-600);
+  color: var(--text-secondary);
 }
 
 /* Style des records */

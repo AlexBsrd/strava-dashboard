@@ -2,7 +2,7 @@
 
 /* Card Container */
 .stats-card {
-  background: white;
+  background: var(--bg-primary);
   border: 1px solid var(--gray-200);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
@@ -22,7 +22,7 @@
 
 /* Card Title */
 .stats-title {
-  color: var(--gray-600);
+  color: var(--text-secondary);
   font-size: 0.875rem;
   font-weight: 500;
   letter-spacing: 0.5px;
@@ -32,7 +32,7 @@
 
 /* Regular Value Display */
 .stats-value {
-  color: var(--primary-color);
+  color: var(--primary-500);
   font-size: 2rem;
   font-weight: 600;
   line-height: 1.2;
@@ -40,7 +40,7 @@
 }
 
 .stats-unit {
-  color: var(--gray-600);
+  color: var(--text-secondary);
   font-size: 0.875rem;
   margin-left: 0.25rem;
 }

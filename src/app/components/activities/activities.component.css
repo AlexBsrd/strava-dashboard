@@ -10,7 +10,7 @@
 
 .activities-header h1 {
   font-size: 2rem;
-  color: var(--gray-800);
+  color: var(--text-primary);
   margin-bottom: 1rem;
 }
 
@@ -33,13 +33,13 @@
 }
 
 .date-badge {
-  background: #f8f9fa;
+  background: var(--bg-primary);
   padding: 0.5rem 1rem;
   border-radius: 20px;
   font-weight: 500;
-  color: #495057;
+  color: var(--text-primary);
   font-size: 0.9rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
 }
 
 .activities-group {
@@ -50,17 +50,17 @@
 }
 
 .activity-card {
-  background: white;
+  background: var(--bg-primary);
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  border-left: 4px solid #ddd;
+  box-shadow: var(--shadow-sm);
+  border-left: 4px solid var(--gray-300);
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .activity-card:hover {
   transform: translateX(4px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-md);
 }
 
 .activity-card.run {
@@ -92,6 +92,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 0.75rem;
+  color: var(--text-secondary);
 }
 
 .activity-type {
@@ -109,7 +110,7 @@
 .activity-name {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #2d3748;
+  color: var(--text-primary);
   margin-bottom: 1rem;
 }
 

@@ -1,6 +1,6 @@
 /* src/app/components/period-selector/period-selector.component.css */
 .period-selector-card {
-  background: white;
+  background: var(--bg-primary);
   border-radius: var(--radius-md);
   padding: 1.5rem;
   margin-bottom: 2rem;
@@ -10,7 +10,7 @@
 .period-title {
   font-size: 1.1rem;
   font-weight: 500;
-  color: var(--gray-800);
+  color: var(--text-primary);
   margin-bottom: 1rem;
 }
 
@@ -22,10 +22,10 @@
 
 .period-button {
   padding: 0.75rem 1.25rem;
-  border: 2px solid var(--primary-color);
-  background: white;
+  border: 2px solid var(--primary-500);
+  background: var(--bg-primary);
   border-radius: var(--radius-sm);
-  color: var(--primary-color);
+  color: var(--primary-500);
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -35,13 +35,13 @@
 }
 
 .period-button:hover {
-  background: var(--primary-light);
-  border-color: var(--primary-dark);
+  background: var(--primary-100);
+  border-color: var(--primary-600);
 }
 
 .period-button.active {
-  background: var(--primary-color);
-  color: white;
+  background: var(--primary-500);
+  color: var(--bg-primary);
 }
 
 @media (max-width: 768px) {

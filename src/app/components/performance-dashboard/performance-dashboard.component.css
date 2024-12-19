@@ -4,7 +4,7 @@
 
 .section {
   margin-bottom: 1rem;
-  background: white;
+  background: var(--bg-primary);
   border-radius: var(--radius-md);
   padding: 1rem;
   box-shadow: var(--shadow-sm);
@@ -16,6 +16,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  background: var(--bg-primary);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
 }
 
 .empty-state-content {
@@ -35,13 +38,13 @@
 }
 
 .empty-state h2 {
-  color: var(--gray-800);
+  color: var(--text-primary);
   font-size: 1.1rem;
   margin-bottom: 0.5rem;
 }
 
 .empty-state p {
-  color: var(--gray-600);
+  color: var(--text-secondary);
   margin-bottom: 0.5rem;
   font-size: 0.9rem;
 }
@@ -49,7 +52,7 @@
 .empty-state ul {
   list-style: none;
   padding: 0;
-  color: var(--gray-600);
+  color: var(--text-secondary);
   margin: 0;
   display: flex;
   gap: 1rem;
@@ -68,7 +71,7 @@
 }
 
 h2 {
-  color: var(--gray-800);
+  color: var(--text-primary);
   font-size: 1.25rem;
   margin-bottom: 1.5rem;
   font-weight: 600;
@@ -81,41 +84,86 @@ h2 {
 }
 
 .record-card {
-  background: linear-gradient(to bottom right, var(--primary-light), white);
+  background: linear-gradient(
+    to bottom right,
+    var(--primary-100),
+    var(--bg-primary)
+  );
   padding: 1.5rem;
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
-  transition: transform 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Effet de brillance subtil pour le thème clair */
+[data-theme="light"] .record-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.2) 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  pointer-events: none;
+}
+
+/* Effet de brillance subtil pour le thème sombre */
+[data-theme="dark"] .record-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.02) 100%
+  );
+  pointer-events: none;
 }
 
 .record-card:hover {
   transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .record-title {
   font-weight: 600;
-  color: var(--primary-color);
+  color: var(--primary-500);
   font-size: 1.1rem;
   margin-bottom: 0.5rem;
+  position: relative;
 }
 
 .record-value {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--gray-800);
+  color: var(--text-primary);
   margin-bottom: 0.25rem;
+  position: relative;
 }
 
 .record-pace {
   font-size: 0.9rem;
-  color: var(--gray-600);
+  color: var(--text-secondary);
   margin-bottom: 0.75rem;
   font-weight: 500;
+  position: relative;
 }
 
 .record-details {
   font-size: 0.875rem;
-  color: var(--gray-600);
+  color: var(--text-secondary);
+  position: relative;
 }
 
 .record-details small {

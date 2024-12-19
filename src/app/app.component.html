@@ -10,6 +10,26 @@
         <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">Statistiques</a>
         <a routerLink="/activities" routerLinkActive="active" class="nav-link">Activités</a>
         <a routerLink="/profile" routerLinkActive="active" class="nav-link">Profil</a>
+        <button 
+          class="theme-toggle" 
+          [class.dark]="isDarkTheme"
+          (click)="toggleTheme()" 
+          [attr.aria-label]="'Basculer vers le thème ' + (isDarkTheme ? 'clair' : 'sombre')"
+        >
+          <div class="toggle-icons">
+            <div class="light-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <circle cx="12" cy="12" r="5"/>
+                <path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42m12.72-12.72l1.42-1.42"/>
+              </svg>
+            </div>
+            <div class="dark-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M10 2c-1.82 0-3.53.5-5 1.35C7.99 5.08 10 8.3 10 12s-2.01 6.92-5 8.65C6.47 21.5 8.18 22 10 22c5.52 0 10-4.48 10-10S15.52 2 10 2z"/>
+              </svg>
+            </div>
+          </div>
+        </button>
       </nav>
     </div>
   </header>
