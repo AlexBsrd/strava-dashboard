@@ -1,0 +1,627 @@
+/* Animations */
+@keyframes slideIn {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Layout de base */
+.page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  animation: slideIn 0.3s ease-out;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.page-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+}
+
+/* Conteneur principal */
+.comparison-container {
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  box-shadow: var(--shadow-md);
+}
+
+/* Section des contrôles */
+.controls-section {
+  display: grid;
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+/* Sélecteur de sport */
+.sport-selector {
+  background: var(--bg-secondary);
+  padding: 1.5rem;
+  border-radius: var(--radius-lg);
+}
+
+.sport-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.sport-button {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--bg-primary);
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sport-button:hover {
+  transform: translateY(-2px);
+  border-color: var(--primary-400);
+  box-shadow: var(--shadow-sm);
+}
+
+.sport-button.active {
+  background: var(--primary-500);
+  border-color: var(--primary-600);
+  color: white;
+}
+
+.sport-icon {
+  font-size: 1.5rem;
+}
+
+.sport-label {
+  font-weight: 500;
+}
+
+.activity-count {
+  margin-left: auto;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+/* Sélection des périodes */
+.periods-selection {
+  background: var(--bg-secondary);
+  padding: 1.5rem;
+  border-radius: var(--radius-lg);
+  margin-bottom: 2rem;
+}
+
+.period-options {
+  margin-bottom: 1.5rem;
+}
+
+.period-buttons {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.period-button {
+  padding: 0.75rem 1.25rem;
+  border: 2px solid var(--primary-200);
+  border-radius: var(--radius-md);
+  background: var(--bg-primary);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.period-button.active {
+  background: var(--primary-500);
+  border-color: var(--primary-600);
+  color: white;
+}
+
+.period-details {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 2rem;
+  align-items: center;
+}
+
+.period-column {
+  background: var(--bg-primary);
+  padding: 1.25rem;
+  border-radius: var(--radius-md);
+}
+
+.date-input {
+  margin: 1rem 0;
+}
+
+.date-input label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--text-secondary);
+}
+
+.date-input input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+}
+
+.period-summary {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.activity-count {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--primary-500);
+  font-weight: 500;
+}
+
+.vs-badge {
+  background: var(--primary-500);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+}
+
+/* Comparaisons rapides */
+.quick-compare {
+  background: var(--bg-secondary);
+  padding: 1.5rem;
+  border-radius: var(--radius-lg);
+}
+
+.quick-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.quick-buttons button {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: var(--bg-primary);
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quick-buttons button:hover {
+  transform: translateY(-2px);
+  border-color: var(--primary-400);
+  box-shadow: var(--shadow-sm);
+}
+
+.quick-buttons button.active {
+  background: var(--primary-500);
+  border-color: var(--primary-600);
+  color: white;
+}
+
+.quick-icon {
+  font-size: 1.25rem;
+}
+
+/* Résultats de la comparaison */
+.comparison-results {
+  margin-top: 3rem;
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Indicateur de tendance */
+.trend-indicator {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-radius: var(--radius-lg);
+  margin-bottom: 2rem;
+}
+
+.trend-improving {
+  background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+  color: white;
+}
+
+.trend-declining {
+  background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+  color: white;
+}
+
+.trend-stable {
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+  color: white;
+}
+
+.trend-icon {
+  font-size: 2rem;
+  animation: pulse 2s infinite;
+}
+
+/* Grille de métriques */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.metric-card {
+  background: var(--bg-secondary);
+  padding: 1.5rem;
+  border-radius: var(--radius-lg);
+  transition: transform 0.2s ease;
+}
+
+.metric-card:hover {
+  transform: translateY(-2px);
+}
+
+.metric-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.metric-icon {
+  font-size: 1.5rem;
+}
+
+.metric-comparison {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.period-value {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.period-label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.comparison-arrow {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.comparison-arrow.positive {
+  color: var(--success);
+}
+
+.comparison-arrow.negative {
+  color: var(--error);
+}
+
+/* Section graphique */
+.charts-section {
+  background: var(--bg-secondary);
+  padding: 1.5rem;
+  border-radius: var(--radius-lg);
+  margin-bottom: 3rem;
+}
+
+.chart-container {
+  height: 400px;
+  position: relative;
+}
+
+.chart-controls {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.chart-controls button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.chart-controls button.active {
+  background: var(--primary-500);
+  color: white;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .page-container {
+    padding: 1rem;
+  }
+
+  .periods-selection {
+    grid-template-columns: 1fr;
+  }
+
+  .period-divider {
+    display: none;
+  }
+
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Nouvelles classes pour les métriques */
+.metric-card.highlight {
+  background: linear-gradient(135deg, var(--primary-100), var(--primary-200));
+  border: 2px solid var(--primary-300);
+}
+
+.metric-card.wide {
+  grid-column: 1 / -1;
+}
+
+.records-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.record-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0.75rem;
+  background: var(--bg-primary);
+  border-radius: var(--radius-md);
+}
+
+.record-label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.record-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--primary-500);
+}
+
+/* Distribution des intensités */
+.intensity-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.intensity-bar {
+  position: relative;
+  height: 2rem;
+  background: var(--bg-primary);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.bar-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.bar-fill.easy {
+  background: linear-gradient(90deg, #4ade80, #22c55e);
+}
+
+.bar-fill.moderate {
+  background: linear-gradient(90deg, #fbbf24, #f59e0b);
+}
+
+.bar-fill.intense {
+  background: linear-gradient(90deg, #f87171, #ef4444);
+}
+
+.bar-label {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  z-index: 1;
+}
+
+.bar-value {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 0.9rem;
+  z-index: 1;
+}
+
+/* Améliorations des animations */
+.metric-card {
+  transition: all 0.3s ease;
+}
+
+.metric-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.comparison-arrow {
+  transition: all 0.3s ease;
+}
+
+.comparison-arrow.positive {
+  color: #22c55e;
+}
+
+.comparison-arrow.negative {
+  color: #ef4444;
+}
+
+/* Responsive design amélioré */
+@media (max-width: 1024px) {
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .metric-card.wide {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 768px) {
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .metric-card.wide {
+    grid-column: span 1;
+  }
+
+  .records-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .intensity-bar {
+    height: 3rem;
+  }
+}
+
+/* Thème sombre */
+[data-theme="dark"] .metric-card.highlight {
+  background: linear-gradient(135deg, var(--primary-900), var(--primary-800));
+  border-color: var(--primary-700);
+}
+
+[data-theme="dark"] .bar-fill.easy {
+  background: linear-gradient(90deg, #22c55e, #16a34a);
+}
+
+[data-theme="dark"] .bar-fill.moderate {
+  background: linear-gradient(90deg, #f59e0b, #d97706);
+}
+
+[data-theme="dark"] .bar-fill.intense {
+  background: linear-gradient(90deg, #ef4444, #dc2626);
+}
+
+.compare-button-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.compare-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--primary-500);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.compare-button:hover {
+  background: var(--primary-600);
+  transform: translateY(-1px);
+}
+
+.compare-button:active {
+  transform: translateY(0);
+}
+
+.compare-icon {
+  font-size: 1.2rem;
+}
+
+/* Ajouter ces styles */
+.period-options {
+  margin-bottom: 2rem;
+}
+
+.period-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.period-button {
+  padding: 0.75rem 1.5rem;
+  border: 2px solid var(--primary-200);
+  border-radius: var(--radius-md);
+  background: var(--bg-primary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.period-button.active {
+  background: var(--primary-500);
+  border-color: var(--primary-600);
+  color: white;
+}
+
+.period-columns {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 2rem;
+}
+
+.date-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.period-info {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: var(--bg-primary);
+  border-radius: var(--radius-md);
+  text-align: center;
+  font-weight: 500;
+}

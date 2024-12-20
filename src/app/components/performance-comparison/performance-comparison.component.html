@@ -1,0 +1,323 @@
+<div class="page-container">
+  <header class="page-header">
+    <h1>Comparaison des performances</h1>
+    <p class="subtitle">Analysez et comparez vos performances entre différentes périodes</p>
+  </header>
+
+  <div class="comparison-container">
+    <app-spinner *ngIf="isLoading"></app-spinner>
+
+    <div *ngIf="!isLoading && !error" class="controls-section">
+      <!-- Sélecteur de sport avec icônes et animations -->
+      <div class="sport-selector">
+        <h4>Choisissez votre sport</h4>
+        <div class="sport-buttons">
+          <button 
+            class="sport-button" 
+            [class.active]="selectedSport === 'Run'"
+            (click)="onSportChange('Run')">
+            <i class="sport-icon">🏃</i>
+            <span class="sport-label">Course à pied</span>
+            <span class="activity-count" *ngIf="period1Activities?.length">
+              {{ getActivityCount('Run') }} activités
+            </span>
+          </button>
+          <button 
+            class="sport-button" 
+            [class.active]="selectedSport === 'Ride'"
+            (click)="onSportChange('Ride')">
+            <i class="sport-icon">🚴</i>
+            <span class="sport-label">Vélo</span>
+            <span class="activity-count" *ngIf="period1Activities?.length">
+              {{ getActivityCount('Ride') }} activités
+            </span>
+          </button>
+          <button 
+            class="sport-button" 
+            [class.active]="selectedSport === 'Walk/Hike'"
+            (click)="onSportChange('Walk/Hike')">
+            <i class="sport-icon">🥾</i>
+            <span class="sport-label">Marche/Randonnée</span>
+            <span class="activity-count" *ngIf="period1Activities?.length">
+              {{ getActivityCount('Walk/Hike') }} activités
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Remplacer la section de sélection des périodes -->
+      <div class="periods-selection">
+        <div class="period-options">
+          <h4>Sélection des périodes</h4>
+          <div class="period-buttons">
+            <button 
+              *ngFor="let option of periodOptions"
+              [class.active]="option.active"
+              (click)="onPeriodSelect(option.days)"
+              class="period-button">
+              {{ option.label }}
+            </button>
+          </div>
+        </div>
+
+        <div class="period-details">
+          <div class="period-column current">
+            <h5>Période récente</h5>
+            <div class="date-input">
+              <label>Fin de période :</label>
+              <input 
+                type="date" 
+                [max]="today"
+                [(ngModel)]="period1End"
+                (change)="onDateChange()">
+            </div>
+            <div class="period-summary">
+              {{ period1Start | date:'dd/MM/yyyy' }} - {{ period1End | date:'dd/MM/yyyy' }}
+              <span class="activity-count" *ngIf="period1Activities?.length">
+                ({{ period1Activities.length }} activités)
+              </span>
+            </div>
+          </div>
+
+          <div class="vs-badge">VS</div>
+
+          <div class="period-column previous">
+            <h5>Période précédente</h5>
+            <div class="period-summary">
+              {{ period2Start | date:'dd/MM/yyyy' }} - {{ period2End | date:'dd/MM/yyyy' }}
+              <span class="activity-count" *ngIf="period2Activities?.length">
+                ({{ period2Activities.length }} activités)
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bouton de comparaison -->
+      <div class="compare-button-container">
+        <button 
+          class="compare-button"
+          (click)="comparePerformances()">
+          <i class="compare-icon">🔄</i>
+          Comparer les périodes
+        </button>
+      </div>
+
+      <!-- Comparaisons rapides -->
+      <div class="quick-compare">
+        <h4>Comparaisons rapides</h4>
+        <div class="quick-buttons">
+          <button (click)="quickCompare('last_months')" [class.active]="selectedQuickCompare === 'last_months'">
+            <i class="quick-icon">📅</i>
+            <span>Dernier mois vs mois précédent</span>
+          </button>
+          <button (click)="quickCompare('last_years')" [class.active]="selectedQuickCompare === 'last_years'">
+            <i class="quick-icon">📊</i>
+            <span>Cette année vs année précédente</span>
+          </button>
+          <button (click)="quickCompare('same_season')" [class.active]="selectedQuickCompare === 'same_season'">
+            <i class="quick-icon">🌡️</i>
+            <span>Même saison l'an dernier</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Résultats de la comparaison -->
+    <div *ngIf="comparisonData && !isLoading" class="comparison-results">
+      <!-- Vue d'ensemble -->
+      <div class="overview-section">
+        <div class="trend-indicator" [class]="getTrendClass()">
+          <i class="trend-icon">{{ getTrendIcon() }}</i>
+          <div class="trend-details">
+            <h5>Tendance globale</h5>
+            <p>{{ getTrendDescription() }}</p>
+          </div>
+        </div>
+
+        <!-- Métriques principales -->
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-header">
+              <i class="metric-icon">📏</i>
+              <h5>Distance totale</h5>
+            </div>
+            <div class="metric-comparison">
+              <div class="period-value">
+                {{ formatMetricValue('distance', comparisonData.currentPeriod.totalDistance) }}
+                <span class="period-label">Période 1</span>
+              </div>
+              <div class="comparison-arrow" [class.positive]="comparisonData.percentageChanges.distance > 0">
+                {{ comparisonData.percentageChanges.distance > 0 ? '↑' : '↓' }}
+                {{ abs(comparisonData.percentageChanges.distance) | number:'1.1-1' }}%
+              </div>
+              <div class="period-value">
+                {{ formatMetricValue('distance', comparisonData.previousPeriod.totalDistance) }}
+                <span class="period-label">Période 2</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Vitesse moyenne -->
+          <div class="metric-card">
+            <div class="metric-header">
+              <i class="metric-icon">⚡</i>
+              <h5>Vitesse moyenne</h5>
+            </div>
+            <div class="metric-comparison">
+              <div class="period-value">
+                {{ formatMetricValue('avgSpeed', comparisonData.currentPeriod.averageSpeed) }}
+                <span class="period-label">Période 1</span>
+              </div>
+              <div class="comparison-arrow" [class.positive]="comparisonData.percentageChanges.speed > 0">
+                {{ comparisonData.percentageChanges.speed > 0 ? '↑' : '↓' }}
+                {{ abs(comparisonData.percentageChanges.speed) | number:'1.0-1' }}%
+              </div>
+              <div class="period-value">
+                {{ formatMetricValue('avgSpeed', comparisonData.previousPeriod.averageSpeed) }}
+                <span class="period-label">Période 2</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Temps total -->
+          <div class="metric-card">
+            <div class="metric-header">
+              <i class="metric-icon">⏱️</i>
+              <h5>Temps total</h5>
+            </div>
+            <div class="metric-comparison">
+              <div class="period-value">
+                {{ formatMetricValue('time', comparisonData.currentPeriod.totalTime) }}
+                <span class="period-label">Période 1</span>
+              </div>
+              <div class="comparison-arrow" [class.positive]="comparisonData.percentageChanges.time > 0">
+                {{ comparisonData.percentageChanges.time > 0 ? '↑' : '↓' }}
+                {{ abs(comparisonData.percentageChanges.time) | number:'1.0-1' }}%
+              </div>
+              <div class="period-value">
+                {{ formatMetricValue('time', comparisonData.previousPeriod.totalTime) }}
+                <span class="period-label">Période 2</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dénivelé total -->
+          <div class="metric-card">
+            <div class="metric-header">
+              <i class="metric-icon">⛰️</i>
+              <h5>Dénivelé total</h5>
+            </div>
+            <div class="metric-comparison">
+              <div class="period-value">
+                {{ formatMetricValue('elevation', comparisonData.currentPeriod.totalElevation) }}
+                <span class="period-label">Période 1</span>
+              </div>
+              <div class="comparison-arrow" [class.positive]="comparisonData.percentageChanges.elevation > 0">
+                {{ comparisonData.percentageChanges.elevation > 0 ? '↑' : '↓' }}
+                {{ abs(comparisonData.percentageChanges.elevation) | number:'1.0-1' }}%
+              </div>
+              <div class="period-value">
+                {{ formatMetricValue('elevation', comparisonData.previousPeriod.totalElevation) }}
+                <span class="period-label">Période 2</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Records -->
+          <div class="metric-card highlight">
+            <div class="metric-header">
+              <i class="metric-icon">🏆</i>
+              <h5>Records</h5>
+            </div>
+            <div class="records-grid">
+              <div class="record-item">
+                <span class="record-label">Distance max</span>
+                <span class="record-value">{{ formatMetricValue('distance', comparisonData.currentPeriod.maxDistance) }}</span>
+              </div>
+              <div class="record-item" *ngIf="selectedSport !== 'Run'">
+                <span class="record-label">Vitesse max</span>
+                <span class="record-value">{{ formatMetricValue('maxSpeed', comparisonData.currentPeriod.maxSpeed) }}</span>
+              </div>
+              <div class="record-item">
+                <span class="record-label">Dénivelé max</span>
+                <span class="record-value">{{ formatMetricValue('elevation', comparisonData.currentPeriod.maxElevation) }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Distribution des intensités -->
+          <div class="metric-card wide">
+            <div class="metric-header">
+              <i class="metric-icon">🔥</i>
+              <h5>Distribution des intensités</h5>
+            </div>
+            <div class="intensity-bars">
+              <div class="intensity-bar">
+                <div class="bar-fill easy" [style.width.%]="comparisonData.currentPeriod.intensityDistribution.easy"></div>
+                <span class="bar-label">Facile</span>
+                <span class="bar-value">{{ comparisonData.currentPeriod.intensityDistribution.easy | number:'1.0-0' }}%</span>
+              </div>
+              <div class="intensity-bar">
+                <div class="bar-fill moderate" [style.width.%]="comparisonData.currentPeriod.intensityDistribution.moderate"></div>
+                <span class="bar-label">Modéré</span>
+                <span class="bar-value">{{ comparisonData.currentPeriod.intensityDistribution.moderate | number:'1.0-0' }}%</span>
+              </div>
+              <div class="intensity-bar">
+                <div class="bar-fill intense" [style.width.%]="comparisonData.currentPeriod.intensityDistribution.intense"></div>
+                <span class="bar-label">Intense</span>
+                <span class="bar-value">{{ comparisonData.currentPeriod.intensityDistribution.intense | number:'1.0-0' }}%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Graphiques -->
+      <div class="charts-section">
+        <div class="chart-container">
+          <div class="chart-header">
+            <h4>Évolution comparative</h4>
+            <div class="chart-controls">
+              <button 
+                *ngFor="let metric of availableMetrics" 
+                [class.active]="selectedMetric === metric.id"
+                (click)="updateChart(metric.id)">
+                {{ metric.label }}
+              </button>
+            </div>
+          </div>
+          <canvas #chartCanvas></canvas>
+        </div>
+      </div>
+
+      <!-- Distribution des intensités -->
+      <div class="intensity-distribution">
+        <h4>Distribution des intensités</h4>
+        <div class="distribution-grid">
+          <div class="distribution-period">
+            <h5>Période 1</h5>
+            <div class="intensity-bars">
+              <!-- Barres de distribution pour période 1 -->
+            </div>
+          </div>
+          <div class="distribution-period">
+            <h5>Période 2</h5>
+            <div class="intensity-bars">
+              <!-- Barres de distribution pour période 2 -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Message d'erreur -->
+    <div *ngIf="error" class="error-state">
+      <div class="error-content">
+        <i class="error-icon">⚠️</i>
+        <h3>{{ error }}</h3>
+        <button class="retry-button" (click)="comparePerformances()">Réessayer</button>
+      </div>
+    </div>
+  </div>
+</div> 

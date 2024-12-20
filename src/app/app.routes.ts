@@ -1,5 +1,6 @@
 import {Routes} from '@angular/router';
 import {AuthGuard} from './guards/auth.guard';
+import {PerformanceComparisonComponent} from './components/performance-comparison/performance-comparison.component';
 
 export const routes: Routes = [
   {
@@ -24,5 +25,11 @@ export const routes: Routes = [
     path: 'callback',
     loadComponent: () =>
       import('./components/auth-callback/auth-callback.component').then(m => m.AuthCallbackComponent)
+  },
+  {
+    path: 'comparison',
+    component: PerformanceComparisonComponent,
+    canActivate: [AuthGuard],
+    title: 'Comparaison des performances'
   }
 ];

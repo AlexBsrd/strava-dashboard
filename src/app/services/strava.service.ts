@@ -178,4 +178,23 @@ export class StravaService {
       fetchPage(1); // Commencer à la première page
     });
   }
+
+  getActivitiesByDateRange(startDate: string, endDate: string): Observable<Activity[]> {
+    const headers = new HttpHeaders().set(
+      'Authorization',
+      `Bearer ${localStorage.getItem('strava_token')}`
+    );
+
+    const after = new Date(startDate).getTime() / 1000;
+    const before = new Date(endDate).getTime() / 1000;
+
+    return this.getAllActivities(new Date(startDate), headers).pipe(
+      map(activities => {
+        return activities.filter(activity => {
+          const activityDate = new Date(activity.start_date).getTime() / 1000;
+          return activityDate >= after && activityDate <= before;
+        });
+      })
+    );
+  }
 }
