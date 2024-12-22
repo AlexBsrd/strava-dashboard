@@ -11,6 +11,7 @@ STRAVA_CLIENT_ID=<your_strava_client_id>
 STRAVA_CLIENT_SECRET=<your_strava_client_secret>
 REDIRECT_URI=http://localhost:4200/callback
 IS_PRODUCTION=false
+API_URL=<Url of your strava-dashboard-api deployment>
 ```
 
 ## Development server

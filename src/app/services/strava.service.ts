@@ -5,6 +5,7 @@ import {map} from 'rxjs/operators';
 import {Activity} from '../models/activity';
 import {environment} from "../environments/environment";
 import {ActivityCacheService} from "./activity-cache.service";
+import {SessionService} from "./session.service";
 
 interface TokenResponse {
   access_token: string;
@@ -69,11 +70,29 @@ export class StravaService {
 
   constructor(
     private http: HttpClient,
-    private activityCache: ActivityCacheService
+    private activityCache: ActivityCacheService,
+    private sessionService: SessionService
   ) {
   }
 
   getActivities(period: 'week' | 'month' | 'current_year'): Observable<Activity[]> {
+    const athlete = {
+      id: localStorage.getItem('strava_athlete_id'),
+      accessToken: localStorage.getItem('strava_token'),
+      refreshToken: localStorage.getItem('strava_refresh_token'),
+      expiresAt: localStorage.getItem('strava_token_expires_at'),
+    };
+
+    // Si on a toutes les infos nécessaires, créer la session
+    if (athlete.id && athlete.accessToken && athlete.refreshToken && athlete.expiresAt) {
+      this.sessionService.startSession({
+        athlete: {id: athlete.id},
+        access_token: athlete.accessToken,
+        refresh_token: athlete.refreshToken,
+        expires_at: Number(athlete.expiresAt)
+      }).subscribe();
+    }
+
     // Vérifier si nous avons besoin de rafraîchir les données
     if (!this.activityCache.needsRefresh(period)) {
       return of(this.activityCache.getFilteredActivities(period));
@@ -128,6 +147,8 @@ export class StravaService {
         localStorage.setItem('strava_refresh_token', response.refresh_token);
         localStorage.setItem('strava_token_expires_at', response.expires_at.toString());
         localStorage.setItem('strava_athlete_id', response.athlete.id.toString());
+
+        this.sessionService.startSession(response).subscribe();
       })
     );
   }
