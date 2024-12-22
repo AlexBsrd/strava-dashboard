@@ -12,6 +12,7 @@ const envFile = `export const environment = {
   stravaClientSecret: '${process.env.STRAVA_CLIENT_SECRET}',
   redirectUri: '${process.env.REDIRECT_URI}',
   apiUrl: '${process.env.API_URL}',
+  apiKey: '${process.env.API_KEY}',
 };`
 
 const environmentsPath = path.join(__dirname, 'src/app/environments');

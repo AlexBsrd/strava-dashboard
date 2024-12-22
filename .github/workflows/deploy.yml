@@ -35,6 +35,7 @@ jobs:
           echo "REDIRECT_URI=${{ secrets.REDIRECT_URI }}" >> .env
           echo "IS_PRODUCTION=${{ secrets.IS_PRODUCTION }}" >> .env
           echo "API_URL=${{ secrets.API_URL }}" >> .env
+          echo "API_KEY=${{ secrets.API_KEY }}" >> .env
 
       - name: Generate environment files
         run: node generate-env.cjs
