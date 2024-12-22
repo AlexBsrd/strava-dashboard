@@ -108,11 +108,9 @@ Distribué sous la licence MIT. Voir `LICENSE` pour plus d'informations.
 ## 💖 Remerciements
 
 - [Strava API](https://developers.strava.com/) pour l'accès aux données
-- [Chart.js](https://www.chartjs.org/) pour les visualisations
-- La communauté Open Source pour les inspirations et contributions
 
 ## 📞 Contact
 
-Votre Nom - [@votretwitter](https://twitter.com/votretwitter)
+Alex Broussard - [alexbroussard@hotmail.fr](mailto:alexbroussard@hotmail.fr)
 
-Lien du projet : [https://github.com/votre-username/strava-dashboard](https://github.com/votre-username/strava-dashboard)
+Lien du projet : [https://github.com/AlexBsrd/strava-dashboard](https://github.com/AlexBsrd/strava-dashboard)
