@@ -1,39 +1,118 @@
-# StravaDashboard
+# Strava Dashboard 🏃‍♂️ 🚴‍♂️
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.5.
+Un dashboard moderne et élégant pour visualiser vos données Strava. Cette application vous permet de suivre vos performances sportives et d'analyser vos activités avec des visualisations intuitives.
 
-## Setup
+![img.png](docs/dashboard.png)
+![img_1.png](docs/dashboard_1.png)
+![img_2.png](docs/dashboard_2.png)
 
-Create a file .env at project root containing you credentials (see https://developers.strava.com/docs/getting-started/#account to know how to get a token):
+## ✨ Fonctionnalités
 
-```env
-STRAVA_CLIENT_ID=<your_strava_client_id>
-STRAVA_CLIENT_SECRET=<your_strava_client_secret>
-REDIRECT_URI=http://localhost:4200/callback
-IS_PRODUCTION=false
-API_URL=<Url of your strava-dashboard-api deployment>
+- 📊 Visualisation des statistiques de course, vélo et marche/randonnée
+- 📈 Graphiques interactifs d'évolution des performances
+- 🎯 Suivi des records personnels
+- 📱 Interface responsive et moderne
+- 🌓 Mode sombre/clair
+- 🔄 Synchronisation automatique avec Strava
+- 📊 Export des statistiques en stories Instagram
+
+## 🚀 Installation
+
+1. Clonez le repository :
+
+```bash
+git clone https://github.com/votre-username/strava-dashboard.git
+cd strava-dashboard
 ```
 
-## Development server
+2. Installez les dépendances :
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+```bash
+npm install
+```
 
-## Code scaffolding
+3. Configurez les variables d'environnement :
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+Créez un fichier `.env` à la racine du projet avec les variables suivantes :
 
-## Build
+```bash
+STRAVA_CLIENT_ID=votre_client_id           # ID Client fourni par Strava
+STRAVA_CLIENT_SECRET=votre_client_secret   # Secret Client fourni par Strava
+REDIRECT_URI=http://localhost:4200/callback # URL de redirection OAuth
+API_URL=http://localhost:3000/api          # URL de l'API backend (voir étape 4)
+API_KEY=votre_api_key                      # Clé API pour sécuriser les requêtes
+```
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+Puis exécutez la commande suivante pour générer automatiquement le fichier environment.ts :
 
-## Running unit tests
+```bash
+npm run config
+```
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+Cette commande utilisera les valeurs de votre fichier `.env` pour mettre à jour la configuration dans `/src/app/environments/environment.ts`. Répétez cette opération chaque fois que vous modifiez le fichier `.env`.
 
-## Running end-to-end tests
+4. Configurez l'API backend :
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+- Clonez le repository de l'API : [strava-dashboard-api](https://github.com/AlexBsrd/strava-dashboard-api)
+- Suivez les instructions d'installation du README de l'API
+- Assurez-vous que l'API est en cours d'exécution sur http://localhost:3000 avant de lancer le frontend
 
-## Further help
+5. Lancez le serveur de développement :
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+```bash
+ng serve
+```
+
+5. Ouvrez votre navigateur sur `http://localhost:4200`
+
+## 🔧 Technologies Utilisées
+
+- Angular 17
+- TypeScript
+- Chart.js
+- RxJS
+- Strava API v3
+
+## 📌 Prérequis
+
+- Node.js (v18.x ou supérieur)
+- Angular CLI
+- Un compte Strava et des identifiants API
+- Un navigateur moderne
+
+## 🔒 Configuration Strava
+
+1. Créez une application sur [Strava API](https://www.strava.com/settings/api)
+2. Notez votre Client ID et Client Secret
+3. Configurez l'URL de redirection : `http://localhost:4200/callback`
+4. Ajoutez ces informations dans votre fichier `.env`
+
+## 🎨 Personnalisation
+
+Le theme peut être personnalisé via les variables CSS dans `/src/styles/variables.css`. L'application supporte un thème clair et sombre par défaut.
+
+## 📝 Contribution
+
+Les contributions sont les bienvenues ! Pour contribuer :
+
+1. Forkez le projet
+2. Créez une branche pour votre fonctionnalité (`git checkout -b feature/AmazingFeature`)
+3. Committez vos changements (`git commit -m 'Add some AmazingFeature'`)
+4. Poussez vers la branche (`git push origin feature/AmazingFeature`)
+5. Ouvrez une Pull Request
+
+## 📄 Licence
+
+Distribué sous la licence MIT. Voir `LICENSE` pour plus d'informations.
+
+## 💖 Remerciements
+
+- [Strava API](https://developers.strava.com/) pour l'accès aux données
+- [Chart.js](https://www.chartjs.org/) pour les visualisations
+- La communauté Open Source pour les inspirations et contributions
+
+## 📞 Contact
+
+Votre Nom - [@votretwitter](https://twitter.com/votretwitter)
+
+Lien du projet : [https://github.com/votre-username/strava-dashboard](https://github.com/votre-username/strava-dashboard)
