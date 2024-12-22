@@ -1,0 +1,19 @@
+.preview-canvas {
+  display: flex;
+  justify-content: center;
+  margin: 1rem 0;
+}
+
+canvas {
+  width: 360px;
+  height: 640px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+}
+
+@media (max-width: 768px) {
+  canvas {
+    width: 270px;
+    height: 480px;
+  }
+}

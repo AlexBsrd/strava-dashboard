@@ -32,17 +32,20 @@
     <div class="activity-type-container">
       <app-stats-list
         title="Run"
-        [stats]="runningStats">
+        [stats]="runningStats"
+        [selectedPeriod]="selectedPeriod">
       </app-stats-list>
 
       <app-stats-list
         title="Walk"
-        [stats]="walkingStats">
+        [stats]="walkingStats"
+        [selectedPeriod]="selectedPeriod">
       </app-stats-list>
 
       <app-stats-list
         title="Bike"
-        [stats]="bikingStats">
+        [stats]="bikingStats"
+        [selectedPeriod]="selectedPeriod">
       </app-stats-list>
 
       <app-modern-activity-chart

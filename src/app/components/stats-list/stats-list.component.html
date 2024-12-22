@@ -1,11 +1,22 @@
 <div class="activity-header">
-  <div class="activity-icon" [ngClass]="activityType.toLowerCase()">
-    <i class="icon"></i>
+  <div class="title-section">
+    <div class="activity-icon" [ngClass]="activityType.toLowerCase()">
+      <i class="icon"></i>
+    </div>
+    <div class="activity-info">
+      <h2>{{ title }}</h2>
+      <span class="activity-count">{{ stats.numberOfActivities }} activité(s)</span>
+    </div>
   </div>
-  <div class="activity-info">
-    <h2>{{ title }}</h2>
-    <span class="activity-count">{{ stats.numberOfActivities }} activité(s)</span>
-  </div>
+
+  <button class="share-button" (click)="openShareModal()">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+      <polyline points="16 6 12 2 8 6"></polyline>
+      <line x1="12" y1="2" x2="12" y2="15"></line>
+    </svg>
+  </button>
 </div>
 
 <div class="stats-grid">
@@ -48,3 +59,12 @@
     unit="m">
   </app-stats-card>
 </div>
+
+<app-share-modal
+  *ngIf="showShareModal"
+  [isOpen]="showShareModal"
+  [stats]="stats"
+  [title]="title"
+  [period]="getPeriodLabel()"
+  (closeModal)="closeShareModal()">
+</app-share-modal>

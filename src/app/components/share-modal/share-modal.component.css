@@ -1,0 +1,125 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-xl);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm);
+  transition: all 0.2s;
+}
+
+.close-button:hover {
+  background: var(--gray-100);
+  color: var(--text-primary);
+}
+
+.preview {
+  display: flex;
+  justify-content: center;
+  margin: 1rem 0;
+}
+
+.theme-selector {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  justify-content: center;
+}
+
+.theme-button {
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--primary-500);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.theme-button.active {
+  background: var(--primary-500);
+  color: white;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--gray-200);
+}
+
+.cancel-btn,
+.generate-btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  border: none;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.cancel-btn {
+  background: var(--gray-200);
+  color: var(--text-primary);
+}
+
+.generate-btn {
+  background: var(--primary-500);
+  color: white;
+}
+
+.cancel-btn:hover {
+  background: var(--gray-300);
+}
+
+.generate-btn:hover {
+  background: var(--primary-600);
+}
+
+@media (max-width: 768px) {
+  .modal-content {
+    width: 95%;
+    padding: 1.5rem;
+  }
+}
