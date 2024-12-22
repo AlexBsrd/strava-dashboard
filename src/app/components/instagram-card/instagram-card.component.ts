@@ -28,8 +28,8 @@ export class InstagramCardComponent implements AfterViewInit {
   @Input() stats!: Stats;
   @Input() title!: string;
   @Input() period: string = '7 derniers jours';
-  @Input() selectedTheme = 'modern';
 
+  selectedTheme: string = 'modern';
   themes: { value: string; label: string; }[] = [
     {value: 'modern', label: 'Moderne'},
     {value: 'minimal', label: 'Minimal'},

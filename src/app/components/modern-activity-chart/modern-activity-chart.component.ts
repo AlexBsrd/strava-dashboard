@@ -185,13 +185,13 @@ export class ModernActivityChartComponent implements OnChanges {
 
     switch (this.selectedActivityType) {
       case 'Run':
-        filteredActivities = filteredActivities.filter(a => a.type === 'Run');
+        filteredActivities = filteredActivities.filter(a => a.type.includes('Run'));
         break;
       case 'Ride':
-        filteredActivities = filteredActivities.filter(a => a.type === 'Ride');
+        filteredActivities = filteredActivities.filter(a => a.type.includes('Ride'));
         break;
       case 'Walk/Hike':
-        filteredActivities = filteredActivities.filter(a => a.type === 'Walk' || a.type === 'Hike');
+        filteredActivities = filteredActivities.filter(a => a.type.includes('Hike') || a.type.includes('Walk'));
         break;
     }
 
