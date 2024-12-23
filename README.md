@@ -5,6 +5,7 @@ Un dashboard moderne et élégant pour visualiser vos données Strava. Cette app
 ![img.png](docs/dashboard.png)
 ![img_1.png](docs/dashboard_1.png)
 ![img_2.png](docs/dashboard_2.png)
+![img_3.png](docs/dashboard_3.png)
 
 ## ✨ Fonctionnalités
 
