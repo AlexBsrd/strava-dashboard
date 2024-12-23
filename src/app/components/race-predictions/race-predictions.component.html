@@ -1,0 +1,36 @@
+<div class="predictions-container" *ngIf="showPredictions">
+  <div class="predictions-header">
+    <div class="header-main">
+      <h3>Prédictions de course</h3>
+      <div class="confidence-badge" [class.high]="confidenceScore >= 75"
+           [class.medium]="confidenceScore >= 50 && confidenceScore < 75"
+           [class.low]="confidenceScore < 50">
+        Fiabilité : {{ confidenceScore }}%
+      </div>
+    </div>
+    <p class="header-description">
+      Estimations basées sur vos performances récentes
+    </p>
+  </div>
+
+  <div class="predictions-grid">
+    <div class="prediction-card" *ngFor="let race of races">
+      <div class="race-name">{{ race.name }}</div>
+      <div class="predictions">
+        <div class="prediction-item">
+          <span class="label">Temps estimé</span>
+          <span class="value">{{ formatTime(race.predictedTime) }}</span>
+        </div>
+        <div class="prediction-item">
+          <span class="label">Allure moyenne</span>
+          <span class="value">{{ formatPace(race.predictedPace) }}/km</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="disclaimer">
+    Ces prédictions sont basées sur vos performances récentes et utilisent une version modifiée de la formule de Riegel.
+    Les résultats réels peuvent varier en fonction de nombreux facteurs.
+  </div>
+</div>

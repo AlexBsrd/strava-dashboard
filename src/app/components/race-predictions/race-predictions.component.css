@@ -1,0 +1,122 @@
+.predictions-container {
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-top: 2rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.predictions-header {
+  margin-bottom: 1.5rem;
+}
+
+.header-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.header-main h3 {
+  font-size: 1.25rem;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.confidence-badge {
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.confidence-badge.high {
+  background-color: #ECFDF5;
+  color: #047857;
+}
+
+.confidence-badge.medium {
+  background-color: #FEF3C7;
+  color: #92400E;
+}
+
+.confidence-badge.low {
+  background-color: #FEE2E2;
+  color: #991B1B;
+}
+
+.header-description {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.predictions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.prediction-card {
+  background: linear-gradient(to bottom right, var(--primary-50), var(--bg-primary));
+  padding: 1.25rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--primary-100);
+}
+
+.race-name {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--primary-700);
+  margin-bottom: 1rem;
+}
+
+.predictions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.prediction-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.prediction-item .label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.prediction-item .value {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.disclaimer {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  text-align: center;
+  padding: 1rem;
+  background: var(--gray-50);
+  border-radius: var(--radius-md);
+}
+
+@media (max-width: 768px) {
+  .predictions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .header-main {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .confidence-badge {
+    align-self: flex-start;
+  }
+}

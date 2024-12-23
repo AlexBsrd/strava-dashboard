@@ -11,6 +11,7 @@ import {PerformanceDashboardComponent} from "../performance-dashboard/performanc
 import {ModernActivityChartComponent} from "../modern-activity-chart/modern-activity-chart.component";
 import {Activity} from "../../models/activity";
 import {PaceScatterComponent} from "../pace-scatter/pace-scatter.component";
+import {RacePredictionsComponent} from "../race-predictions/race-predictions.component";
 
 @Component({
   selector: 'app-dashboard',
@@ -22,7 +23,8 @@ import {PaceScatterComponent} from "../pace-scatter/pace-scatter.component";
     SpinnerComponent,
     PerformanceDashboardComponent,
     ModernActivityChartComponent,
-    PaceScatterComponent
+    PaceScatterComponent,
+    RacePredictionsComponent
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
