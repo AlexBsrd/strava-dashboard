@@ -209,13 +209,24 @@ export class PaceScatterComponent implements OnChanges {
               text: yAxisLabel,
             },
             reverse: this.selectedActivityType !== 'Ride',
+            grid: {
+              drawOnChartArea: true,
+              color: (context) => {
+                if (this.selectedActivityType === 'Ride') return 'rgba(0, 0, 0, 0.1)';
+                return context.tick.value % 1 === 0 ? 'rgba(0, 0, 0, 0.1)' : 'rgba(0, 0, 0, 0.05)';
+              },
+              lineWidth: (context) => {
+                if (this.selectedActivityType === 'Ride') return 1;
+                return context.tick.value % 1 === 0 ? 1 : 0.5;
+              }
+            },
             ticks: {
-              stepSize: this.selectedActivityType === 'Ride' ? undefined : 1,
+              stepSize: this.selectedActivityType === 'Ride' ? undefined : 0.5,
               callback: (value: any) => {
                 if (this.selectedActivityType === 'Ride') {
                   return `${value} km/h`;
                 } else {
-                  return this.formatPace(Number(value));
+                  return value % 1 === 0 ? this.formatPace(Number(value)) : '';
                 }
               }
             }
