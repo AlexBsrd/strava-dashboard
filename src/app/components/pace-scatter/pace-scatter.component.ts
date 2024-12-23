@@ -168,6 +168,9 @@ export class PaceScatterComponent implements OnChanges {
     const trendLineData = this.generateTrendLineData(scatterData);
     const yAxisLabel = this.selectedActivityType === 'Ride' ? 'Vitesse (km/h)' : 'Allure (min/km)';
 
+    const minX = 0; // Minimum pour éviter les négatifs
+    const maxX = Math.max(...scatterData.map(point => point.x)) + 1; // Ajoutez une marge
+
     this.chart = new Chart(canvas, {
       type: 'scatter',
       data: {
@@ -201,27 +204,16 @@ export class PaceScatterComponent implements OnChanges {
               display: true,
               text: 'Distance (km)',
             },
-            min: 0,
+            min: minX,
+            max: maxX,
           },
           y: {
             title: {
               display: true,
               text: yAxisLabel,
             },
-            reverse: this.selectedActivityType !== 'Ride',
-            grid: {
-              drawOnChartArea: true,
-              color: (context) => {
-                if (this.selectedActivityType === 'Ride') return 'rgba(0, 0, 0, 0.1)';
-                return context.tick.value % 1 === 0 ? 'rgba(0, 0, 0, 0.1)' : 'rgba(0, 0, 0, 0.05)';
-              },
-              lineWidth: (context) => {
-                if (this.selectedActivityType === 'Ride') return 1;
-                return context.tick.value % 1 === 0 ? 1 : 0.5;
-              }
-            },
+            reverse: this.selectedActivityType === 'Ride', // Vitesse non inversée, allure inversée
             ticks: {
-              stepSize: this.selectedActivityType === 'Ride' ? undefined : 0.5,
               callback: (value: any) => {
                 if (this.selectedActivityType === 'Ride') {
                   return `${value} km/h`;
@@ -237,7 +229,6 @@ export class PaceScatterComponent implements OnChanges {
             enabled: true,
             callbacks: {
               label: (context: any) => {
-                // Ne pas afficher de tooltip pour la ligne de tendance
                 if (context.datasetIndex === 1) return '';
 
                 const point = scatterData[context.dataIndex];
@@ -273,4 +264,6 @@ export class PaceScatterComponent implements OnChanges {
       }
     });
   }
+
+
 }
