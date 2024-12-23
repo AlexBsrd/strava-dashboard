@@ -1,6 +1,4 @@
-<!-- src/app/components/period-selector/period-selector.component.html -->
-<div class="period-selector-card">
-  <h2 class="period-title">Sélectionner la période</h2>
+<div class="period-selector-wrapper" [class.hidden]="isHidden">
   <div class="period-buttons">
     <button
       *ngFor="let period of periods"

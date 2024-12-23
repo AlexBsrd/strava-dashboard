@@ -1,56 +1,69 @@
-/* src/app/components/period-selector/period-selector.component.css */
-.period-selector-card {
-  background: var(--bg-primary);
-  border-radius: var(--radius-md);
-  padding: 1.5rem;
-  margin-bottom: 2rem;
-  box-shadow: var(--shadow-sm);
+.period-selector-wrapper {
+  position: sticky;
+  top: 120px;
+  z-index: 90;
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  transition: transform 0.3s ease;
 }
 
-.period-title {
-  font-size: 1.1rem;
-  font-weight: 500;
-  color: var(--text-primary);
-  margin-bottom: 1rem;
+.period-selector-wrapper.hidden {
+  transform: translateY(-150%);
 }
 
 .period-buttons {
   display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: rgba(var(--bg-primary-rgb), 0.95);
+  backdrop-filter: blur(8px);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1),
+  0 0 1px rgba(0, 0, 0, 0.15);
 }
 
 .period-button {
   padding: 0.75rem 1.25rem;
-  border: 2px solid var(--primary-500);
+  border: 1px solid var(--gray-200);
   background: var(--bg-primary);
-  border-radius: var(--radius-sm);
-  color: var(--primary-500);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
   font-weight: 500;
+  font-size: 0.95rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  flex: 1;
-  min-width: 140px;
-  max-width: 200px;
+  white-space: nowrap;
+  min-height: 44px;
 }
 
 .period-button:hover {
-  background: var(--primary-100);
-  border-color: var(--primary-600);
+  background: var(--primary-50);
+  border-color: var(--primary-200);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .period-button.active {
   background: var(--primary-500);
-  color: var(--bg-primary);
+  border-color: var(--primary-600);
+  color: white;
 }
 
 @media (max-width: 768px) {
-  .period-selector-card {
-    padding: 1rem;
+  .period-selector-wrapper {
+    top: 180px;
+    padding: 0.5rem;
+  }
+
+  .period-buttons {
+    flex-direction: column;
+    width: calc(100% - 2rem);
+    max-width: 400px;
   }
 
   .period-button {
-    min-width: 120px;
-    padding: 0.5rem 1rem;
+    width: 100%;
+    text-align: center;
   }
 }
