@@ -1,0 +1,33 @@
+<div class="scatter-card">
+  <div class="card-header">
+    <div class="header-main">
+      <h2 class="card-title">Distance vs Allure</h2>
+      <div class="controls">
+        <select
+          class="select"
+          [(ngModel)]="selectedActivityType"
+          (ngModelChange)="onActivityTypeChange($event)">
+          <option *ngFor="let type of activityTypes" [value]="type">
+            {{ type }}
+          </option>
+        </select>
+
+        <div class="zoom-controls">
+          <button class="zoom-button" (click)="resetZoom()">
+            <span class="zoom-icon">🔄</span>
+          </button>
+          <button class="zoom-button" (click)="zoomIn()">
+            <span class="zoom-icon">+</span>
+          </button>
+          <button class="zoom-button" (click)="zoomOut()">
+            <span class="zoom-icon">-</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-container">
+    <canvas id="paceScatterChart"></canvas>
+  </div>
+</div>

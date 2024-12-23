@@ -24,7 +24,6 @@
       (periodChange)="onPeriodChange($event)">
     </app-period-selector>
 
-    <!-- Ajout du nouveau composant de performances -->
     <app-performance-dashboard
       [activities]="runningActivityData">
     </app-performance-dashboard>
@@ -52,6 +51,10 @@
         [activities]="allActivities"
         [period]="selectedPeriod">
       </app-modern-activity-chart>
+
+      <app-pace-scatter
+        [activities]="allActivities">
+      </app-pace-scatter>
     </div>
   </div>
 </div>
