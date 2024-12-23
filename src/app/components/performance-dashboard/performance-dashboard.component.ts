@@ -27,17 +27,11 @@ export class PerformanceDashboardComponent implements OnChanges {
     if (!this.metrics?.bestRaces) return false;
 
     return !!(
+      this.metrics.bestRaces.fiveKm.value ||
       this.metrics.bestRaces.tenKm.value ||
       this.metrics.bestRaces.semi.value ||
-      this.metrics.bestRaces.trail30.value
+      this.metrics.bestRaces.marathon.value
     );
-  }
-
-  formatTime(seconds: number): string {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    return `${hours}h ${minutes.toString().padStart(2, '0')}min ${secs.toString().padStart(2, '0')}s`;
   }
 
   formatDate(date: Date): string {

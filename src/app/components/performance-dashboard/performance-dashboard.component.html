@@ -3,6 +3,18 @@
     <div class="section best-performances">
       <h2>Records Personnels (sur la période)</h2>
       <div class="records-grid">
+        <!-- 5km Record -->
+        <div class="record-card" *ngIf="metrics?.bestRaces?.fiveKm?.value">
+          <div class="record-title">5 KM</div>
+          <div class="record-value">{{ metrics.bestRaces.fiveKm.value | number:'1.1-1' }} km/h</div>
+          <div class="record-pace">{{ calculatePace(metrics.bestRaces.fiveKm.value) }} min/km</div>
+          <div class="record-details">
+            {{ metrics.bestRaces.fiveKm.activityName }}
+            <small>{{ formatDate(metrics.bestRaces.fiveKm.date) }}</small>
+          </div>
+        </div>
+
+        <!-- 10km Record -->
         <div class="record-card" *ngIf="metrics?.bestRaces?.tenKm?.value">
           <div class="record-title">10 KM</div>
           <div class="record-value">{{ metrics.bestRaces.tenKm.value | number:'1.1-1' }} km/h</div>
@@ -13,6 +25,7 @@
           </div>
         </div>
 
+        <!-- Semi-Marathon Record -->
         <div class="record-card" *ngIf="metrics?.bestRaces?.semi?.value">
           <div class="record-title">Semi-Marathon</div>
           <div class="record-value">{{ metrics.bestRaces.semi.value | number:'1.1-1' }} km/h</div>
@@ -23,13 +36,14 @@
           </div>
         </div>
 
-        <div class="record-card" *ngIf="metrics?.bestRaces?.trail30?.value">
-          <div class="record-title">Trail 30km+</div>
-          <div class="record-value">{{ metrics.bestRaces.trail30.value | number:'1.1-1' }} km/h</div>
-          <div class="record-pace">{{ calculatePace(metrics.bestRaces.trail30.value) }} min/km</div>
+        <!-- Marathon Record -->
+        <div class="record-card" *ngIf="metrics?.bestRaces?.marathon?.value">
+          <div class="record-title">Marathon</div>
+          <div class="record-value">{{ metrics.bestRaces.marathon.value | number:'1.1-1' }} km/h</div>
+          <div class="record-pace">{{ calculatePace(metrics.bestRaces.marathon.value) }} min/km</div>
           <div class="record-details">
-            {{ metrics.bestRaces.trail30.activityName }}
-            <small>{{ formatDate(metrics.bestRaces.trail30.date) }}</small>
+            {{ metrics.bestRaces.marathon.activityName }}
+            <small>{{ formatDate(metrics.bestRaces.marathon.date) }}</small>
           </div>
         </div>
       </div>
@@ -46,9 +60,10 @@
           <h2>Aucun record sur cette période</h2>
           <p>Continuez à vous entraîner pour établir de nouveaux records sur :</p>
           <ul>
-            <li>Course de 10km</li>
+            <li>5 kilomètres</li>
+            <li>10 kilomètres</li>
             <li>Semi-marathon</li>
-            <li>Trail de 30km et plus</li>
+            <li>Marathon</li>
           </ul>
         </div>
       </div>

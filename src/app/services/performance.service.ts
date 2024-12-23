@@ -1,4 +1,3 @@
-// src/app/services/performance.service.ts
 import {Injectable} from '@angular/core';
 import {Activity} from '../models/activity';
 
@@ -10,9 +9,10 @@ export interface PersonalRecord {
 
 export interface PerformanceMetrics {
   bestRaces: {
-    semi: PersonalRecord;
-    trail30: PersonalRecord;
+    fiveKm: PersonalRecord;
     tenKm: PersonalRecord;
+    semi: PersonalRecord;
+    marathon: PersonalRecord;
   };
 }
 
@@ -21,25 +21,27 @@ export interface PerformanceMetrics {
 })
 export class PerformanceService {
   analyzePerformances(activities: Activity[]): PerformanceMetrics {
-    return {
-      bestRaces: this.findBestRaces(activities)
+    const emptyRecord: PersonalRecord = {
+      value: 0,
+      date: new Date(),
+      activityName: ''
     };
-  }
 
-  private findBestRaces(activities: Activity[]): PerformanceMetrics['bestRaces'] {
     let bestRaces = {
-      semi: {value: 0, date: new Date(), activityName: ''},
-      trail30: {value: 0, date: new Date(), activityName: ''},
-      tenKm: {value: 0, date: new Date(), activityName: ''}
+      fiveKm: {...emptyRecord},
+      tenKm: {...emptyRecord},
+      semi: {...emptyRecord},
+      marathon: {...emptyRecord}
     };
 
     activities.forEach(activity => {
       const pace = activity.average_speed;
       const distance = activity.distance;
 
-      if (distance >= 9.9 && distance <= 10.1) {
-        if (pace > bestRaces.tenKm.value || bestRaces.tenKm.value === 0) {
-          bestRaces.tenKm = {
+      // Marathon (tolérance 500m)
+      if (distance >= 41.695) {
+        if (pace > bestRaces.marathon.value || bestRaces.marathon.value === 0) {
+          bestRaces.marathon = {
             value: pace,
             date: new Date(activity.start_date),
             activityName: activity.name
@@ -47,7 +49,8 @@ export class PerformanceService {
         }
       }
 
-      if (distance >= 21 && distance <= 21.5) {
+      // Semi-marathon (tolérance 500m)
+      if (distance >= 20.6) {
         if (pace > bestRaces.semi.value || bestRaces.semi.value === 0) {
           bestRaces.semi = {
             value: pace,
@@ -57,9 +60,21 @@ export class PerformanceService {
         }
       }
 
-      if (distance >= 30 && activity.total_elevation_gain > 500) {
-        if (pace > bestRaces.trail30.value || bestRaces.trail30.value === 0) {
-          bestRaces.trail30 = {
+      // 10km
+      if (distance >= 9.5) {
+        if (pace > bestRaces.tenKm.value || bestRaces.tenKm.value === 0) {
+          bestRaces.tenKm = {
+            value: pace,
+            date: new Date(activity.start_date),
+            activityName: activity.name
+          };
+        }
+      }
+
+      // 5km (tolérance 300m)
+      if (distance >= 4.7) {
+        if (pace > bestRaces.fiveKm.value || bestRaces.fiveKm.value === 0) {
+          bestRaces.fiveKm = {
             value: pace,
             date: new Date(activity.start_date),
             activityName: activity.name
@@ -68,6 +83,6 @@ export class PerformanceService {
       }
     });
 
-    return bestRaces;
+    return {bestRaces};
   }
 }
