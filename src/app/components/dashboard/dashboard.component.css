@@ -32,6 +32,13 @@
   animation: pulse 2s infinite;
 }
 
+.activity-type-container {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  grid-template-columns: 1fr;
+}
+
 @keyframes slideDown {
   from {
     transform: translateY(-100%);
