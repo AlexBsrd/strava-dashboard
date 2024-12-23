@@ -67,7 +67,7 @@ ng serve
 
 ## 🔧 Technologies Utilisées
 
-- Angular 17
+- Angular 18
 - TypeScript
 - Chart.js
 - RxJS
@@ -75,7 +75,7 @@ ng serve
 
 ## 📌 Prérequis
 
-- Node.js (v18.x ou supérieur)
+- Node.js (v20.x ou supérieur)
 - Angular CLI
 - Un compte Strava et des identifiants API
 - Un navigateur moderne
