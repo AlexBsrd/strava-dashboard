@@ -1,4 +1,4 @@
-import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
+import {Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {Activity} from '../../models/activity';
@@ -14,6 +14,7 @@ import {
   Tooltip
 } from 'chart.js';
 import zoomPlugin from 'chartjs-plugin-zoom';
+import {FullscreenService} from "../../services/fullscreen.service";
 
 Chart.register(
   LinearScale,
@@ -48,6 +49,20 @@ export class PaceScatterComponent implements OnChanges {
   chart: Chart | null = null;
 
   activityTypes: string[] = ['Run', 'Ride', 'Walk/Hike'];
+  @ViewChild('chartContainer') chartContainer!: ElementRef;
+  isFullscreen$;
+
+  constructor(
+    private fullscreenService: FullscreenService
+  ) {
+    this.isFullscreen$ = this.fullscreenService.isFullscreen$;
+  }
+
+  toggleFullscreen() {
+    if (this.chartContainer) {
+      this.fullscreenService.toggleFullscreen(this.chartContainer.nativeElement);
+    }
+  }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['activities'] && this.activities) {

@@ -1,4 +1,4 @@
-import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
+import {Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {
@@ -17,6 +17,7 @@ import {
 } from 'chart.js';
 import zoomPlugin from 'chartjs-plugin-zoom';
 import {Activity} from '../../models/activity';
+import {FullscreenService} from "../../services/fullscreen.service";
 
 Chart.register(
   LinearScale,
@@ -67,6 +68,21 @@ export class ModernActivityChartComponent implements OnChanges {
     {value: 'elevation', label: 'Dénivelé (m)', color: '#FF9800'},
     {value: 'duration', label: 'Durée (h)', color: '#9C27B0'}
   ];
+
+  @ViewChild('chartContainer') chartContainer!: ElementRef;
+  isFullscreen$;
+
+  constructor(
+    private fullscreenService: FullscreenService
+  ) {
+    this.isFullscreen$ = this.fullscreenService.isFullscreen$;
+  }
+
+  toggleFullscreen() {
+    if (this.chartContainer) {
+      this.fullscreenService.toggleFullscreen(this.chartContainer.nativeElement);
+    }
+  }
 
   ngOnChanges(changes: SimpleChanges) {
     if ((changes['activities'] || changes['period']) && this.activities) {

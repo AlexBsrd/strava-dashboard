@@ -94,8 +94,58 @@
 }
 
 .chart-container {
-  height: 400px;
   position: relative;
+  height: 400px;
+}
+
+.fullscreen-button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10;
+  background: var(--bg-primary);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  padding: 0.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.fullscreen-button:hover {
+  background: var(--bg-secondary);
+  transform: scale(1.1);
+}
+
+.fullscreen-icon {
+  width: 20px;
+  height: 20px;
+  fill: var(--text-primary);
+}
+
+/* Styles pour le mode plein écran */
+:fullscreen .chart-container {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-primary);
+}
+
+:fullscreen canvas {
+  width: 100% !important;
+  height: 100% !important;
+  max-height: 100vh;
+}
+
+@media screen and (orientation: landscape) {
+  :fullscreen canvas {
+    width: auto !important;
+    height: 100% !important;
+  }
 }
 
 .primary-controls {
