@@ -2,17 +2,24 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {AthleteProfile, AthleteService, AthleteSummary} from '../../services/athlete.service';
-import {SpinnerComponent} from '../spinner/spinner.component';
 import {ProfileCacheService} from '../../services/profile-cache.service';
 import {Subject, takeUntil} from 'rxjs';
 import {StravaService} from "../../services/strava.service";
+import {animate, style, transition, trigger} from '@angular/animations';
+
+export const fadeIn = trigger('fadeIn', [
+  transition(':enter', [
+    style({opacity: 0}),
+    animate('300ms ease-out', style({opacity: 1}))
+  ])
+]);
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, SpinnerComponent],
+  imports: [CommonModule],
   templateUrl: './profile.component.html',
-  styleUrls: ['./profile.component.css']
+  styleUrls: ['./profile.component.css', './skeleton/profile-skeleton.component.css']
 })
 export class ProfileComponent implements OnInit, OnDestroy {
   profile: AthleteProfile | null = null;

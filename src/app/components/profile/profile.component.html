@@ -1,13 +1,95 @@
-<!-- src/app/components/profile/profile.component.html -->
 <div class="profile-container">
-  <app-spinner *ngIf="isLoading"></app-spinner>
+  <!-- Skeleton Loading -->
+  <ng-container *ngIf="isLoading">
+    <div class="skeleton-profile-card">
+      <div class="skeleton skeleton-avatar"></div>
+      <div class="skeleton-info">
+        <div class="skeleton skeleton-name"></div>
+        <div class="skeleton-details">
+          <div class="skeleton skeleton-detail"></div>
+          <div class="skeleton skeleton-detail"></div>
+        </div>
+      </div>
+    </div>
 
-  <div *ngIf="error" class="error-message">
-    {{ error }}
+    <div class="skeleton-stats-grid">
+      <!-- Running Total Skeleton -->
+      <div class="skeleton-stats-card">
+        <div class="skeleton skeleton-card-title"></div>
+        <div class="skeleton-stats-details">
+          <div class="skeleton-stat">
+            <div class="skeleton skeleton-stat-label"></div>
+            <div class="skeleton skeleton-stat-value"></div>
+          </div>
+          <div class="skeleton-stat">
+            <div class="skeleton skeleton-stat-label"></div>
+            <div class="skeleton skeleton-stat-value"></div>
+          </div>
+          <div class="skeleton-stat">
+            <div class="skeleton skeleton-stat-label"></div>
+            <div class="skeleton skeleton-stat-value"></div>
+          </div>
+          <div class="skeleton-stat">
+            <div class="skeleton skeleton-stat-label"></div>
+            <div class="skeleton skeleton-stat-value"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cycling Total Skeleton -->
+      <div class="skeleton-stats-card">
+        <div class="skeleton skeleton-card-title"></div>
+        <div class="skeleton-stats-details">
+          <div class="skeleton-stat">
+            <div class="skeleton skeleton-stat-label"></div>
+            <div class="skeleton skeleton-stat-value"></div>
+          </div>
+          <div class="skeleton-stat">
+            <div class="skeleton skeleton-stat-label"></div>
+            <div class="skeleton skeleton-stat-value"></div>
+          </div>
+          <div class="skeleton-stat">
+            <div class="skeleton skeleton-stat-label"></div>
+            <div class="skeleton skeleton-stat-value"></div>
+          </div>
+          <div class="skeleton-stat">
+            <div class="skeleton skeleton-stat-label"></div>
+            <div class="skeleton skeleton-stat-value"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Records Skeleton -->
+      <div class="skeleton-stats-card">
+        <div class="skeleton skeleton-card-title"></div>
+        <div class="skeleton-stats-details">
+          <div class="skeleton-stat">
+            <div class="skeleton skeleton-stat-label"></div>
+            <div class="skeleton skeleton-stat-value"></div>
+          </div>
+          <div class="skeleton-stat">
+            <div class="skeleton skeleton-stat-label"></div>
+            <div class="skeleton skeleton-stat-value"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="error-container">
+    <div class="error-message">
+      <div class="error-icon">⚠️</div>
+      <p>{{ error }}</p>
+      <button class="reconnect-button" (click)="reconnect()">
+        Se reconnecter à Strava
+      </button>
+    </div>
   </div>
 
-  <div *ngIf="!isLoading && !error && profile" class="profile-content">
-    <!-- Header du profil -->
+  <!-- Actual Content -->
+  <div *ngIf="!isLoading && !error && profile" class="profile-content" @fadeIn>
+    <!-- Profile Header -->
     <div class="profile-card">
       <div class="profile-avatar">
         <img [src]="profile.profile || '/assets/images/default-avatar.png'" [alt]="profile.firstname">
@@ -27,7 +109,7 @@
       </div>
     </div>
 
-    <!-- Grid des statistiques totales -->
+    <!-- Statistics Grid -->
     <div class="stats-container" *ngIf="summary">
       <div class="stats-card total-running">
         <div class="stats-header">
@@ -111,7 +193,7 @@
         </div>
       </div>
 
-      <!-- Statistiques de l'année en cours -->
+      <!-- Yearly Stats -->
       <div class="stats-card ytd-running">
         <div class="stats-header">
           <div class="stats-icon running">🏃</div>
@@ -162,14 +244,5 @@
         </div>
       </div>
     </div>
-  </div>
-</div>
-<div *ngIf="error" class="error-container">
-  <div class="error-message">
-    <div class="error-icon">⚠️</div>
-    <p>{{ error }}</p>
-    <button class="reconnect-button" (click)="reconnect()">
-      Se reconnecter à Strava
-    </button>
   </div>
 </div>
