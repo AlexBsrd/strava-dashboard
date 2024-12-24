@@ -6,6 +6,7 @@ import {ProfileCacheService} from '../../services/profile-cache.service';
 import {Subject, takeUntil} from 'rxjs';
 import {StravaService} from "../../services/strava.service";
 import {animate, style, transition, trigger} from '@angular/animations';
+import {ProfileSkeletonComponent} from "./skeleton/profile-skeleton.component";
 
 export const fadeIn = trigger('fadeIn', [
   transition(':enter', [
@@ -17,9 +18,9 @@ export const fadeIn = trigger('fadeIn', [
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ProfileSkeletonComponent],
   templateUrl: './profile.component.html',
-  styleUrls: ['./profile.component.css', './skeleton/profile-skeleton.component.css']
+  styleUrls: ['./profile.component.css']
 })
 export class ProfileComponent implements OnInit, OnDestroy {
   profile: AthleteProfile | null = null;
