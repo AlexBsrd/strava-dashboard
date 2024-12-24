@@ -1,0 +1,76 @@
+@keyframes slideInFromBottom {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes countUp {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stats-card {
+  opacity: 0;
+}
+
+.stats-card.visible {
+  animation: slideInFromBottom 0.6s ease-out forwards;
+}
+
+.stats-value {
+  opacity: 0;
+}
+
+.stats-card.visible .stats-value {
+  animation: countUp 0.8s ease-out forwards;
+  animation-delay: 0.3s;
+}
+
+/* Délai progressif pour chaque carte visible */
+.stats-card.visible:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.stats-card.visible:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.stats-card.visible:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.stats-card.visible:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+/* Animation des nombres */
+@keyframes glowPulse {
+  0% {
+    color: var(--primary-500);
+  }
+  50% {
+    color: var(--primary-600);
+  }
+  100% {
+    color: var(--primary-500);
+  }
+}
+
+.time-display.animating .time-number,
+.number-display.animating {
+  animation: glowPulse 2s ease-in-out;
+}

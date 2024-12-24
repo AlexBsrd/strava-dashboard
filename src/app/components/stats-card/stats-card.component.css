@@ -1,5 +1,3 @@
-/* src/app/components/stats-card/stats-card.component.css */
-
 /* Card Container */
 .stats-card {
   background: var(--bg-primary);
@@ -37,6 +35,15 @@
   font-weight: 600;
   line-height: 1.2;
   margin-bottom: 0.25rem;
+}
+
+.number-display, .time-display {
+  font-variant-numeric: tabular-nums;
+  transition: color 0.3s ease;
+}
+
+.number-display.animating, .time-display.animating {
+  color: var(--primary-600);
 }
 
 .stats-unit {

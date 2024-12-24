@@ -13,7 +13,7 @@ import {ShareModalComponent} from '../share-modal/share-modal.component';
     ShareModalComponent
   ],
   templateUrl: './stats-list.component.html',
-  styleUrls: ['./stats-list.component.css']
+  styleUrls: ['./stats-list.component.css', './stats-list.animations.css']
 })
 export class StatsListComponent {
   @Input() stats!: Stats;
