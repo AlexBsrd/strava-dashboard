@@ -1,11 +1,12 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {Observable, of, tap} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {Observable, of, throwError} from 'rxjs';
+import {catchError, map, tap} from 'rxjs/operators';
 import {Activity} from '../models/activity';
 import {environment} from "../environments/environment";
 import {ActivityCacheService} from "./activity-cache.service";
 import {SessionService} from "./session.service";
+import {Router} from '@angular/router';
 
 interface TokenResponse {
   access_token: string;
@@ -13,49 +14,8 @@ interface TokenResponse {
   expires_at: number;
   athlete: {
     id: number;
-    username: string | null;
-    resource_state: number;
     firstname: string;
     lastname: string;
-    bio: string;
-    city: string;
-    state: string;
-    country: string;
-    sex: string;
-    premium: boolean;
-    summit: boolean;
-    created_at: string;
-    updated_at: string;
-    badge_type_id: number;
-    weight: number;
-    profile_medium: string;
-    profile: string;
-    friend: null;
-    follower: null;
-    blocked: boolean;
-    can_follow: boolean;
-    follower_count: number;
-    friend_count: number;
-    mutual_friend_count: number;
-    athlete_type: number;
-    date_preference: string;
-    measurement_preference: string;
-    clubs: any[];
-    ftp: number | null;
-    bikes: Array<{
-      id: string;
-      primary: boolean;
-      name: string;
-      resource_state: number;
-      distance: number;
-    }>;
-    shoes: Array<{
-      id: string;
-      primary: boolean;
-      name: string;
-      resource_state: number;
-      distance: number;
-    }>;
   };
 }
 
@@ -71,11 +31,26 @@ export class StravaService {
   constructor(
     private http: HttpClient,
     private activityCache: ActivityCacheService,
-    private sessionService: SessionService
+    private sessionService: SessionService,
+    private router: Router
   ) {
   }
 
+  checkTokenExpiration() {
+    const expiresAt = localStorage.getItem('strava_token_expires_at');
+    if (expiresAt && Date.now() / 1000 > Number(expiresAt)) {
+      localStorage.clear();
+      this.router.navigate(['/login']);
+      return true;
+    }
+    return false;
+  }
+
   getActivities(period: 'week' | 'month' | 'current_year'): Observable<Activity[]> {
+    if (this.checkTokenExpiration()) {
+      return throwError(() => new Error('Token expired'));
+    }
+
     const athlete = {
       id: localStorage.getItem('strava_athlete_id'),
       accessToken: localStorage.getItem('strava_token'),
@@ -83,7 +58,6 @@ export class StravaService {
       expiresAt: localStorage.getItem('strava_token_expires_at'),
     };
 
-    // Si on a toutes les infos nécessaires, créer la session
     if (athlete.id && athlete.accessToken && athlete.refreshToken && athlete.expiresAt) {
       this.sessionService.startSession({
         athlete: {id: athlete.id},
@@ -93,14 +67,12 @@ export class StravaService {
       }).subscribe();
     }
 
-    // Vérifier si nous avons besoin de rafraîchir les données
     if (!this.activityCache.needsRefresh(period)) {
       return of(this.activityCache.getFilteredActivities(period));
     }
 
     let after = new Date();
 
-    // Ajuster la date de début selon la période
     switch (period) {
       case 'week':
         after.setDate(after.getDate() - 7);
@@ -115,7 +87,7 @@ export class StravaService {
 
     const headers = new HttpHeaders().set(
       'Authorization',
-      `Bearer ${localStorage.getItem('strava_token')}`
+      `Bearer ${athlete.accessToken}`
     );
 
     return this.getAllActivities(after, headers).pipe(
@@ -124,6 +96,15 @@ export class StravaService {
       }),
       map(activities => {
         return this.activityCache.getFilteredActivities(period);
+      }),
+      catchError(error => {
+        // Si l'erreur est liée à l'authentification
+        if (error.status === 401 ||
+          (error.error && error.error.message && error.error.message.includes('Authorization Error'))) {
+          localStorage.clear();
+          this.router.navigate(['/login']);
+        }
+        return throwError(() => error);
       })
     );
   }
@@ -149,6 +130,11 @@ export class StravaService {
         localStorage.setItem('strava_athlete_id', response.athlete.id.toString());
 
         this.sessionService.startSession(response).subscribe();
+      }),
+      catchError(error => {
+        console.error('Erreur lors de l\'authentification:', error);
+        this.router.navigate(['/login']);
+        return throwError(() => error);
       })
     );
   }
@@ -184,11 +170,9 @@ export class StravaService {
         this.getActivitiesPage(after, page, headers).subscribe({
           next: (activities) => {
             if (activities.length === 0) {
-              // Plus d'activités à récupérer
               subscriber.next(accumulatedActivities);
               subscriber.complete();
             } else {
-              // Récupérer la page suivante
               fetchPage(page + 1, [...accumulatedActivities, ...activities]);
             }
           },
@@ -196,7 +180,7 @@ export class StravaService {
         });
       };
 
-      fetchPage(1); // Commencer à la première page
+      fetchPage(1);
     });
   }
 }

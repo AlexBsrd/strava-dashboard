@@ -3,7 +3,7 @@ import {CanActivate, Router} from '@angular/router';
 import {StravaService} from '../services/strava.service';
 import {SessionService} from '../services/session.service';
 import {Observable, of} from 'rxjs';
-import {catchError, map} from 'rxjs/operators';
+import {catchError, map, tap} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -22,25 +22,32 @@ export class AuthGuard implements CanActivate {
     const athleteId = localStorage.getItem('strava_athlete_id');
 
     if (!token || !expiresAt || !athleteId) {
-      this.stravaService.authenticate();
+      this.cleanAndRedirect();
       return of(false);
     }
 
     // Vérifier si le token est expiré
     if (Date.now() / 1000 > Number(expiresAt)) {
-      this.stravaService.authenticate();
+      this.cleanAndRedirect();
       return of(false);
     }
 
     // Vérifier la session
     return this.sessionService.checkSession(athleteId).pipe(
+      tap(() => {
+        // Rafraîchir l'activité de l'utilisateur
+        this.sessionService.updateActivity().subscribe();
+      }),
       map(() => true),
       catchError(() => {
-        // Si la session n'est pas valide, nettoyer et rediriger
-        localStorage.clear();
-        this.stravaService.authenticate();
+        this.cleanAndRedirect();
         return of(false);
       })
     );
+  }
+
+  private cleanAndRedirect(): void {
+    localStorage.clear();
+    this.router.navigate(['/login']);
   }
 }

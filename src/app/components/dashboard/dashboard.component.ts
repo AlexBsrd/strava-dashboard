@@ -1,6 +1,7 @@
 // src/app/components/dashboard/dashboard.component.ts
 import {Component, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
+import {Router} from '@angular/router';
 import {PeriodSelectorComponent} from '../period-selector/period-selector.component';
 import {StravaService} from '../../services/strava.service';
 import {StatsService} from '../../services/stats.service';
@@ -31,6 +32,7 @@ export class DashboardComponent implements OnInit {
   selectedPeriod: 'week' | 'month' | 'current_year' = 'week';
   isLoading = false;
   error: string | null = null;
+  authError = false;
 
   runningStats: Stats;
   bikingStats: Stats;
@@ -43,7 +45,8 @@ export class DashboardComponent implements OnInit {
 
   constructor(
     private stravaService: StravaService,
-    private statsService: StatsService
+    private statsService: StatsService,
+    private router: Router
   ) {
     const emptyStat: Stats = {
       averageSpeed: 0,
@@ -60,22 +63,33 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit() {
+    if (!this.checkAuth()) {
+      return;
+    }
     this.loadData();
   }
 
   onPeriodChange(period: 'week' | 'month' | 'current_year') {
     this.selectedPeriod = period;
+    if (!this.checkAuth()) {
+      return;
+    }
     this.loadData();
+  }
+
+  reconnectToStrava() {
+    localStorage.clear();
+    this.stravaService.authenticate();
   }
 
   protected loadData() {
     this.isLoading = true;
     this.error = null;
+    this.authError = false;
 
     this.stravaService.getActivities(this.selectedPeriod).subscribe({
       next: (activities) => {
         this.allActivities = activities;
-        console.log(activities);
         this.runningActivityData = activities.filter(a => a.type.includes('Run'));
         this.bikingActivityData = activities.filter(a => a.type.includes('Ride'));
         this.walkingActivityData = activities.filter(a => a.type.includes('Hike') || a.type.includes('Walk'));
@@ -89,8 +103,30 @@ export class DashboardComponent implements OnInit {
       error: (error) => {
         console.error('Error loading activities:', error);
         this.isLoading = false;
-        this.error = 'Une erreur est survenue lors du chargement des données.';
+
+        if (error.status === 401) {
+          this.handleAuthError();
+        } else {
+          this.error = 'Une erreur est survenue lors du chargement des données.';
+          this.authError = false;
+        }
       }
     });
+  }
+
+  private checkAuth(): boolean {
+    const token = localStorage.getItem('strava_token');
+    const expiresAt = localStorage.getItem('strava_token_expires_at');
+    if (!token || !expiresAt || Date.now() / 1000 > Number(expiresAt)) {
+      this.handleAuthError();
+      return false;
+    }
+    return true;
+  }
+
+  private handleAuthError() {
+    this.authError = true;
+    this.error = null;
+    this.isLoading = false;
   }
 }

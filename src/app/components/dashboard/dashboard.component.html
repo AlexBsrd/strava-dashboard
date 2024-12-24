@@ -1,60 +1,76 @@
-<!-- src/app/components/dashboard/dashboard.component.html -->
 <div class="dashboard-container">
-  <div class="dev-banner">
-    <div class="dev-banner-content">
-      <svg class="dev-icon" viewBox="0 0 24 24" width="24" height="24">
-        <path fill="currentColor"
-              d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm-1-5h2v2h-2zm0-8h2v6h-2z"/>
-      </svg>
-      <span>Cette application est en cours de développement. Certaines fonctionnalités peuvent être instables ou incomplètes.</span>
+  <div *ngIf="!authError"> <!-- On cache la dev banner si erreur d'auth -->
+    <div class="dev-banner">
+      <div class="dev-banner-content">
+        <svg class="dev-icon" viewBox="0 0 24 24" width="24" height="24">
+          <path fill="currentColor"
+                d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm-1-5h2v2h-2zm0-8h2v6h-2z"/>
+        </svg>
+        <span>Cette application est en cours de développement. Certaines fonctionnalités peuvent être instables ou incomplètes.</span>
+      </div>
     </div>
   </div>
+
   <app-spinner *ngIf="isLoading"></app-spinner>
 
-  <div *ngIf="error" class="error-container">
-    <div class="error-message">
-      {{ error }}
-      <button class="retry-button" (click)="loadData()">Réessayer</button>
+  <ng-container *ngIf="!isLoading">
+    <div *ngIf="authError" class="error-container">
+      <div class="error-message">
+        <p>Votre session a expiré ou n'est plus valide.</p>
+        <button class="retry-button" (click)="reconnectToStrava()">
+          Se reconnecter à Strava
+        </button>
+      </div>
     </div>
-  </div>
 
-  <div *ngIf="!isLoading && !error">
-    <app-period-selector
-      [selectedPeriod]="selectedPeriod"
-      (periodChange)="onPeriodChange($event)">
-    </app-period-selector>
-
-    <app-performance-dashboard
-      [activities]="runningActivityData">
-    </app-performance-dashboard>
-
-    <div class="activity-type-container">
-      <app-stats-list
-        title="Run"
-        [stats]="runningStats"
-        [selectedPeriod]="selectedPeriod">
-      </app-stats-list>
-
-      <app-stats-list
-        title="Walk"
-        [stats]="walkingStats"
-        [selectedPeriod]="selectedPeriod">
-      </app-stats-list>
-
-      <app-stats-list
-        title="Bike"
-        [stats]="bikingStats"
-        [selectedPeriod]="selectedPeriod">
-      </app-stats-list>
-
-      <app-modern-activity-chart
-        [activities]="allActivities"
-        [period]="selectedPeriod">
-      </app-modern-activity-chart>
-
-      <app-pace-scatter
-        [activities]="allActivities">
-      </app-pace-scatter>
+    <div *ngIf="error && !authError" class="error-container">
+      <div class="error-message">
+        <p>{{ error }}</p>
+        <button class="retry-button" (click)="loadData()">
+          Réessayer
+        </button>
+      </div>
     </div>
-  </div>
+
+    <div *ngIf="!error && !authError">
+      <app-period-selector
+        [selectedPeriod]="selectedPeriod"
+        (periodChange)="onPeriodChange($event)">
+      </app-period-selector>
+
+      <app-performance-dashboard
+        [activities]="runningActivityData">
+      </app-performance-dashboard>
+
+      <div class="activity-type-container">
+        <!-- Le reste de votre contenu -->
+        <app-stats-list
+          title="Run"
+          [stats]="runningStats"
+          [selectedPeriod]="selectedPeriod">
+        </app-stats-list>
+
+        <app-stats-list
+          title="Walk"
+          [stats]="walkingStats"
+          [selectedPeriod]="selectedPeriod">
+        </app-stats-list>
+
+        <app-stats-list
+          title="Bike"
+          [stats]="bikingStats"
+          [selectedPeriod]="selectedPeriod">
+        </app-stats-list>
+
+        <app-modern-activity-chart
+          [activities]="allActivities"
+          [period]="selectedPeriod">
+        </app-modern-activity-chart>
+
+        <app-pace-scatter
+          [activities]="allActivities">
+        </app-pace-scatter>
+      </div>
+    </div>
+  </ng-container>
 </div>
