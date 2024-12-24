@@ -1,4 +1,3 @@
-/* src/app/components/dashboard/dashboard.component.css */
 .dashboard-container {
   padding: 20px;
   max-width: 1200px;
@@ -65,7 +64,6 @@
 @media (max-width: 768px) {
   .dev-banner {
     margin: -1rem -1rem 1rem -1rem;
-    border-radius: 0;
   }
 
   .dev-banner-content {
