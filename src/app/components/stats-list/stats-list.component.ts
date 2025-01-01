@@ -3,6 +3,7 @@ import {CommonModule} from '@angular/common';
 import {Stats} from '../../models/stats';
 import {StatsCardComponent} from '../stats-card/stats-card.component';
 import {ShareModalComponent} from '../share-modal/share-modal.component';
+import {PeriodType} from "../../types/period";
 
 @Component({
   selector: 'app-stats-list',
@@ -18,7 +19,7 @@ import {ShareModalComponent} from '../share-modal/share-modal.component';
 export class StatsListComponent {
   @Input() stats!: Stats;
   @Input() title!: string;
-  @Input() selectedPeriod: 'week' | 'month' | 'current_year' = 'week';
+  @Input() selectedPeriod: PeriodType = 'week';
 
   showShareModal = false;
 
@@ -42,6 +43,8 @@ export class StatsListComponent {
         return '30 derniers jours';
       case 'current_year':
         return 'Depuis le 1er janvier';
+      case '2024':
+        return 'Année 2024';
       default:
         return '';
     }

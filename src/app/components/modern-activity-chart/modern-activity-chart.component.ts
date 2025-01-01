@@ -18,6 +18,7 @@ import {
 import zoomPlugin from 'chartjs-plugin-zoom';
 import {Activity} from '../../models/activity';
 import {FullscreenService} from "../../services/fullscreen.service";
+import {PeriodType} from "../../types/period";
 
 Chart.register(
   LinearScale,
@@ -54,7 +55,7 @@ interface WeeklyData {
 })
 export class ModernActivityChartComponent implements OnChanges {
   @Input() activities: Activity[] = [];
-  @Input() period: 'week' | 'month' | 'current_year' = 'week';
+  @Input() period: PeriodType = 'week';
 
   selectedActivityType = 'Run';
   selectedMetrics: string[] = ['speed'];
@@ -299,6 +300,10 @@ export class ModernActivityChartComponent implements OnChanges {
         case 'current_year':
           startDate = new Date(today.getFullYear(), 0, 1);
           startDate.setHours(0, 0, 0, 0);
+          break;
+        case '2024':
+          startDate = new Date(2024, 0, 1);
+          endDate = new Date(2024, 11, 31);
           break;
       }
 

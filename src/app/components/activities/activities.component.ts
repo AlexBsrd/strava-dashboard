@@ -4,6 +4,7 @@ import {StravaService} from '../../services/strava.service';
 import {Activity} from '../../models/activity';
 import {PeriodSelectorComponent} from '../period-selector/period-selector.component';
 import {SpinnerComponent} from '../spinner/spinner.component';
+import {PeriodType} from "../../types/period";
 
 @Component({
   selector: 'app-activities',
@@ -21,7 +22,7 @@ export class ActivitiesComponent implements OnInit {
   groupedActivities: { [key: string]: Activity[] } = {};
   isLoading = false;
   error: string | null = null;
-  selectedPeriod: 'week' | 'month' | 'current_year' = 'week';
+  selectedPeriod: PeriodType = 'week';
 
   private readonly cardioActivities = ['RUN', 'RIDE', 'WALK', 'HIKE', 'ALPINESKI', 'BACKCOUNTRYSKI'];
 
@@ -32,7 +33,7 @@ export class ActivitiesComponent implements OnInit {
     this.loadActivities();
   }
 
-  onPeriodChange(period: 'week' | 'month' | 'current_year') {
+  onPeriodChange(period: PeriodType) {
     this.selectedPeriod = period;
     this.loadActivities();
   }

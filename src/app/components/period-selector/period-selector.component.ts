@@ -1,7 +1,6 @@
 import {Component, ElementRef, EventEmitter, HostListener, Input, Output} from '@angular/core';
 import {CommonModule} from '@angular/common';
-
-type PeriodType = 'week' | 'month' | 'current_year';
+import {PeriodType} from "../../types/period";
 
 interface Period {
   value: PeriodType;
@@ -23,7 +22,8 @@ export class PeriodSelectorComponent {
   periods: Period[] = [
     {value: 'week', label: '7 derniers jours'},
     {value: 'month', label: '30 derniers jours'},
-    {value: 'current_year', label: 'Depuis le 1er janvier'}
+    {value: 'current_year', label: 'Depuis le 1er janvier'},
+    {value: '2024', label: 'Année 2024'}
   ];
   private lastScrollTop = 0;
   private scrollThreshold = 50;

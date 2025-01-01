@@ -12,6 +12,7 @@ import {PerformanceDashboardComponent} from "../performance-dashboard/performanc
 import {ModernActivityChartComponent} from "../modern-activity-chart/modern-activity-chart.component";
 import {Activity} from "../../models/activity";
 import {PaceScatterComponent} from "../pace-scatter/pace-scatter.component";
+import {PeriodType} from "../../types/period";
 
 @Component({
   selector: 'app-dashboard',
@@ -29,7 +30,7 @@ import {PaceScatterComponent} from "../pace-scatter/pace-scatter.component";
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
-  selectedPeriod: 'week' | 'month' | 'current_year' = 'week';
+  selectedPeriod: PeriodType = 'week';
   isLoading = false;
   error: string | null = null;
   authError = false;
@@ -69,7 +70,7 @@ export class DashboardComponent implements OnInit {
     this.loadData();
   }
 
-  onPeriodChange(period: 'week' | 'month' | 'current_year') {
+  onPeriodChange(period: PeriodType) {
     this.selectedPeriod = period;
     if (!this.checkAuth()) {
       return;

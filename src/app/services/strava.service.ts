@@ -7,6 +7,7 @@ import {environment} from "../environments/environment";
 import {ActivityCacheService} from "./activity-cache.service";
 import {SessionService} from "./session.service";
 import {Router} from '@angular/router';
+import {PeriodType} from "../types/period";
 
 interface TokenResponse {
   access_token: string;
@@ -46,7 +47,7 @@ export class StravaService {
     return false;
   }
 
-  getActivities(period: 'week' | 'month' | 'current_year'): Observable<Activity[]> {
+  getActivities(period: PeriodType): Observable<Activity[]> {
     if (this.checkTokenExpiration()) {
       return throwError(() => new Error('Token expired'));
     }
@@ -82,6 +83,9 @@ export class StravaService {
         break;
       case 'current_year':
         after = new Date(after.getFullYear(), 0, 1);
+        break;
+      case '2024':
+        after = new Date(2024, 0, 1);
         break;
     }
 
