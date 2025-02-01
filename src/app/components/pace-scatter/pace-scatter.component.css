@@ -129,7 +129,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-primary);
+  background-color: var(--bg-primary);
 }
 
 :fullscreen canvas {
