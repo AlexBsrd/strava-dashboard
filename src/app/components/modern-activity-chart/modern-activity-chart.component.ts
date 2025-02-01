@@ -464,6 +464,32 @@ export class ModernActivityChartComponent implements OnChanges {
       };
     });
 
+    const generateTitle = (date: Date, dataMap: Map<string, Activity | WeeklyData>) => {
+      if (this.period === 'current_year' && this.isGroupedByWeek) {
+        const weekNum = this.getWeekNumber(date);
+        const weekData = dataMap.get(weekNum.toString()) as WeeklyData;
+        if (!weekData) return '';
+
+        let title = `Semaine ${weekData.weekNumber}\n`;
+        title += `Du ${weekData.weekStart.toLocaleDateString('fr-FR')} au ${weekData.weekEnd.toLocaleDateString('fr-FR')}\n\n`;
+        title += 'Activités de la semaine:\n';
+        weekData.activities.forEach(activity => {
+          title += `- ${activity.date.toLocaleDateString('fr-FR')}: ${activity.name}\n`;
+        });
+        return title;
+      } else {
+        const key = date.toISOString().split('T')[0];
+        const activity = dataMap.get(key) as Activity;
+        if (!activity) return '';
+
+        return `${date.toLocaleDateString('fr-FR', {
+          weekday: 'long',
+          day: 'numeric',
+          month: 'long'
+        })}\n${activity.name}`;
+      }
+    };
+
     this.chart = new Chart(canvas, {
       type: 'line',
       data: data,
@@ -489,25 +515,7 @@ export class ModernActivityChartComponent implements OnChanges {
                 const dataIndex = tooltipItems[0].dataIndex;
                 if (!dateLabels[dataIndex]) return '';
 
-                if (this.period === 'current_year' && this.isGroupedByWeek) {
-                  const weekData = (rawData as WeeklyData[])[dataIndex];
-                  if (!weekData) return '';
-
-                  let title = `Semaine ${weekData.weekNumber}\n`;
-                  title += `Du ${weekData.weekStart.toLocaleDateString('fr-FR')} au ${weekData.weekEnd.toLocaleDateString('fr-FR')}\n\n`;
-                  title += 'Activités de la semaine:\n';
-                  weekData.activities.forEach(activity => {
-                    title += `- ${activity.date.toLocaleDateString('fr-FR')}: ${activity.name}\n`;
-                  });
-                  return title;
-                }
-
-                const date = dateLabels[dataIndex];
-                return date.toLocaleDateString('fr-FR', {
-                  weekday: 'long',
-                  day: 'numeric',
-                  month: 'long'
-                });
+                return generateTitle(dateLabels[dataIndex], dataMap);
               },
               label: (context) => {
                 const value = context.raw as number;
