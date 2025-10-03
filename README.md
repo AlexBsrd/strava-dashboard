@@ -1,6 +1,6 @@
 # Strava Dashboard 🏃‍♂️ 🚴‍♂️
 
-Un dashboard moderne et élégant pour visualiser vos données Strava. Cette application vous permet de suivre vos performances sportives et d'analyser vos activités avec des visualisations intuitives.
+Un dashboard moderne et élégant pour visualiser vos données Strava. Cette application vous permet de suivre vos performances sportives et d'analyser vos activités avec des visualisations intuitives. 
 
 ![img.png](docs/dashboard.png)
 ![img_1.png](docs/dashboard_1.png)
