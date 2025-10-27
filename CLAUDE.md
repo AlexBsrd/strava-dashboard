@@ -66,6 +66,12 @@ npm run deploy                 # Deploy to GitHub Pages with auto-commit message
 - Calculates aggregate statistics from activities
 - Returns Stats objects with distance, speed, elevation, and time metrics
 
+**ComparisonService** ([comparison.service.ts](src/app/services/comparison.service.ts))
+- Calculates deltas between two Stats objects (absolute and percentage)
+- Generates smart comparison presets (week vs week, month vs month, etc.)
+- Filters activities by custom date ranges
+- Formats period labels for display
+
 **ThemeService** ([theme.service.ts](src/app/services/theme.service.ts))
 - Manages light/dark theme switching
 - Persists theme preference in localStorage
@@ -111,6 +117,19 @@ npm run deploy                 # Deploy to GitHub Pages with auto-commit message
 - Exports statistics as Instagram-ready story images
 - InstagramCardComponent renders stats in shareable format
 
+**ComparisonComponent** ([comparison](src/app/components/comparison))
+- Period comparison page allowing users to compare two time periods
+- Supports both preset suggestions and custom date ranges
+- Displays comparison for all three activity types (Run, Walk, Bike)
+- Shows comparative stats cards with deltas and percentage changes
+- Includes comparison charts with overlaid data for both periods
+
+**Comparison Sub-components**
+- ComparisonPeriodSelectorComponent: Dual period selector with presets and custom dates
+- ComparisonStatsGridComponent: Grid of comparison cards for one activity type
+- ComparisonStatsCardComponent: Individual metric comparison with delta visualization
+- ComparisonChartComponent: Chart.js time-series comparison with metric selection
+
 ## Configuration
 
 ### Environment Variables
@@ -142,6 +161,7 @@ Ensure the backend is running on the URL specified in API_URL before starting de
 
 Routes use lazy loading for all components ([app.routes.ts](src/app/app.routes.ts)):
 - `/` - Dashboard (protected by AuthGuard)
+- `/compare` - Period comparison (protected by AuthGuard)
 - `/activities` - Activities list (protected by AuthGuard)
 - `/profile` - User profile (protected by AuthGuard)
 - `/login` - OAuth login page
@@ -183,3 +203,37 @@ Required GitHub secrets: STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET, REDIRECT_URI, I
 2. Add period logic in ActivityCacheService.getFilteredActivities()
 3. Update cache refresh logic in ActivityCacheService.needsRefresh()
 4. Add UI option in PeriodSelectorComponent
+
+### Using the Period Comparison Feature
+The comparison feature ([/compare](src/app/components/comparison)) allows users to compare statistics between two time periods:
+
+**Preset Comparisons** - Smart suggestions automatically generated:
+- Current week vs Previous week
+- Current month vs Previous month
+- Last 30 days vs Previous 30 days
+- Current year vs Previous year
+- Same month this year vs last year
+
+**Custom Comparisons** - User can select any custom date range for both periods
+
+**Comparison Data Displayed**:
+- All metrics shown with Period 1 → Period 2 format
+- Absolute delta (e.g., +5.6 km)
+- Percentage change (e.g., +11.2%)
+- Trend indicators: ↑ (up), ↓ (down), → (stable)
+- Color coding: Green for improvements, Red for declines, Gray for stable
+- Time-series charts with both periods overlaid
+
+**How it Works**:
+1. ComparisonService generates preset suggestions based on current date
+2. User selects two periods (preset or custom)
+3. ComparisonComponent fetches all activities from Strava
+4. Activities filtered by date range for each period
+5. Stats calculated for each period using StatsService
+6. ComparisonService calculates deltas between the two Stats objects
+7. Results displayed in comparison cards and charts
+
+**Adding New Comparison Presets**:
+1. Edit ComparisonService.getComparisonPresets()
+2. Add new preset with period1 and period2 ComparisonPeriod objects
+3. Label will appear in suggestions dropdown automatically

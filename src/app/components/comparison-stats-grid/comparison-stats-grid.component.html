@@ -1,0 +1,71 @@
+<div class="stats-grid-container" *ngIf="comparison">
+  <div class="activity-header">
+    <div class="activity-icon" [ngClass]="activityIcon">
+      <i class="icon"></i>
+    </div>
+    <h2 class="activity-title">{{ activityType }}</h2>
+    <span class="activity-count">
+      {{ comparison.period1Stats.numberOfActivities }} activité(s) → {{ comparison.period2Stats.numberOfActivities }} activité(s)
+    </span>
+  </div>
+
+  <div class="comparison-grid">
+    <!-- Total Distance -->
+    <app-comparison-stats-card
+      title="Distance totale"
+      [value1]="comparison.period1Stats.totalDistance"
+      [value2]="comparison.period2Stats.totalDistance"
+      [delta]="comparison.deltas.totalDistance"
+      unit="km">
+    </app-comparison-stats-card>
+
+    <!-- Average Distance -->
+    <app-comparison-stats-card
+      title="Distance moyenne/sortie"
+      [value1]="comparison.period1Stats.averageDistance"
+      [value2]="comparison.period2Stats.averageDistance"
+      [delta]="comparison.deltas.averageDistance"
+      unit="km">
+    </app-comparison-stats-card>
+
+    <!-- Average Speed -->
+    <app-comparison-stats-card
+      title="Vitesse moyenne"
+      [value1]="comparison.period1Stats.averageSpeed"
+      [value2]="comparison.period2Stats.averageSpeed"
+      [delta]="comparison.deltas.averageSpeed"
+      unit="km/h">
+    </app-comparison-stats-card>
+
+    <!-- Total Elevation -->
+    <app-comparison-stats-card
+      title="Dénivelé total"
+      [value1]="comparison.period1Stats.totalElevation"
+      [value2]="comparison.period2Stats.totalElevation"
+      [delta]="comparison.deltas.totalElevation"
+      unit="m">
+    </app-comparison-stats-card>
+
+    <!-- Average Elevation -->
+    <app-comparison-stats-card
+      title="Dénivelé moyen/sortie"
+      [value1]="comparison.period1Stats.averageElevation"
+      [value2]="comparison.period2Stats.averageElevation"
+      [delta]="comparison.deltas.averageElevation"
+      unit="m">
+    </app-comparison-stats-card>
+
+    <!-- Total Time -->
+    <app-comparison-stats-card
+      title="Temps total"
+      [value1]="comparison.period1Stats.totalElapsedTime"
+      [value2]="comparison.period2Stats.totalElapsedTime"
+      [delta]="comparison.deltas.totalElapsedTime"
+      [isTime]="true">
+    </app-comparison-stats-card>
+  </div>
+</div>
+
+<div class="no-data" *ngIf="!comparison">
+  <p>Aucune donnée disponible pour cette comparaison.</p>
+</div>

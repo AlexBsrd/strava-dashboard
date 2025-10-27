@@ -1,0 +1,104 @@
+<div class="comparison-selector-container">
+  <h2 class="selector-title">Comparer les périodes</h2>
+
+  <!-- Preset suggestions -->
+  <div class="presets-section">
+    <h3>Suggestions</h3>
+    <div class="presets-grid">
+      <button
+        *ngFor="let preset of presets; let i = index"
+        class="preset-button"
+        [class.active]="selectedPresetIndex === i"
+        (click)="onPresetSelect(i)">
+        {{ preset.label }}
+      </button>
+      <button
+        class="preset-button custom"
+        [class.active]="selectedPresetIndex === null && (showCustomPeriod1 || showCustomPeriod2)"
+        (click)="onCustomMode()">
+        Personnalisé
+      </button>
+    </div>
+  </div>
+
+  <!-- Period selectors -->
+  <div class="periods-comparison">
+    <!-- Period 1 -->
+    <div class="period-selector">
+      <h3>Période 1</h3>
+      <div class="period-display">
+        <div class="period-label">{{ formatPeriod(period1) }}</div>
+        <button
+          *ngIf="!showCustomPeriod1"
+          class="custom-toggle"
+          (click)="showCustomPeriod1 = true; selectedPresetIndex = null">
+          Personnaliser
+        </button>
+      </div>
+
+      <div *ngIf="showCustomPeriod1" class="custom-inputs">
+        <div class="date-input-group">
+          <label>Date de début</label>
+          <input
+            type="date"
+            [(ngModel)]="customPeriod1Start"
+            (change)="applyCustomPeriod1()"
+            class="date-input">
+        </div>
+        <div class="date-input-group">
+          <label>Date de fin</label>
+          <input
+            type="date"
+            [(ngModel)]="customPeriod1End"
+            (change)="applyCustomPeriod1()"
+            class="date-input">
+        </div>
+      </div>
+    </div>
+
+    <div class="vs-separator">VS</div>
+
+    <!-- Period 2 -->
+    <div class="period-selector">
+      <h3>Période 2</h3>
+      <div class="period-display">
+        <div class="period-label">{{ formatPeriod(period2) }}</div>
+        <button
+          *ngIf="!showCustomPeriod2"
+          class="custom-toggle"
+          (click)="showCustomPeriod2 = true; selectedPresetIndex = null">
+          Personnaliser
+        </button>
+      </div>
+
+      <div *ngIf="showCustomPeriod2" class="custom-inputs">
+        <div class="date-input-group">
+          <label>Date de début</label>
+          <input
+            type="date"
+            [(ngModel)]="customPeriod2Start"
+            (change)="applyCustomPeriod2()"
+            class="date-input">
+        </div>
+        <div class="date-input-group">
+          <label>Date de fin</label>
+          <input
+            type="date"
+            [(ngModel)]="customPeriod2End"
+            (change)="applyCustomPeriod2()"
+            class="date-input">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Compare button -->
+  <div class="compare-action">
+    <button
+      class="compare-button"
+      [disabled]="!canCompare()"
+      (click)="onCompare()">
+      Comparer les périodes
+    </button>
+  </div>
+</div>

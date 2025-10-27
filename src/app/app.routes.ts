@@ -21,6 +21,12 @@ export const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
+    path: 'compare',
+    loadComponent: () =>
+      import('./components/comparison/comparison.component').then(m => m.ComparisonComponent),
+    canActivate: [AuthGuard]
+  },
+  {
     path: 'login',
     loadComponent: () =>
       import('./components/login/login.component').then(m => m.LoginComponent)

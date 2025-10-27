@@ -1,0 +1,29 @@
+<div class="comparison-card">
+  <div class="card-title">{{ title }}</div>
+
+  <div class="values-container">
+    <div class="value period1">
+      <span class="value-number">{{ formattedValue1 }}</span>
+      <span class="value-unit" *ngIf="!isTime">{{ unit }}</span>
+    </div>
+
+    <div class="arrow">→</div>
+
+    <div class="value period2">
+      <span class="value-number">{{ formattedValue2 }}</span>
+      <span class="value-unit" *ngIf="!isTime">{{ unit }}</span>
+    </div>
+  </div>
+
+  <div class="delta-container" *ngIf="delta" [ngClass]="trendClass">
+    <div class="delta-value">
+      {{ formattedDelta }}
+      <span class="trend-icon">{{ trendIcon }}</span>
+    </div>
+    <div class="delta-percentage">{{ formattedPercentage }}</div>
+  </div>
+
+  <div class="no-delta" *ngIf="!delta">
+    <span>—</span>
+  </div>
+</div>

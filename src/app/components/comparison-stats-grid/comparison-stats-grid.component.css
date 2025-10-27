@@ -1,0 +1,113 @@
+.stats-grid-container {
+  background: var(--card-background);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Activity header */
+.activity-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.activity-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.activity-icon.run {
+  background: linear-gradient(135deg, #fc4c02 0%, #ff6b35 100%);
+}
+
+.activity-icon.walk {
+  background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+}
+
+.activity-icon.bike {
+  background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+}
+
+.activity-icon .icon {
+  width: 24px;
+  height: 24px;
+  background: white;
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+}
+
+.activity-icon.run .icon {
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor'%3E%3Cpath d='M13 2L3 14h9l-1 8 10-12h-9l1-8z'/%3E%3C/svg%3E");
+}
+
+.activity-icon.walk .icon {
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor'%3E%3Ccircle cx='12' cy='4' r='2'/%3E%3Cpath d='M10 8v6M14 8v6M10 14l-2 6M14 14l2 6'/%3E%3C/svg%3E");
+}
+
+.activity-icon.bike .icon {
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor'%3E%3Ccircle cx='18' cy='18' r='3'/%3E%3Ccircle cx='6' cy='18' r='3'/%3E%3Cpath d='M12 6l-2 4h6l-2-4M8 14l4-4 4 4'/%3E%3C/svg%3E");
+}
+
+.activity-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.activity-count {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-left: auto;
+}
+
+/* Comparison grid */
+.comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+/* No data state */
+.no-data {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 48px;
+  background: var(--card-background);
+  border-radius: 12px;
+  margin-bottom: 24px;
+}
+
+.no-data p {
+  color: var(--text-secondary);
+  font-size: 16px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .comparison-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .activity-header {
+    flex-wrap: wrap;
+  }
+
+  .activity-count {
+    margin-left: 0;
+    width: 100%;
+    text-align: left;
+  }
+}
