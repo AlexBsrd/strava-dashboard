@@ -102,133 +102,119 @@ h1 {
   }
 }
 
+/* Modern theme toggle button */
 .theme-toggle {
   position: relative;
-  width: 80px;
-  height: 40px;
-  background: #87CEEB;
-  border-radius: 25px;
+  background: transparent;
   border: none;
   cursor: pointer;
-  padding: 0;
+  padding: 4px;
   display: flex;
   align-items: center;
-  transition: all 0.5s ease;
-  overflow: hidden;
+  transition: transform 0.2s ease;
 }
 
-.toggle-icons {
+.theme-toggle:hover {
+  transform: scale(1.05);
+}
+
+.theme-toggle:active {
+  transform: scale(0.95);
+}
+
+.toggle-track {
   position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 4px;
+  width: 64px;
+  height: 32px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  padding: 2px;
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.2),
+    0 2px 8px rgba(102, 126, 234, 0.3);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.light-icon {
+.theme-toggle.dark .toggle-track {
+  background: linear-gradient(135deg, #1e3a8a 0%, #312e81 100%);
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.3),
+    0 2px 8px rgba(30, 58, 138, 0.4);
+}
+
+.toggle-thumb {
   position: absolute;
-  left: 4px;
-  width: 32px;
-  height: 32px;
-  background: #FFD700;
+  top: 2px;
+  left: 2px;
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.5s ease;
-  z-index: 2;
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.15),
+    0 1px 2px rgba(0, 0, 0, 0.1);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.cloud {
+.theme-toggle.dark .toggle-thumb {
+  transform: translateX(32px);
+  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.icon {
+  width: 18px;
+  height: 18px;
   position: absolute;
-  background: white;
-  border-radius: 10px;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.cloud-1 {
-  width: 20px;
-  height: 8px;
-  right: 15px;
-  top: 12px;
-}
-
-.cloud-2 {
-  width: 15px;
-  height: 6px;
-  right: 30px;
-  top: 18px;
-}
-
-.dark-icon {
-  position: absolute;
-  right: 4px;
-  width: 32px;
-  height: 32px;
-  background: #FFEB3B;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.5s ease;
-  transform: scale(0);
-}
-
-.star {
-  position: absolute;
-  background: white;
-  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-  transition: all 0.3s ease;
-}
-
-.star-1 { width: 8px; height: 8px; left: 15px; top: 12px; }
-.star-2 { width: 6px; height: 6px; left: 30px; top: 18px; }
-.star-3 { width: 7px; height: 7px; left: 40px; bottom: 12px; }
-
-/* État sombre du toggle */
-.theme-toggle.dark {
-  background: #1a237e;
-}
-
-.theme-toggle.dark .light-icon {
-  transform: translateX(40px) scale(0);
-}
-
-.theme-toggle.dark .dark-icon {
-  transform: scale(1);
-  background: #F4F1C9;
-}
-
-.theme-toggle.dark .cloud {
-  opacity: 0;
-}
-
-.theme-toggle.dark .star {
+.sun-icon {
+  color: #fbbf24;
   opacity: 1;
+  transform: rotate(0deg) scale(1);
 }
 
-.theme-toggle:not(.dark) .star {
+.theme-toggle.dark .sun-icon {
   opacity: 0;
+  transform: rotate(180deg) scale(0);
 }
 
-/* Ajustement pour le responsive */
+.moon-icon {
+  color: #e0e7ff;
+  opacity: 0;
+  transform: rotate(-180deg) scale(0);
+}
+
+.theme-toggle.dark .moon-icon {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+/* Responsive adjustments */
 @media (max-width: 768px) {
-  .theme-toggle {
-    width: 70px;
-    height: 35px;
-  }
-  
-  .light-icon, .dark-icon {
-    width: 28px;
+  .toggle-track {
+    width: 56px;
     height: 28px;
+    border-radius: 14px;
   }
-  
-  .cloud-1 { width: 16px; height: 6px; }
-  .cloud-2 { width: 12px; height: 5px; }
-  
-  .star-1 { width: 6px; height: 6px; }
-  .star-2 { width: 5px; height: 5px; }
-  .star-3 { width: 6px; height: 6px; }
+
+  .toggle-thumb {
+    width: 24px;
+    height: 24px;
+  }
+
+  .theme-toggle.dark .toggle-thumb {
+    transform: translateX(28px);
+  }
+
+  .icon {
+    width: 16px;
+    height: 16px;
+  }
 }

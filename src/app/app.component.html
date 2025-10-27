@@ -10,20 +10,22 @@
         <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">Statistiques</a>
         <a routerLink="/activities" routerLinkActive="active" class="nav-link">Activités</a>
         <a routerLink="/profile" routerLinkActive="active" class="nav-link">Profil</a>
-        <button 
-          class="theme-toggle" 
+        <button
+          class="theme-toggle"
           [class.dark]="isDarkTheme"
-          (click)="toggleTheme()" 
+          (click)="toggleTheme()"
           [attr.aria-label]="'Basculer vers le thème ' + (isDarkTheme ? 'clair' : 'sombre')"
         >
-          <div class="toggle-icons">
-            <div class="light-icon"></div>
-            <div class="cloud cloud-1"></div>
-            <div class="cloud cloud-2"></div>
-            <div class="dark-icon"></div>
-            <div class="star star-1"></div>
-            <div class="star star-2"></div>
-            <div class="star star-3"></div>
+          <div class="toggle-track">
+            <div class="toggle-thumb">
+              <svg class="icon sun-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="5" fill="currentColor"/>
+                <path d="M12 1v3M12 20v3M21 12h-3M6 12H3M18.5 18.5l-2-2M7.5 7.5l-2-2M18.5 5.5l-2 2M7.5 16.5l-2 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              <svg class="icon moon-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="currentColor"/>
+              </svg>
+            </div>
           </div>
         </button>
       </nav>
