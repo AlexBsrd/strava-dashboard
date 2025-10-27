@@ -13,15 +13,39 @@
         </select>
 
         <!-- Nouveau contrôle pour le groupement -->
-        <div class="grouping-control" *ngIf="period === 'current_year'">
-          <label class="grouping-label">
-            <input
-              type="checkbox"
-              [checked]="isGroupedByWeek"
-              (change)="onGroupingChange($event)"
-            >
-            Grouper par semaine
-          </label>
+        <div class="grouping-control" *ngIf="period === 'current_year' || period === '2024'">
+          <div class="grouping-options">
+            <label class="grouping-label">
+              <input
+                type="radio"
+                name="grouping"
+                value="none"
+                [checked]="groupingType === 'none'"
+                (change)="onGroupingChange('none')"
+              >
+              Aucun
+            </label>
+            <label class="grouping-label">
+              <input
+                type="radio"
+                name="grouping"
+                value="week"
+                [checked]="groupingType === 'week'"
+                (change)="onGroupingChange('week')"
+              >
+              Par semaine
+            </label>
+            <label class="grouping-label">
+              <input
+                type="radio"
+                name="grouping"
+                value="month"
+                [checked]="groupingType === 'month'"
+                (change)="onGroupingChange('month')"
+              >
+              Par mois
+            </label>
+          </div>
         </div>
 
         <div class="metrics-toggles">

@@ -46,6 +46,21 @@ interface WeeklyData {
   activities: Array<{ name: string, date: Date }>;
 }
 
+interface MonthlyData {
+  monthNumber: number;
+  monthLabel: string;
+  monthStart: Date;
+  monthEnd: Date;
+  totalDistance: number;
+  totalDuration: number;
+  averageSpeed: number;
+  totalElevation: number;
+  activitiesCount: number;
+  activities: Array<{ name: string, date: Date }>;
+}
+
+type GroupingType = 'none' | 'week' | 'month';
+
 @Component({
   selector: 'app-modern-activity-chart',
   standalone: true,
@@ -60,7 +75,7 @@ export class ModernActivityChartComponent implements OnChanges {
   selectedActivityType = 'Run';
   selectedMetrics: string[] = ['speed'];
   chart: Chart | null = null;
-  isGroupedByWeek = false;
+  groupingType: GroupingType = 'none';
 
   activityTypes: string[] = ['Run', 'Ride', 'Walk/Hike'];
   metrics = [
@@ -96,9 +111,8 @@ export class ModernActivityChartComponent implements OnChanges {
     this.updateChart();
   }
 
-  onGroupingChange(event: Event) {
-    const checkbox = event.target as HTMLInputElement;
-    this.isGroupedByWeek = checkbox.checked;
+  onGroupingChange(value: GroupingType) {
+    this.groupingType = value;
     this.updateChart();
   }
 
@@ -195,6 +209,58 @@ export class ModernActivityChartComponent implements OnChanges {
     );
   }
 
+  private groupActivitiesByMonth(activities: Activity[]): MonthlyData[] {
+    if (!activities.length) return [];
+
+    const monthlyMap = new Map<number, MonthlyData>();
+
+    activities.forEach(activity => {
+      const activityDate = new Date(activity.start_date);
+      const monthNumber = activityDate.getMonth(); // 0-11
+      const year = activityDate.getFullYear();
+      const monthKey = year * 100 + monthNumber; // Unique key per year-month
+
+      if (!monthlyMap.has(monthKey)) {
+        const monthStart = new Date(year, monthNumber, 1);
+        const monthEnd = new Date(year, monthNumber + 1, 0); // Last day of the month
+        const monthLabel = monthStart.toLocaleDateString('fr-FR', { month: 'long' });
+
+        monthlyMap.set(monthKey, {
+          monthNumber: monthNumber,
+          monthLabel: monthLabel,
+          monthStart: monthStart,
+          monthEnd: monthEnd,
+          totalDistance: 0,
+          totalDuration: 0,
+          averageSpeed: 0,
+          totalElevation: 0,
+          activitiesCount: 0,
+          activities: []
+        });
+      }
+
+      const existingData = monthlyMap.get(monthKey)!;
+      existingData.totalDistance += activity.distance;
+      existingData.totalDuration += activity.elapsed_time;
+      existingData.totalElevation += activity.total_elevation_gain;
+      existingData.activitiesCount += 1;
+      existingData.activities.push({
+        name: activity.name,
+        date: new Date(activity.start_date)
+      });
+    });
+
+    // Calculer les moyennes et trier les activités par date
+    monthlyMap.forEach(month => {
+      month.averageSpeed = (month.totalDistance / (month.totalDuration / 3600)) || 0;
+      month.activities.sort((a, b) => b.date.getTime() - a.date.getTime());
+    });
+
+    return Array.from(monthlyMap.values()).sort((a, b) =>
+      a.monthStart.getTime() - b.monthStart.getTime()
+    );
+  }
+
   private getFilteredActivities(): Activity[] {
     if (!this.activities) return [];
 
@@ -217,16 +283,16 @@ export class ModernActivityChartComponent implements OnChanges {
     );
   }
 
-  private generateDateLabels(): [Date[], Activity[] | WeeklyData[]] {
+  private generateDateLabels(): [Date[], Activity[] | WeeklyData[] | MonthlyData[]] {
     const today = new Date();
     const dates: Date[] = [];
-    let data: Activity[] | WeeklyData[] = [];
+    let data: Activity[] | WeeklyData[] | MonthlyData[] = [];
 
-    if (this.period === 'current_year' && this.isGroupedByWeek) {
+    if ((this.period === 'current_year' || this.period === '2024') && this.groupingType === 'week') {
       // Générer toutes les semaines de l'année
-      const currentYear = today.getFullYear();
-      const firstDayOfYear = new Date(currentYear, 0, 1);
-      const lastDayOfYear = new Date(currentYear, 11, 31);
+      const targetYear = this.period === '2024' ? 2024 : today.getFullYear();
+      const firstDayOfYear = new Date(targetYear, 0, 1);
+      const lastDayOfYear = new Date(targetYear, 11, 31);
 
       // Ajuster au premier lundi de l'année
       const firstMonday = new Date(firstDayOfYear);
@@ -284,6 +350,57 @@ export class ModernActivityChartComponent implements OnChanges {
 
       dates.push(...allWeeks.map(week => week.weekStart));
       data = allWeeks;
+    } else if ((this.period === 'current_year' || this.period === '2024') && this.groupingType === 'month') {
+      // Générer tous les mois de l'année
+      const targetYear = this.period === '2024' ? 2024 : today.getFullYear();
+      const allMonths: MonthlyData[] = [];
+
+      for (let month = 0; month < 12; month++) {
+        const monthStart = new Date(targetYear, month, 1);
+        const monthEnd = new Date(targetYear, month + 1, 0);
+        const monthLabel = monthStart.toLocaleDateString('fr-FR', { month: 'long' });
+
+        allMonths.push({
+          monthNumber: month,
+          monthLabel: monthLabel,
+          monthStart: monthStart,
+          monthEnd: monthEnd,
+          totalDistance: 0,
+          totalDuration: 0,
+          averageSpeed: 0,
+          totalElevation: 0,
+          activitiesCount: 0,
+          activities: []
+        });
+      }
+
+      // Intégrer les données d'activités dans les mois correspondants
+      const filteredActivities = this.getFilteredActivities();
+      filteredActivities.forEach(activity => {
+        const activityDate = new Date(activity.start_date);
+        const monthNumber = activityDate.getMonth();
+        const monthData = allMonths.find(m => m.monthNumber === monthNumber);
+
+        if (monthData) {
+          monthData.totalDistance += activity.distance;
+          monthData.totalDuration += activity.elapsed_time;
+          monthData.totalElevation += activity.total_elevation_gain;
+          monthData.activitiesCount += 1;
+          monthData.activities.push({
+            name: activity.name,
+            date: new Date(activity.start_date)
+          });
+        }
+      });
+
+      // Calculer les moyennes et trier les activités
+      allMonths.forEach(month => {
+        month.averageSpeed = (month.totalDistance / (month.totalDuration / 3600)) || 0;
+        month.activities.sort((a, b) => b.date.getTime() - a.date.getTime());
+      });
+
+      dates.push(...allMonths.map(month => month.monthStart));
+      data = allMonths;
     } else {
       let startDate: Date;
       let endDate = new Date(today);
@@ -319,12 +436,16 @@ export class ModernActivityChartComponent implements OnChanges {
     return [dates, data];
   }
 
-  private createDataMap(dates: Date[], rawData: Activity[] | WeeklyData[]): Map<string, Activity | WeeklyData> {
-    const dataMap = new Map<string, Activity | WeeklyData>();
+  private createDataMap(dates: Date[], rawData: Activity[] | WeeklyData[] | MonthlyData[]): Map<string, Activity | WeeklyData | MonthlyData> {
+    const dataMap = new Map<string, Activity | WeeklyData | MonthlyData>();
 
-    if (this.period === 'current_year' && this.isGroupedByWeek) {
+    if ((this.period === 'current_year' || this.period === '2024') && this.groupingType === 'week') {
       (rawData as WeeklyData[]).forEach(week => {
         dataMap.set(week.weekNumber.toString(), week);
+      });
+    } else if ((this.period === 'current_year' || this.period === '2024') && this.groupingType === 'month') {
+      (rawData as MonthlyData[]).forEach(month => {
+        dataMap.set(month.monthNumber.toString(), month);
       });
     } else {
       (rawData as Activity[]).forEach(activity => {
@@ -344,7 +465,7 @@ export class ModernActivityChartComponent implements OnChanges {
     return `${h}h${m > 0 ? ` ${m}min` : ''}`;
   }
 
-  private getMetricValue(item: Activity | WeeklyData | undefined | null, metricType: string): number | null {
+  private getMetricValue(item: Activity | WeeklyData | MonthlyData | undefined | null, metricType: string): number | null {
     if (!item) return null;
 
     if ('weekNumber' in item) {
@@ -358,6 +479,20 @@ export class ModernActivityChartComponent implements OnChanges {
           return weekData.totalElevation;
         case 'duration':
           return weekData.totalDuration / 3600;
+        default:
+          return null;
+      }
+    } else if ('monthNumber' in item) {
+      const monthData = item as MonthlyData;
+      switch (metricType) {
+        case 'speed':
+          return monthData.averageSpeed;
+        case 'distance':
+          return monthData.totalDistance;
+        case 'elevation':
+          return monthData.totalElevation;
+        case 'duration':
+          return monthData.totalDuration / 3600;
         default:
           return null;
       }
@@ -401,9 +536,13 @@ export class ModernActivityChartComponent implements OnChanges {
       const data = dateLabels.map(date => {
         if (!date) return null;
 
-        if (this.period === 'current_year' && this.isGroupedByWeek) {
+        if ((this.period === 'current_year' || this.period === '2024') && this.groupingType === 'week') {
           const weekNum = this.getWeekNumber(date);
           const item = dataMap.get(weekNum.toString());
+          return this.getMetricValue(item, metricType);
+        } else if ((this.period === 'current_year' || this.period === '2024') && this.groupingType === 'month') {
+          const monthNum = date.getMonth();
+          const item = dataMap.get(monthNum.toString());
           return this.getMetricValue(item, metricType);
         } else {
           const key = date.toISOString().split('T')[0];
@@ -429,9 +568,12 @@ export class ModernActivityChartComponent implements OnChanges {
     const data = {
       labels: dateLabels.map(date => {
         if (!date) return '';
-        if (this.period === 'current_year' && this.isGroupedByWeek) {
+        if ((this.period === 'current_year' || this.period === '2024') && this.groupingType === 'week') {
           const weekNum = this.getWeekNumber(date);
           return `Sem. ${weekNum}`;
+        }
+        if ((this.period === 'current_year' || this.period === '2024') && this.groupingType === 'month') {
+          return date.toLocaleDateString('fr-FR', {month: 'short'});
         }
         return date.toLocaleDateString('fr-FR', {month: 'short', day: 'numeric'});
       }),
@@ -464,8 +606,8 @@ export class ModernActivityChartComponent implements OnChanges {
       };
     });
 
-    const generateTitle = (date: Date, dataMap: Map<string, Activity | WeeklyData>) => {
-      if (this.period === 'current_year' && this.isGroupedByWeek) {
+    const generateTitle = (date: Date, dataMap: Map<string, Activity | WeeklyData | MonthlyData>) => {
+      if ((this.period === 'current_year' || this.period === '2024') && this.groupingType === 'week') {
         const weekNum = this.getWeekNumber(date);
         const weekData = dataMap.get(weekNum.toString()) as WeeklyData;
         if (!weekData) return '';
@@ -474,6 +616,18 @@ export class ModernActivityChartComponent implements OnChanges {
         title += `Du ${weekData.weekStart.toLocaleDateString('fr-FR')} au ${weekData.weekEnd.toLocaleDateString('fr-FR')}\n\n`;
         title += 'Activités de la semaine:\n';
         weekData.activities.forEach(activity => {
+          title += `- ${activity.date.toLocaleDateString('fr-FR')}: ${activity.name}\n`;
+        });
+        return title;
+      } else if ((this.period === 'current_year' || this.period === '2024') && this.groupingType === 'month') {
+        const monthNum = date.getMonth();
+        const monthData = dataMap.get(monthNum.toString()) as MonthlyData;
+        if (!monthData) return '';
+
+        let title = `${monthData.monthLabel.charAt(0).toUpperCase() + monthData.monthLabel.slice(1)}\n`;
+        title += `Du ${monthData.monthStart.toLocaleDateString('fr-FR')} au ${monthData.monthEnd.toLocaleDateString('fr-FR')}\n\n`;
+        title += 'Activités du mois:\n';
+        monthData.activities.forEach(activity => {
           title += `- ${activity.date.toLocaleDateString('fr-FR')}: ${activity.name}\n`;
         });
         return title;
