@@ -105,6 +105,16 @@
             <div class="skeleton-metric"></div>
           </div>
         </div>
+        <div class="stats-skeleton-card">
+          <div class="skeleton-header">
+            <div class="skeleton-icon"></div>
+            <div class="skeleton-title"></div>
+          </div>
+          <div class="skeleton-body">
+            <div class="skeleton-record"></div>
+            <div class="skeleton-record"></div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -192,7 +202,7 @@
         </div>
       </div>
 
-      <!-- Yearly Stats -->
+      <!-- Yearly Stats Course -->
       <div class="stats-card ytd-running">
         <div class="stats-header">
           <div class="stats-icon running">🏃</div>
@@ -242,6 +252,38 @@
           </div>
         </div>
       </div>
+      <!-- Records Vélo -->
+      <div class="stats-card">
+        <div class="stats-header">
+          <div class="stats-icon trophy-ride">🏆</div>
+          <h3>Records (Vélo uniquement)</h3>
+        </div>
+        <div class="stats-body">
+          <div class="record-item">
+            <div class="record-info">
+              <span class="record-title">Plus grand dénivelé</span>
+              <span class="record-value">{{ formatElevation(summary.all_time_ride_records.biggest_climb.value) }}</span>
+              <span class="record-details">
+                {{ summary.all_time_ride_records.biggest_climb.activity_name }}
+                ({{ summary.all_time_ride_records.biggest_climb.activity_type }})
+              </span>
+              <span class="record-date">{{ formatDate(summary.all_time_ride_records.biggest_climb.activity_date) }}</span>
+            </div>
+          </div>
+          <div class="record-item">
+            <div class="record-info">
+              <span class="record-title">Plus longue sortie</span>
+              <span class="record-value">{{ formatDistance(summary.all_time_ride_records.longest_ride.value) }}</span>
+              <span class="record-details">
+                {{ summary.all_time_ride_records.longest_ride.activity_name }}
+                ({{ summary.all_time_ride_records.longest_ride.activity_type }})
+              </span>
+              <span class="record-date">{{ formatDate(summary.all_time_ride_records.longest_ride.activity_date) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>

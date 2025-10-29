@@ -63,8 +63,14 @@
 /* Container des statistiques */
 .stats-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 1.5rem;
+}
+
+@media (min-width: 1200px) {
+  .stats-container {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 /* Carte de statistiques */
@@ -111,6 +117,10 @@
 
 .stats-icon.trophy {
   background-color: #FFE0B2;
+}
+
+.stats-icon.trophy-ride {
+  background-color: #B3E5FC;
 }
 
 .stats-header h3 {

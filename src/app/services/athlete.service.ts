@@ -46,6 +46,14 @@ export interface AthleteSummary {
     biggest_climb: Record;
     longest_run: Record;
   };
+  current_year_ride_records: {
+    biggest_climb: Record;
+    longest_ride: Record;
+  };
+  all_time_ride_records: {
+    biggest_climb: Record;
+    longest_ride: Record;
+  };
 }
 
 @Injectable({
@@ -93,6 +101,14 @@ export class AthleteService {
         const allTimeClimb = this.findBiggestClimb(activities);
         const allTimeRun = this.findLongestRun(activities);
 
+        // Records de vélo de l'année en cours
+        const yearRideClimb = this.findBiggestRideClimb(currentYearActivities);
+        const yearLongestRide = this.findLongestRide(currentYearActivities);
+
+        // Records de vélo de tous les temps
+        const allTimeRideClimb = this.findBiggestRideClimb(activities);
+        const allTimeLongestRide = this.findLongestRide(activities);
+
         return {
           all_run_totals: this.calculateTotals(runActivities),
           all_ride_totals: this.calculateTotals(rideActivities),
@@ -128,6 +144,38 @@ export class AthleteService {
               activity_name: allTimeRun?.name || 'Aucune activité',
               activity_date: allTimeRun?.start_date.toString() || '',
               activity_period: 'all_time' as const  // Forcer le type littéral
+            }
+          },
+          current_year_ride_records: {
+            biggest_climb: {
+              value: yearRideClimb?.total_elevation_gain || 0,
+              activity_type: yearRideClimb?.type || '',
+              activity_name: yearRideClimb?.name || 'Aucune activité',
+              activity_date: yearRideClimb?.start_date.toString() || '',
+              activity_period: 'current_year' as const
+            },
+            longest_ride: {
+              value: yearLongestRide?.distance || 0,
+              activity_type: yearLongestRide?.type || '',
+              activity_name: yearLongestRide?.name || 'Aucune activité',
+              activity_date: yearLongestRide?.start_date.toString() || '',
+              activity_period: 'current_year' as const
+            }
+          },
+          all_time_ride_records: {
+            biggest_climb: {
+              value: allTimeRideClimb?.total_elevation_gain || 0,
+              activity_type: allTimeRideClimb?.type || '',
+              activity_name: allTimeRideClimb?.name || 'Aucune activité',
+              activity_date: allTimeRideClimb?.start_date.toString() || '',
+              activity_period: 'all_time' as const
+            },
+            longest_ride: {
+              value: allTimeLongestRide?.distance || 0,
+              activity_type: allTimeLongestRide?.type || '',
+              activity_name: allTimeLongestRide?.name || 'Aucune activité',
+              activity_date: allTimeLongestRide?.start_date.toString() || '',
+              activity_period: 'all_time' as const
             }
           }
         };
@@ -205,5 +253,25 @@ export class AthleteService {
     return runningActivities.reduce((max, current) =>
         !max || current.distance > max.distance ? current : max
       , runningActivities[0]);
+  }
+
+  private findBiggestRideClimb(activities: Activity[]): Activity | undefined {
+    const rideActivities = activities.filter(a => a.type === 'Ride');
+
+    if (rideActivities.length === 0) return undefined;
+
+    return rideActivities.reduce((max, current) =>
+        !max || current.total_elevation_gain > max.total_elevation_gain ? current : max
+      , rideActivities[0]);
+  }
+
+  private findLongestRide(activities: Activity[]): Activity | undefined {
+    const rideActivities = activities.filter(a => a.type === 'Ride');
+
+    if (rideActivities.length === 0) return undefined;
+
+    return rideActivities.reduce((max, current) =>
+        !max || current.distance > max.distance ? current : max
+      , rideActivities[0]);
   }
 }
