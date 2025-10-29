@@ -25,7 +25,8 @@ export const fadeIn = trigger('fadeIn', [
 export class ProfileComponent implements OnInit, OnDestroy {
   profile: AthleteProfile | null = null;
   summary: AthleteSummary | null = null;
-  isLoading = true;
+  isLoadingProfile = true;
+  isLoadingSummary = true;
   error: string | null = null;
   private destroy$ = new Subject<void>();
 
@@ -42,10 +43,13 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.profileCache.getProfileData$()
       .pipe(takeUntil(this.destroy$))
       .subscribe(cache => {
-        if (cache.profile && cache.summary) {
+        if (cache.profile) {
           this.profile = cache.profile;
+          this.isLoadingProfile = false;
+        }
+        if (cache.summary) {
           this.summary = cache.summary;
-          this.isLoading = false;
+          this.isLoadingSummary = false;
         }
       });
 
@@ -88,25 +92,50 @@ export class ProfileComponent implements OnInit, OnDestroy {
   private loadProfile() {
     // Vérifier si on a besoin de rafraîchir les données
     if (!this.profileCache.needsRefresh()) {
-      this.isLoading = false;
+      this.isLoadingProfile = false;
+      this.isLoadingSummary = false;
       return;
     }
 
-    this.isLoading = true;
+    this.isLoadingProfile = true;
+    this.isLoadingSummary = true;
     this.error = null;
 
-    Promise.all([
-      this.athleteService.getAthleteProfile().toPromise(),
-      this.athleteService.getAthleteSummary().toPromise()
-    ]).then(([profile, summary]) => {
-      if (profile && summary) {
-        this.profileCache.setProfileData(profile, summary);
-      }
-      this.isLoading = false;
-    }).catch(error => {
-      console.error('Error loading profile:', error);
-      this.error = 'Une erreur est survenue lors du chargement du profil.';
-      this.isLoading = false;
-    });
+    // Charger le profil d'abord (rapide)
+    this.athleteService.getAthleteProfile()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (profile) => {
+          this.profile = profile;
+          this.isLoadingProfile = false;
+          // Mettre à jour le cache avec le profil seulement
+          this.profileCache.setProfileOnly(profile);
+        },
+        error: (error) => {
+          console.error('Error loading profile:', error);
+          this.error = 'Une erreur est survenue lors du chargement du profil.';
+          this.isLoadingProfile = false;
+          this.isLoadingSummary = false;
+        }
+      });
+
+    // Charger le summary en parallèle (lent - récupère toutes les activités)
+    this.athleteService.getAthleteSummary()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (summary) => {
+          this.summary = summary;
+          this.isLoadingSummary = false;
+          // Mettre à jour le cache avec le summary
+          if (this.profile) {
+            this.profileCache.setProfileData(this.profile, summary);
+          }
+        },
+        error: (error) => {
+          console.error('Error loading summary:', error);
+          this.error = 'Une erreur est survenue lors du chargement des statistiques.';
+          this.isLoadingSummary = false;
+        }
+      });
   }
 }

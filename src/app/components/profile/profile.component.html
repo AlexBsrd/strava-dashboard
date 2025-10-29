@@ -1,6 +1,6 @@
 <div class="profile-container">
-  <!-- Skeleton Loading -->
-  <app-profile-skeleton *ngIf="isLoading"></app-profile-skeleton>
+  <!-- Skeleton Loading - Only shown when profile is loading -->
+  <app-profile-skeleton *ngIf="isLoadingProfile"></app-profile-skeleton>
 
   <!-- Error Message -->
   <div *ngIf="error" class="error-container">
@@ -14,7 +14,7 @@
   </div>
 
   <!-- Actual Content -->
-  <div *ngIf="!isLoading && !error && profile" class="profile-content" @fadeIn>
+  <div *ngIf="!isLoadingProfile && !error && profile" class="profile-content" @fadeIn>
     <!-- Profile Header -->
     <div class="profile-card">
       <div class="profile-avatar">
@@ -35,8 +35,81 @@
       </div>
     </div>
 
+    <!-- Loading message for statistics -->
+    <div *ngIf="isLoadingSummary" class="loading-stats-message" @fadeIn>
+      <div class="loading-stats-content">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">
+          <h3>Chargement de vos statistiques...</h3>
+          <p>Nous récupérons toutes vos activités Strava pour calculer vos totaux et records.</p>
+          <p class="loading-subtext">Cette opération peut prendre quelques instants selon le nombre d'activités.</p>
+        </div>
+      </div>
+      <!-- Skeleton for stats cards -->
+      <div class="stats-skeleton-grid">
+        <div class="stats-skeleton-card">
+          <div class="skeleton-header">
+            <div class="skeleton-icon"></div>
+            <div class="skeleton-title"></div>
+          </div>
+          <div class="skeleton-body">
+            <div class="skeleton-metric"></div>
+            <div class="skeleton-metric"></div>
+            <div class="skeleton-metric"></div>
+            <div class="skeleton-metric"></div>
+          </div>
+        </div>
+        <div class="stats-skeleton-card">
+          <div class="skeleton-header">
+            <div class="skeleton-icon"></div>
+            <div class="skeleton-title"></div>
+          </div>
+          <div class="skeleton-body">
+            <div class="skeleton-metric"></div>
+            <div class="skeleton-metric"></div>
+            <div class="skeleton-metric"></div>
+            <div class="skeleton-metric"></div>
+          </div>
+        </div>
+        <div class="stats-skeleton-card">
+          <div class="skeleton-header">
+            <div class="skeleton-icon"></div>
+            <div class="skeleton-title"></div>
+          </div>
+          <div class="skeleton-body">
+            <div class="skeleton-record"></div>
+            <div class="skeleton-record"></div>
+          </div>
+        </div>
+        <div class="stats-skeleton-card">
+          <div class="skeleton-header">
+            <div class="skeleton-icon"></div>
+            <div class="skeleton-title"></div>
+          </div>
+          <div class="skeleton-body">
+            <div class="skeleton-metric"></div>
+            <div class="skeleton-metric"></div>
+            <div class="skeleton-metric"></div>
+            <div class="skeleton-metric"></div>
+          </div>
+        </div>
+        <div class="stats-skeleton-card">
+          <div class="skeleton-header">
+            <div class="skeleton-icon"></div>
+            <div class="skeleton-title"></div>
+          </div>
+          <div class="skeleton-body">
+            <div class="skeleton-metric"></div>
+            <div class="skeleton-metric"></div>
+            <div class="skeleton-metric"></div>
+            <div class="skeleton-metric"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Statistics Grid -->
-    <div class="stats-container" *ngIf="summary">
+    <div class="stats-container" *ngIf="!isLoadingSummary && summary" @fadeIn>
       <div class="stats-card total-running">
         <div class="stats-header">
           <div class="stats-icon running">🏃</div>

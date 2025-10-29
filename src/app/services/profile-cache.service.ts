@@ -29,6 +29,15 @@ export class ProfileCacheService {
     this.profileSubject.next(this.cache);
   }
 
+  setProfileOnly(profile: AthleteProfile) {
+    this.cache = {
+      ...this.cache,
+      profile,
+      lastUpdate: this.cache.lastUpdate || new Date()
+    };
+    this.profileSubject.next(this.cache);
+  }
+
   getProfileData$(): Observable<ProfileCache> {
     return this.profileSubject.asObservable();
   }
