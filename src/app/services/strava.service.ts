@@ -187,4 +187,55 @@ export class StravaService {
       fetchPage(1);
     });
   }
+
+  /**
+   * Précharge toutes les activités des 2 dernières années en arrière-plan.
+   * Cette méthode est silencieuse : pas de spinner, pas d'erreur affichée.
+   * Elle peuple le cache localStorage pour des chargements instantanés ultérieurs.
+   */
+  preloadAllRecentActivities(): Observable<Activity[]> {
+    if (this.checkTokenExpiration()) {
+      return of([]);
+    }
+
+    const athlete = {
+      id: localStorage.getItem('strava_athlete_id'),
+      accessToken: localStorage.getItem('strava_token'),
+      refreshToken: localStorage.getItem('strava_refresh_token'),
+      expiresAt: localStorage.getItem('strava_token_expires_at'),
+    };
+
+    if (!athlete.id || !athlete.accessToken || !athlete.refreshToken || !athlete.expiresAt) {
+      return of([]);
+    }
+
+    // Démarrer la session avec le backend
+    this.sessionService.startSession({
+      athlete: {id: athlete.id},
+      access_token: athlete.accessToken,
+      refresh_token: athlete.refreshToken,
+      expires_at: Number(athlete.expiresAt)
+    }).subscribe();
+
+    // Calculer la date d'il y a 2 ans
+    const twoYearsAgo = new Date();
+    twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 2);
+
+    const headers = new HttpHeaders().set(
+      'Authorization',
+      `Bearer ${athlete.accessToken}`
+    );
+
+    return this.getAllActivities(twoYearsAgo, headers).pipe(
+      tap(activities => {
+        // Sauvegarder dans le cache (période 'current_year' pour compatibilité)
+        this.activityCache.setActivities(activities, 'current_year');
+      }),
+      catchError(error => {
+        // Erreur silencieuse : on ne fait rien, le cache restera vide
+        console.warn('Background preload failed (silent):', error);
+        return of([]);
+      })
+    );
+  }
 }

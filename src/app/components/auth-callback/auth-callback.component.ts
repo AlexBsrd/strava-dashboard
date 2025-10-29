@@ -29,6 +29,11 @@ export class AuthCallbackComponent implements OnInit {
             localStorage.setItem('strava_refresh_token', response.refresh_token);
             localStorage.setItem('strava_token_expires_at', response.expires_at.toString());
             localStorage.setItem('strava_athlete_id', response.athlete.id.toString());
+
+            // Précharger toutes les activités des 2 dernières années en arrière-plan
+            // Le chargement se fait en background, l'utilisateur est redirigé immédiatement
+            this.stravaService.preloadAllRecentActivities().subscribe();
+
             this.router.navigate(['/']);
           },
           error: (error) => {

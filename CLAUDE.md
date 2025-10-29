@@ -232,7 +232,6 @@ The comparison feature ([/compare](src/app/components/comparison)) allows users 
 5. Stats calculated for each period using StatsService
 6. ComparisonService calculates deltas between the two Stats objects
 7. Results displayed in comparison cards and charts
-
 **Adding New Comparison Presets**:
 1. Edit ComparisonService.getComparisonPresets()
 2. Add new preset with period1 and period2 ComparisonPeriod objects
