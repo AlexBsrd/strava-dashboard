@@ -255,17 +255,29 @@
 
 @media (max-width: 768px) {
   .grouping-control {
+    width: 100%; /* Prend toute la largeur disponible sur mobile */
     margin: 0.5rem 0;
   }
 
   .grouping-options {
-    flex-direction: column;
+    width: 100%; /* Les options prennent toute la largeur */
+    flex-direction: row; /* Garde les boutons en ligne sur mobile */
     gap: 0.5rem;
-    align-items: flex-start;
+    justify-content: space-around; /* Espace équitablement les 3 options */
+  }
+
+  .grouping-label {
+    font-size: 0.8rem; /* Réduit légèrement la taille du texte */
+    white-space: nowrap; /* Empêche le retour à la ligne */
   }
 
   .primary-controls {
     flex-direction: column;
     gap: 1rem;
+    width: 100%; /* Assure que tous les enfants ont l'espace nécessaire */
+  }
+
+  .primary-controls > * {
+    width: 100%; /* Tous les éléments enfants prennent toute la largeur */
   }
 }

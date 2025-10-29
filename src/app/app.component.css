@@ -94,11 +94,32 @@ h1 {
   .nav-menu {
     width: 100%;
     justify-content: center;
+    gap: 0.4rem; /* Réduit de 1.5rem à 0.4rem pour mobile */
   }
 
   .nav-link {
-    padding: 0.5rem;
-    font-size: 0.9rem;
+    padding: 0.4rem 0.5rem; /* Optimisé pour mobile : moins d'espace horizontal */
+    font-size: 0.8rem; /* Réduit de 0.9rem à 0.8rem */
+  }
+}
+
+/* Breakpoint pour très petits écrans (moins de 380px) */
+@media (max-width: 380px) {
+  .nav-menu {
+    gap: 0.25rem; /* Espacement minimal pour petits écrans */
+  }
+
+  .nav-link {
+    padding: 0.4rem 0.4rem; /* Padding minimal horizontal */
+    font-size: 0.75rem; /* Taille de police encore plus petite */
+  }
+
+  .strava-logo {
+    height: 72px; /* Logo plus petit sur très petits écrans */
+  }
+
+  h1 {
+    font-size: 1.2rem; /* Titre plus petit */
   }
 }
 
@@ -216,5 +237,28 @@ h1 {
   .icon {
     width: 16px;
     height: 16px;
+  }
+}
+
+/* Theme toggle pour très petits écrans */
+@media (max-width: 380px) {
+  .toggle-track {
+    width: 48px; /* Encore plus compact */
+    height: 24px;
+    border-radius: 12px;
+  }
+
+  .toggle-thumb {
+    width: 20px;
+    height: 20px;
+  }
+
+  .theme-toggle.dark .toggle-thumb {
+    transform: translateX(24px);
+  }
+
+  .icon {
+    width: 14px;
+    height: 14px;
   }
 }

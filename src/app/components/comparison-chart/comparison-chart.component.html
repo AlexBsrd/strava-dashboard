@@ -44,7 +44,8 @@
   </div>
 
   <div class="chart-hint">
-    💡 Astuce : Maintenez Ctrl + Molette pour zoomer, cliquez-glissez pour naviguer
+    <span *ngIf="!isMobile">💡 Astuce : Maintenez Ctrl + Molette pour zoomer, cliquez-glissez pour naviguer</span>
+    <span *ngIf="isMobile">💡 Astuce : Pincez pour zoomer, glissez pour naviguer</span>
     <span class="metric-info" *ngIf="selectedMetric === 'distance'">• Distance cumulée affichée</span>
     <span class="metric-info" *ngIf="selectedMetric === 'speed'">• Vitesse moyenne pondérée par distance</span>
     <span class="metric-info" *ngIf="selectedMetric === 'elevation'">• Dénivelé cumulé affiché</span>

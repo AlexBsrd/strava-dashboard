@@ -28,6 +28,9 @@ export class ComparisonChartComponent implements OnChanges {
   selectedMetric: MetricType = 'distance';
   chart: Chart | null = null;
 
+  // Détection du type d'appareil pour adapter les messages d'aide
+  isMobile = this.detectMobileDevice();
+
   ngOnChanges(changes: SimpleChanges) {
     if ((changes['activities1'] || changes['activities2']) && this.activities1.length && this.activities2.length) {
       setTimeout(() => this.createChart(), 0);
@@ -394,5 +397,16 @@ export class ComparisonChartComponent implements OnChanges {
     if (this.chart) {
       this.chart.resetZoom();
     }
+  }
+
+  private detectMobileDevice(): boolean {
+    // Détection basée sur le User Agent
+    const mobileUserAgent = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    // Détection basée sur la largeur d'écran
+    const mobileScreenSize = window.innerWidth <= 768;
+
+    // Retourne true si l'une des deux conditions est vraie
+    return mobileUserAgent || mobileScreenSize;
   }
 }
