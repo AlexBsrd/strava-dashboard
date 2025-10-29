@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Observable, of, throwError} from 'rxjs';
-import {catchError, map, tap} from 'rxjs/operators';
+import {catchError, finalize, map, tap} from 'rxjs/operators';
 import {Activity} from '../models/activity';
 import {environment} from "../environments/environment";
 import {ActivityCacheService} from "./activity-cache.service";
@@ -177,7 +177,13 @@ export class StravaService {
               subscriber.next(accumulatedActivities);
               subscriber.complete();
             } else {
-              fetchPage(page + 1, [...accumulatedActivities, ...activities]);
+              const newAccumulated = [...accumulatedActivities, ...activities];
+
+              // Émettre les résultats intermédiaires après chaque page
+              subscriber.next(newAccumulated);
+
+              // Continuer à charger la page suivante
+              fetchPage(page + 1, newAccumulated);
             }
           },
           error: (error) => subscriber.error(error)
@@ -217,6 +223,9 @@ export class StravaService {
       expires_at: Number(athlete.expiresAt)
     }).subscribe();
 
+    // Marquer le début du preload
+    this.activityCache.setPreloading(true);
+
     // Calculer la date d'il y a 2 ans
     const twoYearsAgo = new Date();
     twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 2);
@@ -235,6 +244,10 @@ export class StravaService {
         // Erreur silencieuse : on ne fait rien, le cache restera vide
         console.warn('Background preload failed (silent):', error);
         return of([]);
+      }),
+      finalize(() => {
+        // Marquer la fin du preload (succès ou erreur)
+        this.activityCache.setPreloading(false);
       })
     );
   }

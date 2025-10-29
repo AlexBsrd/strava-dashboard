@@ -13,6 +13,7 @@ import {ModernActivityChartComponent} from "../modern-activity-chart/modern-acti
 import {Activity} from "../../models/activity";
 import {PaceScatterComponent} from "../pace-scatter/pace-scatter.component";
 import {PeriodType} from "../../types/period";
+import {ActivityCacheService} from "../../services/activity-cache.service";
 
 @Component({
   selector: 'app-dashboard',
@@ -47,7 +48,8 @@ export class DashboardComponent implements OnInit {
   constructor(
     private stravaService: StravaService,
     private statsService: StatsService,
-    private router: Router
+    private router: Router,
+    private activityCache: ActivityCacheService
   ) {
     const emptyStat: Stats = {
       averageSpeed: 0,
@@ -88,18 +90,26 @@ export class DashboardComponent implements OnInit {
     this.error = null;
     this.authError = false;
 
+    // Charger les activités via le service
     this.stravaService.getActivities(this.selectedPeriod).subscribe({
       next: (activities) => {
-        this.allActivities = activities;
-        this.runningActivityData = activities.filter(a => a.type.includes('Run'));
-        this.bikingActivityData = activities.filter(a => a.type.includes('Ride'));
-        this.walkingActivityData = activities.filter(a => a.type.includes('Hike') || a.type.includes('Walk'));
+        this.updateActivitiesDisplay(activities);
 
-        this.runningStats = this.statsService.calculateStats(this.runningActivityData);
-        this.bikingStats = this.statsService.calculateStats(this.bikingActivityData);
-        this.walkingStats = this.statsService.calculateStats(this.walkingActivityData);
-
-        this.isLoading = false;
+        // Si la période n'est pas encore prête (preload en cours)
+        // S'abonner aux changements du cache pour mise à jour automatique
+        if (!this.activityCache.isPeriodReady(this.selectedPeriod)) {
+          const subscription = this.activityCache.activities$.subscribe(() => {
+            if (this.activityCache.isPeriodReady(this.selectedPeriod)) {
+              subscription.unsubscribe();
+              // Recharger les activités maintenant que la période est complète
+              const updatedActivities = this.activityCache.getFilteredActivities(this.selectedPeriod);
+              this.updateActivitiesDisplay(updatedActivities);
+              this.isLoading = false;
+            }
+          });
+        } else {
+          this.isLoading = false;
+        }
       },
       error: (error) => {
         console.error('Error loading activities:', error);
@@ -113,6 +123,17 @@ export class DashboardComponent implements OnInit {
         }
       }
     });
+  }
+
+  private updateActivitiesDisplay(activities: Activity[]) {
+    this.allActivities = activities;
+    this.runningActivityData = activities.filter(a => a.type.includes('Run'));
+    this.bikingActivityData = activities.filter(a => a.type.includes('Ride'));
+    this.walkingActivityData = activities.filter(a => a.type.includes('Hike') || a.type.includes('Walk'));
+
+    this.runningStats = this.statsService.calculateStats(this.runningActivityData);
+    this.bikingStats = this.statsService.calculateStats(this.bikingActivityData);
+    this.walkingStats = this.statsService.calculateStats(this.walkingActivityData);
   }
 
   private checkAuth(): boolean {
