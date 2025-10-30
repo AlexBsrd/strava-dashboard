@@ -33,6 +33,7 @@ import {ActivityCacheService} from "../../services/activity-cache.service";
 export class DashboardComponent implements OnInit {
   selectedPeriod: PeriodType = 'week';
   isLoading = false;
+  isInitialLoad = true;
   error: string | null = null;
   authError = false;
 
@@ -69,7 +70,7 @@ export class DashboardComponent implements OnInit {
     if (!this.checkAuth()) {
       return;
     }
-    this.loadData();
+    this.loadInitialData();
   }
 
   onPeriodChange(period: PeriodType) {
@@ -85,31 +86,46 @@ export class DashboardComponent implements OnInit {
     this.stravaService.authenticate();
   }
 
+  protected loadInitialData() {
+    this.isLoading = true;
+    this.isInitialLoad = true;
+    this.error = null;
+    this.authError = false;
+
+    // Charger toutes les activités des 2 dernières années
+    this.stravaService.loadAllRecentActivities().subscribe({
+      next: (activities) => {
+        // Mettre à jour avec la période sélectionnée
+        const filteredActivities = this.activityCache.getFilteredActivities(this.selectedPeriod);
+        this.updateActivitiesDisplay(filteredActivities);
+        this.isLoading = false;
+        this.isInitialLoad = false;
+      },
+      error: (error) => {
+        console.error('Error loading activities:', error);
+        this.isLoading = false;
+        this.isInitialLoad = false;
+
+        if (error.status === 401) {
+          this.handleAuthError();
+        } else {
+          this.error = 'Une erreur est survenue lors du chargement des données.';
+          this.authError = false;
+        }
+      }
+    });
+  }
+
   protected loadData() {
     this.isLoading = true;
     this.error = null;
     this.authError = false;
 
-    // Charger les activités via le service
+    // Charger les activités via le service (utilise le cache si disponible)
     this.stravaService.getActivities(this.selectedPeriod).subscribe({
       next: (activities) => {
         this.updateActivitiesDisplay(activities);
-
-        // Si la période n'est pas encore prête (preload en cours)
-        // S'abonner aux changements du cache pour mise à jour automatique
-        if (!this.activityCache.isPeriodReady(this.selectedPeriod)) {
-          const subscription = this.activityCache.activities$.subscribe(() => {
-            if (this.activityCache.isPeriodReady(this.selectedPeriod)) {
-              subscription.unsubscribe();
-              // Recharger les activités maintenant que la période est complète
-              const updatedActivities = this.activityCache.getFilteredActivities(this.selectedPeriod);
-              this.updateActivitiesDisplay(updatedActivities);
-              this.isLoading = false;
-            }
-          });
-        } else {
-          this.isLoading = false;
-        }
+        this.isLoading = false;
       },
       error: (error) => {
         console.error('Error loading activities:', error);

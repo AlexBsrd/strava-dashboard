@@ -174,14 +174,11 @@ export class StravaService {
         this.getActivitiesPage(after, page, headers).subscribe({
           next: (activities) => {
             if (activities.length === 0) {
+              // Plus de pages à charger, émettre le résultat final
               subscriber.next(accumulatedActivities);
               subscriber.complete();
             } else {
               const newAccumulated = [...accumulatedActivities, ...activities];
-
-              // Émettre les résultats intermédiaires après chaque page
-              subscriber.next(newAccumulated);
-
               // Continuer à charger la page suivante
               fetchPage(page + 1, newAccumulated);
             }
@@ -195,13 +192,13 @@ export class StravaService {
   }
 
   /**
-   * Précharge toutes les activités des 2 dernières années en arrière-plan.
-   * Cette méthode est silencieuse : pas de spinner, pas d'erreur affichée.
-   * Elle peuple le cache localStorage pour des chargements instantanés ultérieurs.
+   * Charge toutes les activités des 2 dernières années avec affichage d'un spinner.
+   * Cette méthode est appelée au chargement initial du dashboard pour éviter les bugs
+   * quand l'utilisateur clique sur une période qui n'a pas encore été chargée.
    */
-  preloadAllRecentActivities(): Observable<Activity[]> {
+  loadAllRecentActivities(): Observable<Activity[]> {
     if (this.checkTokenExpiration()) {
-      return of([]);
+      return throwError(() => new Error('Token expired'));
     }
 
     const athlete = {
@@ -212,7 +209,7 @@ export class StravaService {
     };
 
     if (!athlete.id || !athlete.accessToken || !athlete.refreshToken || !athlete.expiresAt) {
-      return of([]);
+      return throwError(() => new Error('Missing athlete data'));
     }
 
     // Démarrer la session avec le backend
@@ -222,9 +219,6 @@ export class StravaService {
       refresh_token: athlete.refreshToken,
       expires_at: Number(athlete.expiresAt)
     }).subscribe();
-
-    // Marquer le début du preload
-    this.activityCache.setPreloading(true);
 
     // Calculer la date d'il y a 2 ans
     const twoYearsAgo = new Date();
@@ -237,17 +231,17 @@ export class StravaService {
 
     return this.getAllActivities(twoYearsAgo, headers).pipe(
       tap(activities => {
-        // Sauvegarder dans le cache (période 'current_year' pour compatibilité)
+        // Sauvegarder dans le cache pour toutes les périodes
         this.activityCache.setActivities(activities, 'current_year');
       }),
       catchError(error => {
-        // Erreur silencieuse : on ne fait rien, le cache restera vide
-        console.warn('Background preload failed (silent):', error);
-        return of([]);
-      }),
-      finalize(() => {
-        // Marquer la fin du preload (succès ou erreur)
-        this.activityCache.setPreloading(false);
+        // Si l'erreur est liée à l'authentification
+        if (error.status === 401 ||
+          (error.error && error.error.message && error.error.message.includes('Authorization Error'))) {
+          localStorage.clear();
+          this.router.navigate(['/login']);
+        }
+        return throwError(() => error);
       })
     );
   }

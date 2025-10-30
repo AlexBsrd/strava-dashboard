@@ -11,7 +11,18 @@
     </div>
   </div>
 
-  <app-spinner *ngIf="isLoading"></app-spinner>
+  <div *ngIf="isInitialLoad" class="initial-load-container">
+    <app-spinner></app-spinner>
+    <div class="initial-load-message">
+      Chargement de toutes vos activités des deux dernières années...<br>
+      <span class="initial-load-submessage">Cela peut prendre quelques secondes</span>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading && !isInitialLoad" class="spinner-overlay">
+    <app-spinner></app-spinner>
+    <div class="spinner-text">Chargement des activités...</div>
+  </div>
 
   <ng-container *ngIf="!isLoading">
     <div *ngIf="authError" class="error-container">
