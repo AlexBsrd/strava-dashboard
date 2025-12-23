@@ -1,16 +1,4 @@
 <div class="dashboard-container">
-  <div *ngIf="!authError"> <!-- On cache la dev banner si erreur d'auth -->
-    <div class="dev-banner">
-      <div class="dev-banner-content">
-        <svg class="dev-icon" viewBox="0 0 24 24" width="24" height="24">
-          <path fill="currentColor"
-                d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm-1-5h2v2h-2zm0-8h2v6h-2z"/>
-        </svg>
-        <span>Cette application est en cours de développement. Certaines fonctionnalités peuvent être instables ou incomplètes.</span>
-      </div>
-    </div>
-  </div>
-
   <div *ngIf="isInitialLoad" class="initial-load-container">
     <app-spinner></app-spinner>
     <div class="initial-load-message">
@@ -72,4 +60,15 @@
       </div>
     </div>
   </ng-container>
+
+  <!-- Dev banner déplacé en bas -->
+  <div *ngIf="!authError" class="dev-banner">
+    <div class="dev-banner-content">
+      <svg class="dev-icon" viewBox="0 0 24 24" width="16" height="16">
+        <path fill="currentColor"
+              d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm-1-5h2v2h-2zm0-8h2v6h-2z"/>
+      </svg>
+      <span>Application en développement</span>
+    </div>
+  </div>
 </div>

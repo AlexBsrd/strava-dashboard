@@ -160,6 +160,91 @@
         </button>
       </div>
 
+      <!-- Formulaire de création de groupe (déplacé en haut) -->
+      <div class="create-form" *ngIf="showCreateForm">
+        <div class="form-header">
+          <h3>Nouveau groupe</h3>
+          <button class="close-form-btn" (click)="cancelCreateGroup()" aria-label="Annuler">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <div class="form-body">
+          <div class="form-field">
+            <label class="form-label">Nom</label>
+            <input
+              type="text"
+              class="form-input"
+              [(ngModel)]="newGroupName"
+              placeholder="Ex: Trail, CrossFit..."
+            />
+          </div>
+
+          <div class="form-field">
+            <label class="form-label">Couleur</label>
+            <div class="color-picker">
+              <button
+                *ngFor="let color of availableColors"
+                class="color-btn"
+                [style.backgroundColor]="color"
+                [class.selected]="newGroupColor === color"
+                (click)="newGroupColor = color"
+                aria-label="Couleur"
+              ></button>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label class="form-label">Types d'activités</label>
+            <div class="chip-list">
+              <button
+                *ngFor="let type of getAvailableTypesForNewGroup()"
+                type="button"
+                class="chip"
+                [class.selected]="isNewGroupTypeSelected(type)"
+                (click)="toggleNewGroupType(type)"
+              >
+                {{ getSportLabel(type) }}
+              </button>
+            </div>
+            <p class="form-hint" *ngIf="getAvailableTypesForNewGroup().length === 0">
+              Chargez d'abord vos activités.
+            </p>
+          </div>
+
+          <div class="form-field">
+            <label class="form-label">Métriques</label>
+            <div class="chip-list">
+              <button
+                *ngFor="let metric of allMetrics"
+                type="button"
+                class="chip"
+                [class.selected]="isNewGroupMetricSelected(metric)"
+                [class.disabled]="newGroupMetrics.length === 1 && isNewGroupMetricSelected(metric)"
+                (click)="toggleNewGroupMetric(metric)"
+                [disabled]="newGroupMetrics.length === 1 && isNewGroupMetricSelected(metric)"
+              >
+                {{ getMetricLabel(metric) }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn btn-secondary" (click)="cancelCreateGroup()">Annuler</button>
+          <button
+            class="btn btn-primary"
+            [disabled]="!canCreateGroup()"
+            (click)="createGroup()"
+          >
+            Créer
+          </button>
+        </div>
+      </div>
+
       <div class="groups-list">
         <ng-container *ngFor="let group of groups; trackBy: trackByGroupId">
           <!-- Mode normal -->
@@ -339,91 +424,6 @@
             </div>
           </div>
         </div>
-      </div>
-    </section>
-
-    <!-- Formulaire de création de groupe -->
-    <section class="create-form" *ngIf="showCreateForm">
-      <div class="form-header">
-        <h3>Nouveau groupe</h3>
-        <button class="close-form-btn" (click)="cancelCreateGroup()" aria-label="Annuler">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
-      </div>
-
-      <div class="form-body">
-        <div class="form-field">
-          <label class="form-label">Nom</label>
-          <input
-            type="text"
-            class="form-input"
-            [(ngModel)]="newGroupName"
-            placeholder="Ex: Trail, CrossFit..."
-          />
-        </div>
-
-        <div class="form-field">
-          <label class="form-label">Couleur</label>
-          <div class="color-picker">
-            <button
-              *ngFor="let color of availableColors"
-              class="color-btn"
-              [style.backgroundColor]="color"
-              [class.selected]="newGroupColor === color"
-              (click)="newGroupColor = color"
-              aria-label="Couleur"
-            ></button>
-          </div>
-        </div>
-
-        <div class="form-field">
-          <label class="form-label">Types d'activités</label>
-          <div class="chip-list">
-            <button
-              *ngFor="let type of getAvailableTypesForNewGroup()"
-              type="button"
-              class="chip"
-              [class.selected]="isNewGroupTypeSelected(type)"
-              (click)="toggleNewGroupType(type)"
-            >
-              {{ getSportLabel(type) }}
-            </button>
-          </div>
-          <p class="form-hint" *ngIf="getAvailableTypesForNewGroup().length === 0">
-            Chargez d'abord vos activités.
-          </p>
-        </div>
-
-        <div class="form-field">
-          <label class="form-label">Métriques</label>
-          <div class="chip-list">
-            <button
-              *ngFor="let metric of allMetrics"
-              type="button"
-              class="chip"
-              [class.selected]="isNewGroupMetricSelected(metric)"
-              [class.disabled]="newGroupMetrics.length === 1 && isNewGroupMetricSelected(metric)"
-              (click)="toggleNewGroupMetric(metric)"
-              [disabled]="newGroupMetrics.length === 1 && isNewGroupMetricSelected(metric)"
-            >
-              {{ getMetricLabel(metric) }}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-actions">
-        <button class="btn btn-secondary" (click)="cancelCreateGroup()">Annuler</button>
-        <button
-          class="btn btn-primary"
-          [disabled]="!canCreateGroup()"
-          (click)="createGroup()"
-        >
-          Créer
-        </button>
       </div>
     </section>
   </div>
