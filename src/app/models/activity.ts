@@ -7,5 +7,6 @@ export interface Activity {
   total_elevation_gain: number;
   start_date: Date;
   average_speed: number;
-  type: string;
+  type: string;       // Type générique (Run, Ride, Walk, etc.)
+  sport_type: string; // Type spécifique (TrailRun, MountainBikeRide, etc.)
 }

@@ -1,0 +1,315 @@
+<aside class="sport-sidebar" [class.mobile-open]="isMobileOpen">
+  <!-- Drag handle pour mobile -->
+  <div class="drag-handle" *ngIf="isMobileOpen"></div>
+
+  <!-- Header -->
+  <div class="sidebar-header">
+    <h2 class="sidebar-title">Mes Sports</h2>
+    <button class="close-btn mobile-only" (click)="closeMobile.emit()" aria-label="Fermer">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Body -->
+  <div class="sidebar-body">
+    <!-- Section Groupes -->
+    <section class="sidebar-section">
+      <div class="section-header">
+        <span class="section-title">Groupes</span>
+        <button class="add-btn" (click)="startCreateGroup()" aria-label="Créer un groupe">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="groups-list">
+        <ng-container *ngFor="let group of groups; trackBy: trackByGroupId">
+          <!-- Mode normal -->
+          <app-sport-group-item
+            *ngIf="editingGroupId !== group.id"
+            [group]="group"
+            [isExpanded]="expandedGroupId === group.id"
+            [activityCount]="getActivityCount(group.id)"
+            (toggle)="toggleGroup(group.id)"
+            (expand)="expandGroup(group.id)"
+            (edit)="startEditGroup(group)"
+            (metricToggle)="toggleMetric(group.id, $event)"
+          ></app-sport-group-item>
+
+          <!-- Mode édition -->
+          <div class="edit-form" *ngIf="editingGroupId === group.id">
+            <div class="form-header">
+              <h3>Modifier "{{ group.name }}"</h3>
+              <button class="close-form-btn" (click)="cancelEditGroup()" aria-label="Annuler">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+
+            <div class="form-body">
+              <div class="form-field">
+                <label class="form-label">Nom</label>
+                <input
+                  type="text"
+                  class="form-input"
+                  [(ngModel)]="editGroupName"
+                  placeholder="Nom du groupe"
+                />
+              </div>
+
+              <div class="form-field">
+                <label class="form-label">Couleur</label>
+                <div class="color-picker">
+                  <button
+                    *ngFor="let color of availableColors"
+                    class="color-btn"
+                    [style.backgroundColor]="color"
+                    [class.selected]="editGroupColor === color"
+                    (click)="editGroupColor = color"
+                    aria-label="Couleur"
+                  ></button>
+                </div>
+              </div>
+
+              <div class="form-field">
+                <label class="form-label">Types d'activités inclus</label>
+                <div class="chip-list">
+                  <button
+                    *ngFor="let type of getAvailableTypesForEdit()"
+                    type="button"
+                    class="chip"
+                    [class.selected]="isEditGroupTypeSelected(type)"
+                    (click)="toggleEditGroupType(type)"
+                  >
+                    {{ getSportLabel(type) }}
+                  </button>
+                </div>
+              </div>
+
+              <div class="form-field">
+                <label class="form-label">Métriques affichées</label>
+                <div class="chip-list">
+                  <button
+                    *ngFor="let metric of allMetrics"
+                    type="button"
+                    class="chip"
+                    [class.selected]="isEditGroupMetricSelected(metric)"
+                    [class.disabled]="editGroupMetrics.length === 1 && isEditGroupMetricSelected(metric)"
+                    (click)="toggleEditGroupMetric(metric)"
+                    [disabled]="editGroupMetrics.length === 1 && isEditGroupMetricSelected(metric)"
+                  >
+                    {{ getMetricLabel(metric) }}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button
+                *ngIf="!group.isDefault"
+                class="btn btn-danger"
+                (click)="deleteGroup(group.id)"
+              >
+                Supprimer
+              </button>
+              <div class="form-actions-right">
+                <button class="btn btn-secondary" (click)="cancelEditGroup()">Annuler</button>
+                <button
+                  class="btn btn-primary"
+                  [disabled]="!canSaveEditGroup()"
+                  (click)="saveEditGroup()"
+                >
+                  Enregistrer
+                </button>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </section>
+
+    <!-- Section Sports Détectés -->
+    <section class="sidebar-section" *ngIf="ungroupedTypes.length > 0">
+      <div class="section-header">
+        <span class="section-title">Sports détectés</span>
+        <span class="section-badge">{{ ungroupedTypes.length }}</span>
+      </div>
+
+      <div class="ungrouped-list">
+        <div
+          class="ungrouped-item"
+          *ngFor="let type of ungroupedTypes"
+          [class.enabled]="isUngroupedSportEnabled(type)"
+          [class.in-group]="isTypeInGroup(type)"
+          [class.expanded]="expandedUngroupedType === type && isUngroupedSportEnabled(type)"
+        >
+          <div class="ungrouped-header">
+            <button
+              class="toggle-switch"
+              [class.active]="isUngroupedSportEnabled(type)"
+              (click)="toggleUngroupedSport(type)"
+              [attr.aria-label]="isUngroupedSportEnabled(type) ? 'Désactiver ' + getSportLabel(type) : 'Activer ' + getSportLabel(type)"
+            >
+              <span class="toggle-slider"></span>
+            </button>
+            <div class="ungrouped-info">
+              <span
+                class="ungrouped-name"
+                [class.clickable]="isUngroupedSportEnabled(type)"
+                (click)="isUngroupedSportEnabled(type) && expandUngroupedType(type)"
+              >
+                {{ getSportLabel(type) }}
+              </span>
+              <span class="group-badge" *ngIf="isTypeInGroup(type)">
+                {{ getGroupNameForType(type) }}
+              </span>
+            </div>
+            <span class="ungrouped-count" *ngIf="getUngroupedActivityCount(type) > 0">
+              {{ getUngroupedActivityCount(type) }}
+            </span>
+            <button
+              *ngIf="isUngroupedSportEnabled(type)"
+              class="expand-btn"
+              (click)="expandUngroupedType(type)"
+              [class.expanded]="expandedUngroupedType === type"
+              aria-label="Configurer les métriques"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Panneau des métriques (affiché quand le sport est activé et étendu) -->
+          <div class="metrics-panel" *ngIf="expandedUngroupedType === type && isUngroupedSportEnabled(type)">
+            <div class="metrics-list">
+              <label
+                class="metric-toggle"
+                *ngFor="let metric of getAvailableMetricsForType(type)"
+                [class.disabled]="getUngroupedSportMetrics(type).length === 1 && isUngroupedMetricSelected(type, metric)"
+              >
+                <input
+                  type="checkbox"
+                  [checked]="isUngroupedMetricSelected(type, metric)"
+                  (change)="toggleUngroupedMetric(type, metric)"
+                  [disabled]="getUngroupedSportMetrics(type).length === 1 && isUngroupedMetricSelected(type, metric)"
+                />
+                <span class="metric-label">{{ getMetricLabel(metric) }}</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Formulaire de création de groupe -->
+    <section class="create-form" *ngIf="showCreateForm">
+      <div class="form-header">
+        <h3>Nouveau groupe</h3>
+        <button class="close-form-btn" (click)="cancelCreateGroup()" aria-label="Annuler">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="form-body">
+        <div class="form-field">
+          <label class="form-label">Nom</label>
+          <input
+            type="text"
+            class="form-input"
+            [(ngModel)]="newGroupName"
+            placeholder="Ex: Trail, CrossFit..."
+          />
+        </div>
+
+        <div class="form-field">
+          <label class="form-label">Couleur</label>
+          <div class="color-picker">
+            <button
+              *ngFor="let color of availableColors"
+              class="color-btn"
+              [style.backgroundColor]="color"
+              [class.selected]="newGroupColor === color"
+              (click)="newGroupColor = color"
+              aria-label="Couleur"
+            ></button>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label class="form-label">Types d'activités</label>
+          <div class="chip-list">
+            <button
+              *ngFor="let type of getAvailableTypesForNewGroup()"
+              type="button"
+              class="chip"
+              [class.selected]="isNewGroupTypeSelected(type)"
+              (click)="toggleNewGroupType(type)"
+            >
+              {{ getSportLabel(type) }}
+            </button>
+          </div>
+          <p class="form-hint" *ngIf="getAvailableTypesForNewGroup().length === 0">
+            Chargez d'abord vos activités.
+          </p>
+        </div>
+
+        <div class="form-field">
+          <label class="form-label">Métriques</label>
+          <div class="chip-list">
+            <button
+              *ngFor="let metric of allMetrics"
+              type="button"
+              class="chip"
+              [class.selected]="isNewGroupMetricSelected(metric)"
+              [class.disabled]="newGroupMetrics.length === 1 && isNewGroupMetricSelected(metric)"
+              (click)="toggleNewGroupMetric(metric)"
+              [disabled]="newGroupMetrics.length === 1 && isNewGroupMetricSelected(metric)"
+            >
+              {{ getMetricLabel(metric) }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-secondary" (click)="cancelCreateGroup()">Annuler</button>
+        <button
+          class="btn btn-primary"
+          [disabled]="!canCreateGroup()"
+          (click)="createGroup()"
+        >
+          Créer
+        </button>
+      </div>
+    </section>
+  </div>
+
+  <!-- Footer -->
+  <div class="sidebar-footer">
+    <button class="reset-btn" (click)="resetToDefaults()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+        <path d="M3 3v5h5"/>
+      </svg>
+      Réinitialiser
+    </button>
+  </div>
+</aside>
+
+<!-- Overlay pour mobile -->
+<div
+  class="sidebar-overlay"
+  [class.visible]="isMobileOpen"
+  (click)="closeMobile.emit()"
+></div>

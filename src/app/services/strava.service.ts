@@ -163,7 +163,8 @@ export class StravaService {
           total_elevation_gain: activity.total_elevation_gain,
           start_date: new Date(activity.start_date),
           average_speed: (activity.average_speed * 3.6),
-          type: activity.type
+          type: activity.type,
+          sport_type: activity.sport_type || activity.type // Fallback sur type si sport_type absent
         })))
       );
   }

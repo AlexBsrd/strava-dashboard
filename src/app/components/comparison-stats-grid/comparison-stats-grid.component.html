@@ -12,6 +12,7 @@
   <div class="comparison-grid">
     <!-- Total Distance -->
     <app-comparison-stats-card
+      *ngIf="isMetricVisible('totalDistance')"
       title="Distance totale"
       [value1]="comparison.period1Stats.totalDistance"
       [value2]="comparison.period2Stats.totalDistance"
@@ -21,6 +22,7 @@
 
     <!-- Average Distance -->
     <app-comparison-stats-card
+      *ngIf="isMetricVisible('averageDistance')"
       title="Distance moyenne/sortie"
       [value1]="comparison.period1Stats.averageDistance"
       [value2]="comparison.period2Stats.averageDistance"
@@ -30,6 +32,7 @@
 
     <!-- Average Speed -->
     <app-comparison-stats-card
+      *ngIf="isMetricVisible('averageSpeed')"
       title="Vitesse moyenne"
       [value1]="comparison.period1Stats.averageSpeed"
       [value2]="comparison.period2Stats.averageSpeed"
@@ -39,6 +42,7 @@
 
     <!-- Total Elevation -->
     <app-comparison-stats-card
+      *ngIf="isMetricVisible('totalElevation')"
       title="Dénivelé total"
       [value1]="comparison.period1Stats.totalElevation"
       [value2]="comparison.period2Stats.totalElevation"
@@ -48,6 +52,7 @@
 
     <!-- Average Elevation -->
     <app-comparison-stats-card
+      *ngIf="isMetricVisible('averageElevation')"
       title="Dénivelé moyen/sortie"
       [value1]="comparison.period1Stats.averageElevation"
       [value2]="comparison.period2Stats.averageElevation"
@@ -57,6 +62,7 @@
 
     <!-- Total Time -->
     <app-comparison-stats-card
+      *ngIf="isMetricVisible('totalElapsedTime')"
       title="Temps total"
       [value1]="comparison.period1Stats.totalElapsedTime"
       [value2]="comparison.period2Stats.totalElapsedTime"

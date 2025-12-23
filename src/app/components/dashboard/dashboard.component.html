@@ -54,24 +54,17 @@
       </app-performance-dashboard>
 
       <div class="activity-type-container">
-        <!-- Le reste de votre contenu -->
-        <app-stats-list
-          title="Run"
-          [stats]="runningStats"
-          [selectedPeriod]="selectedPeriod">
-        </app-stats-list>
-
-        <app-stats-list
-          title="Walk"
-          [stats]="walkingStats"
-          [selectedPeriod]="selectedPeriod">
-        </app-stats-list>
-
-        <app-stats-list
-          title="Bike"
-          [stats]="bikingStats"
-          [selectedPeriod]="selectedPeriod">
-        </app-stats-list>
+        <!-- Stats par groupe de sports (dynamique) -->
+        <ng-container *ngFor="let groupData of groupedStatsData; trackBy: trackByGroupId">
+          <app-stats-list
+            [title]="groupData.group.name"
+            [stats]="groupData.stats"
+            [selectedPeriod]="selectedPeriod"
+            [groupColor]="groupData.group.color"
+            [groupIcon]="groupData.group.icon"
+            [visibleMetrics]="groupData.group.visibleMetrics">
+          </app-stats-list>
+        </ng-container>
 
         <app-modern-activity-chart
           [activities]="allActivities"

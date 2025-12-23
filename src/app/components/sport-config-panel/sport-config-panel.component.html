@@ -1,0 +1,322 @@
+<!-- Overlay -->
+<div class="panel-overlay"
+     [class.open]="isOpen"
+     (click)="onOverlayClick($event)">
+
+  <!-- Panel Content -->
+  <div class="panel-content" [class.open]="isOpen" (click)="$event.stopPropagation()">
+
+    <!-- Drag Handle (mobile) -->
+    <div class="drag-handle"></div>
+
+    <!-- Header -->
+    <div class="panel-header">
+      <h2>Configurer les sports</h2>
+      <button class="close-btn" (click)="closePanel()" aria-label="Fermer">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="panel-body">
+
+      <!-- Section Groupes -->
+      <section class="groups-section">
+        <div class="section-header">
+          <h3>Groupes de sports</h3>
+          <p class="section-description">Activez/désactivez et réordonnez vos groupes</p>
+        </div>
+
+        <div class="groups-list">
+          <ng-container *ngFor="let group of groups; trackBy: trackByGroupId">
+
+            <!-- Mode visualisation -->
+            <div class="group-item"
+                 *ngIf="editingGroupId !== group.id && deletingGroupId !== group.id"
+                 [class.disabled]="!group.isEnabled">
+
+              <!-- Boutons de réordonnancement (mobile) -->
+              <div class="group-reorder-buttons">
+                <button class="reorder-btn"
+                        [disabled]="isFirstGroup(group)"
+                        (click)="moveGroupUp(group.id)"
+                        aria-label="Monter">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                       stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="18 15 12 9 6 15"></polyline>
+                  </svg>
+                </button>
+                <button class="reorder-btn"
+                        [disabled]="isLastGroup(group)"
+                        (click)="moveGroupDown(group.id)"
+                        aria-label="Descendre">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                       stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Icône du groupe -->
+              <div class="group-icon" [style.backgroundColor]="group.color">
+                <ng-container [ngSwitch]="group.icon">
+                  <svg *ngSwitchCase="'run'" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="5" r="2"/>
+                    <path d="M7 20l3-8 2 2 4-5"/>
+                    <path d="M12 12l-3 8"/>
+                    <path d="M15 17l2 3"/>
+                  </svg>
+                  <svg *ngSwitchCase="'bike'" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="5" cy="17" r="3"/>
+                    <circle cx="19" cy="17" r="3"/>
+                    <path d="M12 17V5l4 6h3"/>
+                    <path d="M9 9l3 8"/>
+                  </svg>
+                  <svg *ngSwitchCase="'walk'" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="5" r="2"/>
+                    <path d="M9 20l2-8 2 2"/>
+                    <path d="M15 20l-2-8"/>
+                    <path d="M10 11l4-1"/>
+                  </svg>
+                  <svg *ngSwitchCase="'weight'" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M6 4h4v16H6z"/>
+                    <path d="M14 4h4v16h-4z"/>
+                    <line x1="10" y1="12" x2="14" y2="12"/>
+                  </svg>
+                  <svg *ngSwitchDefault xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 6v6l4 2"/>
+                  </svg>
+                </ng-container>
+              </div>
+
+              <!-- Infos du groupe -->
+              <div class="group-info">
+                <span class="group-name">{{ group.name }}</span>
+                <span class="group-types-count">{{ getGroupTypesLabel(group) }}</span>
+              </div>
+
+              <!-- Actions -->
+              <div class="group-actions">
+                <button class="action-btn toggle-btn"
+                        [class.active]="group.isEnabled"
+                        (click)="toggleGroup(group.id)"
+                        [attr.aria-label]="group.isEnabled ? 'Masquer' : 'Afficher'">
+                  <svg *ngIf="group.isEnabled" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                  <svg *ngIf="!group.isEnabled" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                    <line x1="1" y1="1" x2="23" y2="23"/>
+                  </svg>
+                </button>
+
+                <button class="action-btn edit-btn"
+                        (click)="startEdit(group)"
+                        aria-label="Modifier">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                  </svg>
+                </button>
+
+                <button *ngIf="!group.isDefault"
+                        class="action-btn delete-btn"
+                        (click)="confirmDelete(group.id)"
+                        aria-label="Supprimer">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"/>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Mode édition -->
+            <div class="group-item editing" *ngIf="editingGroupId === group.id">
+              <div class="edit-form">
+                <div class="form-row">
+                  <label>Nom du groupe</label>
+                  <input type="text"
+                         [(ngModel)]="editGroupName"
+                         placeholder="Nom du groupe"
+                         class="form-input">
+                </div>
+
+                <div class="form-row">
+                  <label>Couleur</label>
+                  <div class="color-options">
+                    <button *ngFor="let color of availableColors"
+                            class="color-btn"
+                            [style.backgroundColor]="color"
+                            [class.selected]="editGroupColor === color"
+                            (click)="editGroupColor = color">
+                    </button>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <label>Types d'activités</label>
+                  <div class="chip-selector">
+                    <button *ngFor="let type of editAvailableTypes; trackBy: trackByType"
+                            type="button"
+                            class="chip"
+                            [class.selected]="isTypeSelectedForEdit(type)"
+                            (click)="toggleEditGroupType(type)">
+                      <svg *ngIf="isTypeSelectedForEdit(type)" class="chip-check" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                      {{ getSportLabel(type) }}
+                    </button>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <label>Indicateurs à afficher</label>
+                  <div class="chip-selector">
+                    <button *ngFor="let metric of allMetrics"
+                            type="button"
+                            class="chip"
+                            [class.selected]="isMetricSelectedForEdit(metric)"
+                            [class.disabled]="editGroupMetrics.length === 1 && isMetricSelectedForEdit(metric)"
+                            (click)="toggleEditMetric(metric)"
+                            [disabled]="editGroupMetrics.length === 1 && isMetricSelectedForEdit(metric)">
+                      <svg *ngIf="isMetricSelectedForEdit(metric)" class="chip-check" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                      {{ getMetricLabel(metric) }}
+                    </button>
+                  </div>
+                </div>
+
+                <div class="form-actions">
+                  <button class="btn btn-secondary" (click)="cancelEdit()">Annuler</button>
+                  <button class="btn btn-primary"
+                          [disabled]="!canSaveEdit()"
+                          (click)="saveEdit()">
+                    Enregistrer
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mode confirmation suppression -->
+            <div class="group-item deleting" *ngIf="deletingGroupId === group.id">
+              <div class="delete-confirm">
+                <p>Supprimer le groupe "{{ group.name }}" ?</p>
+                <div class="form-actions">
+                  <button class="btn btn-secondary" (click)="cancelDelete()">Annuler</button>
+                  <button class="btn btn-danger" (click)="deleteGroup()">Supprimer</button>
+                </div>
+              </div>
+            </div>
+
+          </ng-container>
+        </div>
+
+        <!-- Bouton ajouter groupe -->
+        <button *ngIf="!showNewGroupForm"
+                class="add-group-btn"
+                (click)="startNewGroup()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Créer un groupe personnalisé
+        </button>
+
+        <!-- Formulaire de création -->
+        <div class="new-group-form" *ngIf="showNewGroupForm">
+          <h4>Nouveau groupe</h4>
+
+          <div class="form-row">
+            <label>Nom du groupe</label>
+            <input type="text"
+                   [(ngModel)]="newGroupName"
+                   placeholder="Ex: Trail, Crossfit..."
+                   class="form-input">
+          </div>
+
+          <div class="form-row">
+            <label>Couleur</label>
+            <div class="color-options">
+              <button *ngFor="let color of availableColors"
+                      class="color-btn"
+                      [style.backgroundColor]="color"
+                      [class.selected]="newGroupColor === color"
+                      (click)="newGroupColor = color">
+              </button>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label>Types d'activités à inclure</label>
+            <div class="chip-selector" *ngIf="availableTypes.length > 0">
+              <button *ngFor="let type of availableTypes; trackBy: trackByType"
+                      type="button"
+                      class="chip"
+                      [class.selected]="isTypeSelectedForNewGroup(type)"
+                      (click)="toggleNewGroupType(type)">
+                <svg *ngIf="isTypeSelectedForNewGroup(type)" class="chip-check" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                {{ getSportLabel(type) }}
+              </button>
+            </div>
+            <p class="form-hint" *ngIf="availableTypes.length === 0">
+              Aucun type d'activité détecté. Chargez d'abord vos activités.
+            </p>
+          </div>
+
+          <div class="form-row">
+            <label>Indicateurs à afficher</label>
+            <div class="chip-selector">
+              <button *ngFor="let metric of allMetrics"
+                      type="button"
+                      class="chip"
+                      [class.selected]="isMetricSelectedForNewGroup(metric)"
+                      [class.disabled]="newGroupMetrics.length === 1 && isMetricSelectedForNewGroup(metric)"
+                      (click)="toggleNewGroupMetric(metric)"
+                      [disabled]="newGroupMetrics.length === 1 && isMetricSelectedForNewGroup(metric)">
+                <svg *ngIf="isMetricSelectedForNewGroup(metric)" class="chip-check" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                {{ getMetricLabel(metric) }}
+              </button>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn btn-secondary" (click)="cancelNewGroup()">Annuler</button>
+            <button class="btn btn-primary"
+                    [disabled]="!canCreateGroup()"
+                    (click)="createGroup()">
+              Créer le groupe
+            </button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="panel-footer">
+      <button class="reset-btn" (click)="resetToDefaults()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+          <path d="M3 3v5h5"/>
+        </svg>
+        Réinitialiser les paramètres
+      </button>
+    </div>
+
+  </div>
+</div>

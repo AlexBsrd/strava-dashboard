@@ -65,10 +65,24 @@ h1 {
   background-color: rgba(255, 255, 255, 0.2);
 }
 
+/* Content wrapper avec sidebar */
+.content-wrapper {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+/* Sidebar desktop */
+.sidebar-desktop {
+  flex-shrink: 0;
+}
+
 .main-content {
   flex: 1;
+  min-width: 0;
   padding: 2rem 1rem;
   background-color: var(--bg-secondary);
+  overflow-y: auto;
 }
 
 .app-footer {
@@ -100,6 +114,10 @@ h1 {
   .nav-link {
     padding: 0.4rem 0.5rem; /* Optimisé pour mobile : moins d'espace horizontal */
     font-size: 0.8rem; /* Réduit de 0.9rem à 0.8rem */
+  }
+
+  .content-wrapper {
+    flex-direction: column;
   }
 }
 
@@ -260,5 +278,99 @@ h1 {
   .icon {
     width: 14px;
     height: 14px;
+  }
+}
+
+/* Config button (desktop) */
+.config-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 0.5rem;
+  cursor: pointer;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.config-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
+}
+
+.config-button:active {
+  transform: scale(0.95);
+}
+
+/* FAB button (mobile only) */
+.config-fab {
+  display: none;
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2196F3, #1976D2);
+  border: none;
+  box-shadow:
+    0 4px 12px rgba(33, 150, 243, 0.4),
+    0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  color: white;
+  z-index: 99;
+  transition: all 0.3s ease;
+  align-items: center;
+  justify-content: center;
+}
+
+.config-fab:hover {
+  transform: scale(1.1);
+  box-shadow:
+    0 6px 16px rgba(33, 150, 243, 0.5),
+    0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+.config-fab:active {
+  transform: scale(0.95);
+}
+
+/* Desktop/Mobile visibility */
+.desktop-only {
+  display: flex;
+}
+
+.mobile-only {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none;
+  }
+
+  .mobile-only {
+    display: flex;
+  }
+
+  .config-fab {
+    bottom: 20px;
+    right: 20px;
+  }
+}
+
+@media (max-width: 380px) {
+  .config-fab {
+    width: 48px;
+    height: 48px;
+    bottom: 16px;
+    right: 16px;
+  }
+
+  .config-fab svg {
+    width: 20px;
+    height: 20px;
   }
 }

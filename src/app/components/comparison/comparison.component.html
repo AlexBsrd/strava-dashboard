@@ -41,56 +41,29 @@
 
   <!-- Comparison Results -->
   <div *ngIf="hasCompared && !isLoading && !error && !authError" class="comparison-results">
-    <!-- Running Comparison -->
-    <div *ngIf="hasActivities('run')">
-      <app-comparison-stats-grid
-        [comparison]="runComparison"
-        activityType="Run">
-      </app-comparison-stats-grid>
+    <!-- Comparaisons par groupe de sports (dynamique) -->
+    <ng-container *ngFor="let groupData of groupComparisons; trackBy: trackByGroupId">
+      <div *ngIf="hasGroupActivities(groupData)">
+        <app-comparison-stats-grid
+          [comparison]="groupData.comparison"
+          [activityType]="groupData.group.name"
+          [groupColor]="groupData.group.color"
+          [visibleMetrics]="groupData.group.visibleMetrics">
+        </app-comparison-stats-grid>
 
-      <app-comparison-chart
-        [activities1]="runActivities1"
-        [activities2]="runActivities2"
-        [period1]="period1"
-        [period2]="period2"
-        activityType="Run">
-      </app-comparison-chart>
-    </div>
-
-    <!-- Walking Comparison -->
-    <div *ngIf="hasActivities('walk')">
-      <app-comparison-stats-grid
-        [comparison]="walkComparison"
-        activityType="Walk">
-      </app-comparison-stats-grid>
-
-      <app-comparison-chart
-        [activities1]="walkActivities1"
-        [activities2]="walkActivities2"
-        [period1]="period1"
-        [period2]="period2"
-        activityType="Walk">
-      </app-comparison-chart>
-    </div>
-
-    <!-- Biking Comparison -->
-    <div *ngIf="hasActivities('bike')">
-      <app-comparison-stats-grid
-        [comparison]="bikeComparison"
-        activityType="Bike">
-      </app-comparison-stats-grid>
-
-      <app-comparison-chart
-        [activities1]="bikeActivities1"
-        [activities2]="bikeActivities2"
-        [period1]="period1"
-        [period2]="period2"
-        activityType="Bike">
-      </app-comparison-chart>
-    </div>
+        <app-comparison-chart
+          [activities1]="groupData.activities1"
+          [activities2]="groupData.activities2"
+          [period1]="period1"
+          [period2]="period2"
+          [activityType]="groupData.group.name"
+          [groupColor]="groupData.group.color">
+        </app-comparison-chart>
+      </div>
+    </ng-container>
 
     <!-- No activities message -->
-    <div *ngIf="!hasActivities('run') && !hasActivities('walk') && !hasActivities('bike')" class="no-activities">
+    <div *ngIf="!hasAnyActivities()" class="no-activities">
       <div class="no-activities-content">
         <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none"
              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

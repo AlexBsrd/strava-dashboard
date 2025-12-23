@@ -1,0 +1,272 @@
+.group-item {
+  background: var(--bg-primary);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.group-item:hover {
+  background: var(--bg-secondary);
+}
+
+.group-item.disabled {
+  opacity: 0.6;
+}
+
+.group-item.expanded {
+  background: var(--bg-secondary);
+}
+
+/* Header du groupe */
+.group-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.group-header:hover {
+  background: var(--bg-tertiary, rgba(0, 0, 0, 0.05));
+}
+
+/* Toggle switch */
+.toggle-switch {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  background: var(--gray-300);
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.2s ease;
+  flex-shrink: 0;
+}
+
+.toggle-switch.active {
+  background: var(--primary-500, #3b82f6);
+}
+
+.toggle-slider {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.toggle-switch.active .toggle-slider {
+  transform: translateX(16px);
+}
+
+/* Icône du groupe */
+.group-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+}
+
+/* Infos du groupe */
+.group-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.group-name {
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.group-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.group-meta {
+  font-size: 0.75rem;
+  color: var(--text-secondary, var(--gray-500));
+}
+
+.group-meta.types-count {
+  color: var(--primary-500, #3b82f6);
+  font-weight: 500;
+}
+
+/* Bouton edit */
+.edit-btn {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary, var(--gray-500));
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  opacity: 0;
+}
+
+.group-header:hover .edit-btn {
+  opacity: 1;
+}
+
+.edit-btn:hover {
+  background: var(--primary-100, #dbeafe);
+  color: var(--primary-600, #2563eb);
+}
+
+/* Bouton expand */
+.expand-btn {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary, var(--gray-500));
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.expand-btn:hover {
+  background: var(--bg-tertiary, rgba(0, 0, 0, 0.1));
+  color: var(--text-primary);
+}
+
+.expand-btn.rotated {
+  transform: rotate(180deg);
+}
+
+/* Panel des métriques */
+.metrics-panel {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.25s ease-out, padding 0.25s ease-out;
+  padding: 0 0.75rem;
+}
+
+.metrics-panel.open {
+  max-height: 300px;
+  padding: 0 0.75rem 0.75rem;
+}
+
+.metrics-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-top: 1px solid var(--gray-200);
+  margin-bottom: 0.5rem;
+}
+
+.metrics-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary, var(--gray-500));
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.metrics-count {
+  font-size: 0.75rem;
+  color: var(--text-secondary, var(--gray-500));
+}
+
+/* Liste des métriques */
+.metrics-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.metric-item {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.metric-item.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Toggle des métriques (plus petit) */
+.metric-toggle {
+  position: relative;
+  width: 28px;
+  height: 16px;
+  background: var(--gray-300);
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.15s ease;
+  flex-shrink: 0;
+}
+
+.metric-toggle:disabled {
+  cursor: not-allowed;
+}
+
+.metric-toggle.active {
+  background: var(--primary-500, #3b82f6);
+}
+
+.metric-slider {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 12px;
+  height: 12px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  transition: transform 0.15s ease;
+}
+
+.metric-toggle.active .metric-slider {
+  transform: translateX(12px);
+}
+
+.metric-label {
+  font-size: 0.8125rem;
+  color: var(--text-primary);
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .toggle-switch {
+  background: var(--gray-600);
+}
+
+[data-theme="dark"] .metrics-header {
+  border-top-color: var(--gray-700);
+}
+
+[data-theme="dark"] .metric-toggle {
+  background: var(--gray-600);
+}

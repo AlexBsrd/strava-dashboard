@@ -1,6 +1,8 @@
 <div class="activity-header">
   <div class="title-section">
-    <div class="activity-icon" [ngClass]="activityType.toLowerCase()">
+    <div class="activity-icon"
+         [ngClass]="activityType.toLowerCase()"
+         [style.backgroundColor]="displayColor">
       <i class="icon"></i>
     </div>
     <div class="activity-info">
@@ -21,6 +23,7 @@
 
 <div class="stats-grid">
   <app-stats-card
+    *ngIf="isMetricVisible('totalElapsedTime')"
     class="double-row"
     title="Temps total"
     [value]="stats.totalElapsedTime"
@@ -29,6 +32,7 @@
   </app-stats-card>
 
   <app-stats-card
+    *ngIf="isMetricVisible('averageSpeed')"
     class="double-row"
     title="Vitesse moyenne"
     [value]="stats.averageSpeed"
@@ -36,24 +40,28 @@
   </app-stats-card>
 
   <app-stats-card
+    *ngIf="isMetricVisible('totalDistance')"
     title="Distance totale"
     [value]="stats.totalDistance"
     unit="km">
   </app-stats-card>
 
   <app-stats-card
+    *ngIf="isMetricVisible('averageDistance')"
     title="Distance moyenne/sortie"
     [value]="stats.averageDistance"
     unit="km">
   </app-stats-card>
 
   <app-stats-card
+    *ngIf="isMetricVisible('totalElevation')"
     title="Dénivelé total"
     [value]="stats.totalElevation"
     unit="m">
   </app-stats-card>
 
   <app-stats-card
+    *ngIf="isMetricVisible('averageElevation')"
     title="Dénivelé moyen/sortie"
     [value]="stats.averageElevation"
     unit="m">

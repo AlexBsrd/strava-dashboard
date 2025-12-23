@@ -24,6 +24,7 @@ export class ComparisonChartComponent implements OnChanges {
   @Input() period1: ComparisonPeriod | null = null;
   @Input() period2: ComparisonPeriod | null = null;
   @Input() activityType: string = 'Run';
+  @Input() groupColor?: string;
 
   selectedMetric: MetricType = 'distance';
   chart: Chart | null = null;

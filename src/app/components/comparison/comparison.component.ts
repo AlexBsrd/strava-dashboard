@@ -1,16 +1,26 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { Subject, takeUntil } from 'rxjs';
 import { ComparisonPeriod, StatsComparison } from '../../types/comparison';
 import { ComparisonService } from '../../services/comparison.service';
 import { StravaService } from '../../services/strava.service';
 import { StatsService } from '../../services/stats.service';
 import { Activity } from '../../models/activity';
-import { Stats } from '../../models/stats';
 import { ComparisonPeriodSelectorComponent } from '../comparison-period-selector/comparison-period-selector.component';
 import { ComparisonStatsGridComponent } from '../comparison-stats-grid/comparison-stats-grid.component';
 import { ComparisonChartComponent } from '../comparison-chart/comparison-chart.component';
 import { SpinnerComponent } from '../spinner/spinner.component';
+import { SportConfigService } from '../../services/sport-config.service';
+import { SportGroup, getSportMetadata, getRecommendedMetrics } from '../../types/sport-config';
+
+/** Interface pour les comparaisons groupées par sport */
+interface GroupComparisonData {
+  group: SportGroup;
+  activities1: Activity[];
+  activities2: Activity[];
+  comparison: StatsComparison;
+}
 
 @Component({
   selector: 'app-comparison',
@@ -25,7 +35,9 @@ import { SpinnerComponent } from '../spinner/spinner.component';
   templateUrl: './comparison.component.html',
   styleUrls: ['./comparison.component.css']
 })
-export class ComparisonComponent {
+export class ComparisonComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
+
   period1: ComparisonPeriod | null = null;
   period2: ComparisonPeriod | null = null;
 
@@ -38,25 +50,33 @@ export class ComparisonComponent {
   activities1: Activity[] = [];
   activities2: Activity[] = [];
 
-  // Activities filtered by type
-  runActivities1: Activity[] = [];
-  runActivities2: Activity[] = [];
-  walkActivities1: Activity[] = [];
-  walkActivities2: Activity[] = [];
-  bikeActivities1: Activity[] = [];
-  bikeActivities2: Activity[] = [];
-
-  // Comparisons per activity type
-  runComparison: StatsComparison | null = null;
-  walkComparison: StatsComparison | null = null;
-  bikeComparison: StatsComparison | null = null;
+  // Comparaisons groupées dynamiques
+  groupComparisons: GroupComparisonData[] = [];
 
   constructor(
     private comparisonService: ComparisonService,
     private stravaService: StravaService,
     private statsService: StatsService,
-    private router: Router
+    private router: Router,
+    private sportConfigService: SportConfigService
   ) {}
+
+  ngOnInit() {
+    // S'abonner aux changements de configuration des sports (config complète pour détecter les changements de types)
+    this.sportConfigService.config$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        // Re-calculer les comparaisons quand la config change
+        if (this.hasCompared && this.activities1.length > 0) {
+          this.filterAndCalculateComparisons();
+        }
+      });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
   onPeriod1Change(period: ComparisonPeriod) {
     this.period1 = period;
@@ -112,11 +132,8 @@ export class ComparisonComponent {
             console.log('Period 1:', this.period1.label, '- Activities:', this.activities1.length);
             console.log('Period 2:', this.period2.label, '- Activities:', this.activities2.length);
 
-            // Filter by activity type
-            this.filterActivitiesByType();
-
-            // Calculate stats and comparisons
-            this.calculateComparisons();
+            // Filter by activity type and calculate comparisons
+            this.filterAndCalculateComparisons();
 
             this.isLoading = false;
             this.hasCompared = true;
@@ -145,33 +162,85 @@ export class ComparisonComponent {
     }
   }
 
-  private filterActivitiesByType() {
-    // Period 1
-    this.runActivities1 = this.activities1.filter(a => a.type.includes('Run'));
-    this.walkActivities1 = this.activities1.filter(a => a.type.includes('Hike') || a.type.includes('Walk'));
-    this.bikeActivities1 = this.activities1.filter(a => a.type.includes('Ride'));
+  /**
+   * Filtre les activités par groupe et calcule les comparaisons
+   */
+  private filterAndCalculateComparisons() {
+    const enabledGroups = this.sportConfigService.getEnabledGroups();
 
-    // Period 2
-    this.runActivities2 = this.activities2.filter(a => a.type.includes('Run'));
-    this.walkActivities2 = this.activities2.filter(a => a.type.includes('Hike') || a.type.includes('Walk'));
-    this.bikeActivities2 = this.activities2.filter(a => a.type.includes('Ride'));
+    this.groupComparisons = enabledGroups.map(group => {
+      const activities1 = this.sportConfigService.filterActivitiesByGroup(this.activities1, group);
+      const activities2 = this.sportConfigService.filterActivitiesByGroup(this.activities2, group);
+
+      const stats1 = this.statsService.calculateStats(activities1);
+      const stats2 = this.statsService.calculateStats(activities2);
+      const comparison = this.comparisonService.compareStats(stats1, stats2);
+
+      return {
+        group,
+        activities1,
+        activities2,
+        comparison
+      };
+    });
+
+    // Ajouter les sports individuels activés (même s'ils sont dans un groupe)
+    const config = this.sportConfigService.getConfig();
+
+    for (const type of config.ungroupedSportsEnabled) {
+      const metadata = getSportMetadata(type);
+
+      // Filtrer les activités par type
+      const typeActivities1 = this.activities1.filter(a => (a.sport_type || a.type) === type);
+      const typeActivities2 = this.activities2.filter(a => (a.sport_type || a.type) === type);
+
+      // Ne pas ajouter si aucune activité dans les deux périodes
+      if (typeActivities1.length === 0 && typeActivities2.length === 0) {
+        continue;
+      }
+
+      // Récupérer la configuration des métriques pour ce sport
+      const sportConfig = this.sportConfigService.getUngroupedSportConfig(type);
+      const visibleMetrics = sportConfig?.visibleMetrics || getRecommendedMetrics([type]);
+
+      // Créer un groupe virtuel pour ce sport individuel
+      const virtualGroup: SportGroup = {
+        id: `individual-${type}`,
+        name: metadata.label,
+        types: [type],
+        icon: metadata.icon,
+        color: this.getColorForCategory(metadata.category),
+        isDefault: false,
+        isEnabled: true,
+        order: 999,
+        visibleMetrics: visibleMetrics
+      };
+
+      const stats1 = this.statsService.calculateStats(typeActivities1);
+      const stats2 = this.statsService.calculateStats(typeActivities2);
+      const comparison = this.comparisonService.compareStats(stats1, stats2);
+
+      this.groupComparisons.push({
+        group: virtualGroup,
+        activities1: typeActivities1,
+        activities2: typeActivities2,
+        comparison
+      });
+    }
   }
 
-  private calculateComparisons() {
-    // Running comparison
-    const runStats1 = this.statsService.calculateStats(this.runActivities1);
-    const runStats2 = this.statsService.calculateStats(this.runActivities2);
-    this.runComparison = this.comparisonService.compareStats(runStats1, runStats2);
-
-    // Walking comparison
-    const walkStats1 = this.statsService.calculateStats(this.walkActivities1);
-    const walkStats2 = this.statsService.calculateStats(this.walkActivities2);
-    this.walkComparison = this.comparisonService.compareStats(walkStats1, walkStats2);
-
-    // Biking comparison
-    const bikeStats1 = this.statsService.calculateStats(this.bikeActivities1);
-    const bikeStats2 = this.statsService.calculateStats(this.bikeActivities2);
-    this.bikeComparison = this.comparisonService.compareStats(bikeStats1, bikeStats2);
+  /** Retourne une couleur par défaut selon la catégorie de sport */
+  private getColorForCategory(category: string): string {
+    const colors: Record<string, string> = {
+      'running': '#ef4444',
+      'cycling': '#3b82f6',
+      'walking': '#22c55e',
+      'fitness': '#8b5cf6',
+      'water': '#06b6d4',
+      'winter': '#64748b',
+      'other': '#f97316'
+    };
+    return colors[category] || '#6b7280';
   }
 
   private checkAuth(): boolean {
@@ -195,16 +264,24 @@ export class ComparisonComponent {
     this.stravaService.authenticate();
   }
 
-  hasActivities(activityType: 'run' | 'walk' | 'bike'): boolean {
-    switch (activityType) {
-      case 'run':
-        return this.runActivities1.length > 0 || this.runActivities2.length > 0;
-      case 'walk':
-        return this.walkActivities1.length > 0 || this.walkActivities2.length > 0;
-      case 'bike':
-        return this.bikeActivities1.length > 0 || this.bikeActivities2.length > 0;
-      default:
-        return false;
-    }
+  /**
+   * Vérifie si un groupe a des activités dans au moins une des deux périodes
+   */
+  hasGroupActivities(groupData: GroupComparisonData): boolean {
+    return groupData.activities1.length > 0 || groupData.activities2.length > 0;
+  }
+
+  /**
+   * Vérifie s'il y a des activités dans au moins un groupe
+   */
+  hasAnyActivities(): boolean {
+    return this.groupComparisons.some(gc => this.hasGroupActivities(gc));
+  }
+
+  /**
+   * TrackBy pour les comparaisons de groupes
+   */
+  trackByGroupId(index: number, item: GroupComparisonData): string {
+    return item.group.id;
   }
 }

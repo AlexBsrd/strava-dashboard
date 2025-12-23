@@ -1,7 +1,8 @@
 // src/app/components/dashboard/dashboard.component.ts
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {Router} from '@angular/router';
+import {Subject, takeUntil} from 'rxjs';
 import {PeriodSelectorComponent} from '../period-selector/period-selector.component';
 import {StravaService} from '../../services/strava.service';
 import {StatsService} from '../../services/stats.service';
@@ -14,6 +15,15 @@ import {Activity} from "../../models/activity";
 import {PaceScatterComponent} from "../pace-scatter/pace-scatter.component";
 import {PeriodType} from "../../types/period";
 import {ActivityCacheService} from "../../services/activity-cache.service";
+import {SportConfigService} from "../../services/sport-config.service";
+import {SportGroup, StravaActivityType, getSportMetadata, getRecommendedMetrics, ALL_METRICS} from "../../types/sport-config";
+
+/** Interface pour les données groupées par sport */
+interface GroupedStatsData {
+  group: SportGroup;
+  activities: Activity[];
+  stats: Stats;
+}
 
 @Component({
   selector: 'app-dashboard',
@@ -30,47 +40,52 @@ import {ActivityCacheService} from "../../services/activity-cache.service";
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
+
   selectedPeriod: PeriodType = 'week';
   isLoading = false;
   isInitialLoad = true;
   error: string | null = null;
   authError = false;
 
-  runningStats: Stats;
-  bikingStats: Stats;
-  walkingStats: Stats;
+  // Données groupées dynamiques
+  groupedStatsData: GroupedStatsData[] = [];
+
+  // Données pour le PerformanceDashboard (uniquement les activités de course)
+  runningActivityData: Activity[] = [];
 
   allActivities: Activity[] = [];
-  runningActivityData: any[] = [];
-  bikingActivityData: any[] = [];
-  walkingActivityData: any[] = [];
 
   constructor(
     private stravaService: StravaService,
     private statsService: StatsService,
     private router: Router,
-    private activityCache: ActivityCacheService
-  ) {
-    const emptyStat: Stats = {
-      averageSpeed: 0,
-      totalDistance: 0,
-      averageDistance: 0,
-      totalElevation: 0,
-      averageElevation: 0,
-      totalElapsedTime: 0,
-      numberOfActivities: 0
-    }
-    this.runningStats = emptyStat;
-    this.bikingStats = emptyStat;
-    this.walkingStats = emptyStat;
-  }
+    private activityCache: ActivityCacheService,
+    private sportConfigService: SportConfigService
+  ) {}
 
   ngOnInit() {
     if (!this.checkAuth()) {
       return;
     }
+
+    // S'abonner aux changements de configuration des sports (config complète pour détecter les changements de types)
+    this.sportConfigService.config$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        // Re-filtrer les activités quand la config change
+        if (this.allActivities.length > 0) {
+          this.updateActivitiesDisplay(this.allActivities);
+        }
+      });
+
     this.loadInitialData();
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   onPeriodChange(period: PeriodType) {
@@ -143,13 +158,84 @@ export class DashboardComponent implements OnInit {
 
   private updateActivitiesDisplay(activities: Activity[]) {
     this.allActivities = activities;
-    this.runningActivityData = activities.filter(a => a.type.includes('Run'));
-    this.bikingActivityData = activities.filter(a => a.type.includes('Ride'));
-    this.walkingActivityData = activities.filter(a => a.type.includes('Hike') || a.type.includes('Walk'));
 
-    this.runningStats = this.statsService.calculateStats(this.runningActivityData);
-    this.bikingStats = this.statsService.calculateStats(this.bikingActivityData);
-    this.walkingStats = this.statsService.calculateStats(this.walkingActivityData);
+    // Détecter les types d'activités disponibles
+    this.sportConfigService.detectAvailableTypes(activities);
+
+    // Filtrer les activités par groupes activés
+    const enabledGroups = this.sportConfigService.getEnabledGroups();
+    this.groupedStatsData = enabledGroups.map(group => {
+      const groupActivities = this.sportConfigService.filterActivitiesByGroup(activities, group);
+      return {
+        group,
+        activities: groupActivities,
+        stats: this.statsService.calculateStats(groupActivities)
+      };
+    });
+
+    // Ajouter les sports individuels activés (même s'ils sont dans un groupe)
+    const config = this.sportConfigService.getConfig();
+
+    for (const type of config.ungroupedSportsEnabled) {
+      const metadata = getSportMetadata(type);
+      // Utiliser sport_type pour le filtrage (ex: TrailRun)
+      const typeActivities = activities.filter(a => (a.sport_type || a.type) === type);
+
+      if (typeActivities.length > 0) {
+        // Récupérer la configuration des métriques pour ce sport
+        const sportConfig = this.sportConfigService.getUngroupedSportConfig(type);
+        const visibleMetrics = sportConfig?.visibleMetrics || getRecommendedMetrics([type]);
+
+        // Créer un groupe virtuel pour ce sport individuel
+        const virtualGroup: SportGroup = {
+          id: `individual-${type}`,
+          name: metadata.label,
+          types: [type],
+          icon: metadata.icon,
+          color: this.getColorForCategory(metadata.category),
+          isDefault: false,
+          isEnabled: true,
+          order: 999, // À la fin
+          visibleMetrics: visibleMetrics
+        };
+
+        this.groupedStatsData.push({
+          group: virtualGroup,
+          activities: typeActivities,
+          stats: this.statsService.calculateStats(typeActivities)
+        });
+      }
+    }
+
+    // Extraire les activités de course pour le PerformanceDashboard
+    // On cherche le groupe "running" par défaut ou un groupe contenant des types Run
+    const runningGroup = enabledGroups.find(g => g.id === 'running') ||
+      enabledGroups.find(g => g.types.some(t => t.includes('Run')));
+    if (runningGroup) {
+      this.runningActivityData = this.sportConfigService.filterActivitiesByGroup(activities, runningGroup);
+    } else {
+      // Fallback: filtrer directement les activités de type Run
+      this.runningActivityData = activities.filter(a => a.type.includes('Run'));
+    }
+  }
+
+  /** Retourne une couleur par défaut selon la catégorie de sport */
+  private getColorForCategory(category: string): string {
+    const colors: Record<string, string> = {
+      'running': '#ef4444',
+      'cycling': '#3b82f6',
+      'walking': '#22c55e',
+      'fitness': '#8b5cf6',
+      'water': '#06b6d4',
+      'winter': '#64748b',
+      'other': '#f97316'
+    };
+    return colors[category] || '#6b7280';
+  }
+
+  /** Helper pour le trackBy dans le template */
+  trackByGroupId(index: number, item: GroupedStatsData): string {
+    return item.group.id;
   }
 
   private checkAuth(): boolean {
