@@ -33,6 +33,19 @@
         >
           {{ period.label }}
         </button>
+
+        <!-- Sélecteur d'année -->
+        <select
+          class="period-select"
+          [class.active]="isYearSelected()"
+          [value]="getSelectedYear() || ''"
+          (change)="selectDashboardYear(+$any($event.target).value)"
+        >
+          <option value="" disabled>Sélectionner une année</option>
+          <option *ngFor="let year of availableYears" [value]="year">
+            Année {{ year }}
+          </option>
+        </select>
       </div>
     </section>
 

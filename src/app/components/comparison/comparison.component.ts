@@ -132,43 +132,26 @@ export class ComparisonComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Fetch activities from '2024' period which includes both 2024 and current year activities
-    // This ensures we have data for comparisons like "Oct 2024 vs Oct 2025"
-    this.stravaService.getActivities('2024').subscribe({
-      next: (activities2024) => {
-        // Also fetch current year to get recent activities
-        this.stravaService.getActivities('current_year').subscribe({
-          next: (activitiesCurrentYear) => {
-            if (!this.period1 || !this.period2) return;
+    // Fetch all recent activities (2 years) to ensure we have data for all possible comparisons
+    this.stravaService.loadAllRecentActivities().subscribe({
+      next: (allActivities) => {
+        if (!this.period1 || !this.period2) return;
 
-            // Merge and deduplicate activities
-            const allActivitiesMap = new Map<number, Activity>();
-            [...activities2024, ...activitiesCurrentYear].forEach(activity => {
-              allActivitiesMap.set(activity.id, activity);
-            });
-            const allActivities = Array.from(allActivitiesMap.values());
+        // Filter activities by each period
+        this.activities1 = this.comparisonService.filterActivitiesByPeriod(allActivities, this.period1);
+        this.activities2 = this.comparisonService.filterActivitiesByPeriod(allActivities, this.period2);
 
-            // Filter activities by each period
-            this.activities1 = this.comparisonService.filterActivitiesByPeriod(allActivities, this.period1);
-            this.activities2 = this.comparisonService.filterActivitiesByPeriod(allActivities, this.period2);
+        console.log('Period 1:', this.period1.label, '- Activities:', this.activities1.length);
+        console.log('Period 2:', this.period2.label, '- Activities:', this.activities2.length);
 
-            console.log('Period 1:', this.period1.label, '- Activities:', this.activities1.length);
-            console.log('Period 2:', this.period2.label, '- Activities:', this.activities2.length);
+        // Filter by activity type and calculate comparisons
+        this.filterAndCalculateComparisons();
 
-            // Filter by activity type and calculate comparisons
-            this.filterAndCalculateComparisons();
-
-            this.isLoading = false;
-            this.hasCompared = true;
-          },
-          error: (error) => {
-            console.error('Error loading current year activities:', error);
-            this.handleError(error);
-          }
-        });
+        this.isLoading = false;
+        this.hasCompared = true;
       },
       error: (error) => {
-        console.error('Error loading 2024 activities:', error);
+        console.error('Error loading activities:', error);
         this.handleError(error);
       }
     });

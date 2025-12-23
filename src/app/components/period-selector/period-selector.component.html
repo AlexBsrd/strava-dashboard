@@ -7,5 +7,16 @@
       class="period-button">
       {{ period.label }}
     </button>
+
+    <select
+      [value]="selectedYear || ''"
+      (change)="onYearChange(+$any($event.target).value)"
+      [class.active]="isYearSelected()"
+      class="period-button year-selector">
+      <option value="" disabled>Sélectionner une année</option>
+      <option *ngFor="let year of availableYears" [value]="year">
+        Année {{ year }}
+      </option>
+    </select>
   </div>
 </div>

@@ -18,7 +18,7 @@ import {
 import zoomPlugin from 'chartjs-plugin-zoom';
 import {Activity} from '../../models/activity';
 import {FullscreenService} from "../../services/fullscreen.service";
-import {PeriodType} from "../../types/period";
+import {PeriodType, isYearPeriod, getYearFromPeriod} from "../../types/period";
 
 Chart.register(
   LinearScale,
@@ -98,6 +98,10 @@ export class ModernActivityChartComponent implements OnChanges {
     if (this.chartContainer) {
       this.fullscreenService.toggleFullscreen(this.chartContainer.nativeElement);
     }
+  }
+
+  isYearOrCurrentYear(): boolean {
+    return this.period === 'current_year' || isYearPeriod(this.period);
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -288,9 +292,9 @@ export class ModernActivityChartComponent implements OnChanges {
     const dates: Date[] = [];
     let data: Activity[] | WeeklyData[] | MonthlyData[] = [];
 
-    if ((this.period === 'current_year' || this.period === '2024') && this.groupingType === 'week') {
+    if ((this.period === 'current_year' || isYearPeriod(this.period)) && this.groupingType === 'week') {
       // Générer toutes les semaines de l'année
-      const targetYear = this.period === '2024' ? 2024 : today.getFullYear();
+      const targetYear = getYearFromPeriod(this.period) ?? today.getFullYear();
       const firstDayOfYear = new Date(targetYear, 0, 1);
       const lastDayOfYear = new Date(targetYear, 11, 31);
 
@@ -350,9 +354,9 @@ export class ModernActivityChartComponent implements OnChanges {
 
       dates.push(...allWeeks.map(week => week.weekStart));
       data = allWeeks;
-    } else if ((this.period === 'current_year' || this.period === '2024') && this.groupingType === 'month') {
+    } else if ((this.period === 'current_year' || isYearPeriod(this.period)) && this.groupingType === 'month') {
       // Générer tous les mois de l'année
-      const targetYear = this.period === '2024' ? 2024 : today.getFullYear();
+      const targetYear = getYearFromPeriod(this.period) ?? today.getFullYear();
       const allMonths: MonthlyData[] = [];
 
       for (let month = 0; month < 12; month++) {
@@ -418,9 +422,17 @@ export class ModernActivityChartComponent implements OnChanges {
           startDate = new Date(today.getFullYear(), 0, 1);
           startDate.setHours(0, 0, 0, 0);
           break;
-        case '2024':
-          startDate = new Date(2024, 0, 1);
-          endDate = new Date(2024, 11, 31);
+        default:
+          // Vérifier si c'est une année spécifique
+          const year = getYearFromPeriod(this.period);
+          if (year !== null) {
+            startDate = new Date(year, 0, 1);
+            endDate = new Date(year, 11, 31);
+          } else {
+            // Fallback pour les périodes inconnues
+            startDate = new Date(today);
+            startDate.setDate(today.getDate() - 6);
+          }
           break;
       }
 
@@ -439,11 +451,11 @@ export class ModernActivityChartComponent implements OnChanges {
   private createDataMap(dates: Date[], rawData: Activity[] | WeeklyData[] | MonthlyData[]): Map<string, Activity | WeeklyData | MonthlyData> {
     const dataMap = new Map<string, Activity | WeeklyData | MonthlyData>();
 
-    if ((this.period === 'current_year' || this.period === '2024') && this.groupingType === 'week') {
+    if ((this.period === 'current_year' || isYearPeriod(this.period)) && this.groupingType === 'week') {
       (rawData as WeeklyData[]).forEach(week => {
         dataMap.set(week.weekNumber.toString(), week);
       });
-    } else if ((this.period === 'current_year' || this.period === '2024') && this.groupingType === 'month') {
+    } else if ((this.period === 'current_year' || isYearPeriod(this.period)) && this.groupingType === 'month') {
       (rawData as MonthlyData[]).forEach(month => {
         dataMap.set(month.monthNumber.toString(), month);
       });
@@ -536,11 +548,11 @@ export class ModernActivityChartComponent implements OnChanges {
       const data = dateLabels.map(date => {
         if (!date) return null;
 
-        if ((this.period === 'current_year' || this.period === '2024') && this.groupingType === 'week') {
+        if ((this.period === 'current_year' || isYearPeriod(this.period)) && this.groupingType === 'week') {
           const weekNum = this.getWeekNumber(date);
           const item = dataMap.get(weekNum.toString());
           return this.getMetricValue(item, metricType);
-        } else if ((this.period === 'current_year' || this.period === '2024') && this.groupingType === 'month') {
+        } else if ((this.period === 'current_year' || isYearPeriod(this.period)) && this.groupingType === 'month') {
           const monthNum = date.getMonth();
           const item = dataMap.get(monthNum.toString());
           return this.getMetricValue(item, metricType);
@@ -568,11 +580,11 @@ export class ModernActivityChartComponent implements OnChanges {
     const data = {
       labels: dateLabels.map(date => {
         if (!date) return '';
-        if ((this.period === 'current_year' || this.period === '2024') && this.groupingType === 'week') {
+        if ((this.period === 'current_year' || isYearPeriod(this.period)) && this.groupingType === 'week') {
           const weekNum = this.getWeekNumber(date);
           return `Sem. ${weekNum}`;
         }
-        if ((this.period === 'current_year' || this.period === '2024') && this.groupingType === 'month') {
+        if ((this.period === 'current_year' || isYearPeriod(this.period)) && this.groupingType === 'month') {
           return date.toLocaleDateString('fr-FR', {month: 'short'});
         }
         return date.toLocaleDateString('fr-FR', {month: 'short', day: 'numeric'});
@@ -607,7 +619,7 @@ export class ModernActivityChartComponent implements OnChanges {
     });
 
     const generateTitle = (date: Date, dataMap: Map<string, Activity | WeeklyData | MonthlyData>) => {
-      if ((this.period === 'current_year' || this.period === '2024') && this.groupingType === 'week') {
+      if ((this.period === 'current_year' || isYearPeriod(this.period)) && this.groupingType === 'week') {
         const weekNum = this.getWeekNumber(date);
         const weekData = dataMap.get(weekNum.toString()) as WeeklyData;
         if (!weekData) return '';
@@ -619,7 +631,7 @@ export class ModernActivityChartComponent implements OnChanges {
           title += `- ${activity.date.toLocaleDateString('fr-FR')}: ${activity.name}\n`;
         });
         return title;
-      } else if ((this.period === 'current_year' || this.period === '2024') && this.groupingType === 'month') {
+      } else if ((this.period === 'current_year' || isYearPeriod(this.period)) && this.groupingType === 'month') {
         const monthNum = date.getMonth();
         const monthData = dataMap.get(monthNum.toString()) as MonthlyData;
         if (!monthData) return '';

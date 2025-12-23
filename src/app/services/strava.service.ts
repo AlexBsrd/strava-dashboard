@@ -7,7 +7,7 @@ import {environment} from "../environments/environment";
 import {ActivityCacheService} from "./activity-cache.service";
 import {SessionService} from "./session.service";
 import {Router} from '@angular/router';
-import {PeriodType} from "../types/period";
+import {PeriodType, getYearFromPeriod} from "../types/period";
 
 interface TokenResponse {
   access_token: string;
@@ -72,21 +72,42 @@ export class StravaService {
       return of(this.activityCache.getFilteredActivities(period));
     }
 
+    // Période non couverte par le cache - charger les données manquantes
     let after = new Date();
+    let before: Date | undefined;
 
-    switch (period) {
-      case 'week':
-        after.setDate(after.getDate() - 7);
-        break;
-      case 'month':
-        after.setDate(after.getDate() - 30);
-        break;
-      case 'current_year':
-        after = new Date(after.getFullYear(), 0, 1);
-        break;
-      case '2024':
-        after = new Date(2024, 0, 1);
-        break;
+    // Vérifier si c'est une année spécifique
+    const year = getYearFromPeriod(period);
+    if (year !== null) {
+      after = new Date(year, 0, 1);
+      // Pour une année spécifique, télécharger jusqu'à la fin de l'année
+      // ou jusqu'à oldestActivityDate si on a déjà des données plus récentes
+      const oldestDate = this.activityCache.getOldestActivityDate();
+      const yearEnd = new Date(year, 11, 31, 23, 59, 59);
+      if (oldestDate && oldestDate > after) {
+        // On a déjà des données plus récentes, télécharger seulement jusqu'à oldestDate
+        before = oldestDate;
+      } else {
+        // Pas de données plus récentes, télécharger jusqu'à la fin de l'année
+        before = yearEnd;
+      }
+    } else {
+      switch (period) {
+        case 'week':
+          after.setDate(after.getDate() - 7);
+          break;
+        case 'month':
+          after.setDate(after.getDate() - 30);
+          break;
+        case 'current_year':
+          after = new Date(after.getFullYear(), 0, 1);
+          break;
+      }
+      // Pour les périodes dynamiques, télécharger jusqu'à oldestActivityDate si disponible
+      const oldestDate = this.activityCache.getOldestActivityDate();
+      if (oldestDate && oldestDate > after) {
+        before = oldestDate;
+      }
     }
 
     const headers = new HttpHeaders().set(
@@ -94,7 +115,7 @@ export class StravaService {
       `Bearer ${athlete.accessToken}`
     );
 
-    return this.getAllActivities(after, headers).pipe(
+    return this.getAllActivities(after, headers, before).pipe(
       tap(activities => {
         this.activityCache.setActivities(activities, period);
       }),
@@ -143,15 +164,22 @@ export class StravaService {
     );
   }
 
-  private getActivitiesPage(after: Date, page: number = 1, headers: HttpHeaders): Observable<Activity[]> {
+  private getActivitiesPage(after: Date, page: number = 1, headers: HttpHeaders, before?: Date): Observable<Activity[]> {
+    const params: any = {
+      after: Math.floor(after.getTime() / 1000).toString(),
+      per_page: '200',
+      page: page.toString()
+    };
+
+    // Ajouter le paramètre 'before' si fourni
+    if (before) {
+      params.before = Math.floor(before.getTime() / 1000).toString();
+    }
+
     return this.http
       .get<Activity[]>(`${this.apiUrl}/athlete/activities`, {
         headers,
-        params: {
-          after: Math.floor(after.getTime() / 1000).toString(),
-          per_page: '200',
-          page: page.toString()
-        }
+        params
       })
       .pipe(
         map(activities => activities.map(activity => ({
@@ -169,10 +197,10 @@ export class StravaService {
       );
   }
 
-  private getAllActivities(after: Date, headers: HttpHeaders): Observable<Activity[]> {
+  private getAllActivities(after: Date, headers: HttpHeaders, before?: Date): Observable<Activity[]> {
     return new Observable<Activity[]>(subscriber => {
       const fetchPage = (page: number, accumulatedActivities: Activity[] = []) => {
-        this.getActivitiesPage(after, page, headers).subscribe({
+        this.getActivitiesPage(after, page, headers, before).subscribe({
           next: (activities) => {
             if (activities.length === 0) {
               // Plus de pages à charger, émettre le résultat final

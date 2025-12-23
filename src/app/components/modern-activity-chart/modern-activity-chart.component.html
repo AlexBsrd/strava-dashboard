@@ -13,7 +13,7 @@
         </select>
 
         <!-- Nouveau contrôle pour le groupement -->
-        <div class="grouping-control" *ngIf="period === 'current_year' || period === '2024'">
+        <div class="grouping-control" *ngIf="isYearOrCurrentYear()">
           <div class="grouping-options">
             <label class="grouping-label">
               <input

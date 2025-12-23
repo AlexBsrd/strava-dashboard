@@ -122,6 +122,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.error = null;
     this.authError = false;
 
+    // Vérifier si le cache contient déjà des données valides
+    if (!this.activityCache.needsRefresh(this.selectedPeriod)) {
+      // Utiliser les données en cache
+      const filteredActivities = this.activityCache.getFilteredActivities(this.selectedPeriod);
+      this.updateActivitiesDisplay(filteredActivities);
+      this.isLoading = false;
+      this.isInitialLoad = false;
+      return;
+    }
+
     // Charger toutes les activités des 2 dernières années
     this.stravaService.loadAllRecentActivities().subscribe({
       next: (activities) => {

@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Activity} from '../models/activity';
 import {BehaviorSubject} from 'rxjs';
-import {PeriodType} from "../types/period";
+import {PeriodType, getYearFromPeriod} from "../types/period";
 
 interface CachedData {
   activities: Activity[];
@@ -80,25 +80,28 @@ export class ActivityCacheService {
     let startDate = new Date();
     let endDate = new Date();
 
-    switch (period) {
-      case 'week':
-        startDate.setDate(now.getDate() - 7);
-        break;
-      case 'month':
-        startDate.setDate(now.getDate() - 30);
-        break;
-      case 'current_year':
-        startDate = new Date(now.getFullYear(), 0, 1);
-        break;
-      case '2024':
-        startDate = new Date(2024, 0, 1);
-        endDate = new Date(2024, 11, 31, 23, 59, 59);
-        break;
+    // Vérifier si c'est une année spécifique
+    const year = getYearFromPeriod(period);
+    if (year !== null) {
+      startDate = new Date(year, 0, 1);
+      endDate = new Date(year, 11, 31, 23, 59, 59);
+    } else {
+      switch (period) {
+        case 'week':
+          startDate.setDate(now.getDate() - 7);
+          break;
+        case 'month':
+          startDate.setDate(now.getDate() - 30);
+          break;
+        case 'current_year':
+          startDate = new Date(now.getFullYear(), 0, 1);
+          break;
+      }
     }
 
     return this.activities.filter(activity => {
       const activityDate = new Date(activity.start_date);
-      if (period === '2024') {
+      if (year !== null) {
         return activityDate >= startDate && activityDate <= endDate;
       }
       return activityDate >= startDate;
@@ -112,7 +115,27 @@ export class ActivityCacheService {
 
     // Si la dernière mise à jour date de plus de 15 minutes (in-memory cache)
     const cacheAge = Date.now() - this.lastUpdate.getTime();
-    return cacheAge > this.IN_MEMORY_CACHE_DURATION;
+    if (cacheAge > this.IN_MEMORY_CACHE_DURATION) {
+      return true;
+    }
+
+    // Vérifier si la période demandée est couverte par le cache
+    return !this.isPeriodCovered(period);
+  }
+
+  /**
+   * Vérifie si la période demandée est couverte par les données en cache
+   */
+  isPeriodCovered(period: PeriodType): boolean {
+    if (!this.oldestActivityDate) {
+      return false;
+    }
+
+    const periodStartDate = this.getPeriodStartDate(period);
+
+    // La période est couverte si l'activité la plus ancienne du cache
+    // est antérieure ou égale à la date de début de la période
+    return this.oldestActivityDate <= periodStartDate;
   }
 
   private saveToLocalStorage(): void {
@@ -189,6 +212,10 @@ export class ActivityCacheService {
     this.isPreloading = value;
   }
 
+  getOldestActivityDate(): Date | null {
+    return this.oldestActivityDate;
+  }
+
   /**
    * Calcule la date de début pour une période donnée
    */
@@ -196,19 +223,22 @@ export class ActivityCacheService {
     const now = new Date();
     let startDate = new Date();
 
-    switch (period) {
-      case 'week':
-        startDate.setDate(now.getDate() - 7);
-        break;
-      case 'month':
-        startDate.setDate(now.getDate() - 30);
-        break;
-      case 'current_year':
-        startDate = new Date(now.getFullYear(), 0, 1);
-        break;
-      case '2024':
-        startDate = new Date(2024, 0, 1);
-        break;
+    // Vérifier si c'est une année spécifique
+    const year = getYearFromPeriod(period);
+    if (year !== null) {
+      startDate = new Date(year, 0, 1);
+    } else {
+      switch (period) {
+        case 'week':
+          startDate.setDate(now.getDate() - 7);
+          break;
+        case 'month':
+          startDate.setDate(now.getDate() - 30);
+          break;
+        case 'current_year':
+          startDate = new Date(now.getFullYear(), 0, 1);
+          break;
+      }
     }
 
     return startDate;

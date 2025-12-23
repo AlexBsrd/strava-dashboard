@@ -63,12 +63,8 @@ export class SportSidebarComponent implements OnInit, OnDestroy {
   private activityCountCache = new Map<string, number>();
 
   // ========== Sélection de période (Dashboard) ==========
-  dashboardPeriods = [
-    { value: 'week' as PeriodType, label: '7 derniers jours' },
-    { value: 'month' as PeriodType, label: '30 derniers jours' },
-    { value: 'current_year' as PeriodType, label: 'Depuis le 1er janvier' },
-    { value: '2024' as PeriodType, label: 'Année 2024' }
-  ];
+  dashboardPeriods: { value: PeriodType; label: string }[] = [];
+  availableYears: number[] = [];
   selectedDashboardPeriod: PeriodType = 'week';
 
   // ========== Sélection de comparaison (Compare) ==========
@@ -92,6 +88,20 @@ export class SportSidebarComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // Générer la liste des périodes standards (sans les années)
+    this.dashboardPeriods = [
+      { value: 'week', label: '7 derniers jours' },
+      { value: 'month', label: '30 derniers jours' },
+      { value: 'current_year', label: 'Depuis le 1er janvier' }
+    ];
+
+    // Générer la liste des années disponibles (de l'année en cours à 2020)
+    const currentYear = new Date().getFullYear();
+    const startYear = 2020;
+    for (let year = currentYear; year >= startYear; year--) {
+      this.availableYears.push(year);
+    }
+
     // S'abonner aux changements de groupes
     this.sportConfigService.allGroups$
       .pipe(takeUntil(this.destroy$))
@@ -448,6 +458,23 @@ export class SportSidebarComponent implements OnInit, OnDestroy {
   /** Sélectionne une période pour le dashboard */
   selectDashboardPeriod(period: PeriodType): void {
     this.periodStateService.setDashboardPeriod(period);
+  }
+
+  /** Sélectionne une année pour le dashboard */
+  selectDashboardYear(year: number): void {
+    this.periodStateService.setDashboardPeriod(year.toString());
+  }
+
+  /** Vérifie si une année est sélectionnée */
+  isYearSelected(): boolean {
+    const year = parseInt(this.selectedDashboardPeriod, 10);
+    return !isNaN(year);
+  }
+
+  /** Obtient l'année sélectionnée ou null */
+  getSelectedYear(): number | null {
+    const year = parseInt(this.selectedDashboardPeriod, 10);
+    return !isNaN(year) ? year : null;
   }
 
   // ==================== Sélection de comparaison (Compare) ====================

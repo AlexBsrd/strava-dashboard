@@ -77,9 +77,12 @@ export class StatsListComponent {
         return '30 derniers jours';
       case 'current_year':
         return 'Depuis le 1er janvier';
-      case '2024':
-        return 'Année 2024';
       default:
+        // Si c'est une année (format YYYY)
+        const year = parseInt(this.selectedPeriod, 10);
+        if (!isNaN(year)) {
+          return `Année ${year}`;
+        }
         return '';
     }
   }
