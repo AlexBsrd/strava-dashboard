@@ -1,6 +1,6 @@
 <!-- src/app/app.component.html -->
 <div class="app-wrapper">
-  <header class="app-header">
+  <header class="app-header" [class.hidden]="!isHeaderVisible">
     <div class="header-content">
       <div class="logo-section">
         <img src="assets/images/strava-logo.png" alt="Strava" class="strava-logo"/>

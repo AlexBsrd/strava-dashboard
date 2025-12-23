@@ -28,8 +28,11 @@ export class AppComponent implements OnInit, OnDestroy {
   sportConfigOpen = false;
   activities: Activity[] = [];
   currentRoute = '/';
+  isHeaderVisible = true;
 
   private destroy$ = new Subject<void>();
+  private lastScrollY = 0;
+  private scrollThreshold = 10; // Pixels avant de déclencher le masquage
 
   constructor(
     private themeService: ThemeService,
@@ -65,11 +68,19 @@ export class AppComponent implements OnInit, OnDestroy {
 
     // Initialiser avec la route courante
     this.currentRoute = this.router.url;
+
+    // Gérer le masquage du header au scroll (mobile uniquement)
+    this.setupScrollListener();
   }
 
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
+
+    // Retirer le listener de scroll
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('scroll', this.handleScroll.bind(this));
+    }
   }
 
   toggleTheme() {
@@ -82,5 +93,41 @@ export class AppComponent implements OnInit, OnDestroy {
 
   closeSportConfig() {
     this.sportConfigOpen = false;
+  }
+
+  private setupScrollListener() {
+    // Détecter le scroll uniquement sur mobile
+    if (typeof window !== 'undefined') {
+      window.addEventListener('scroll', this.handleScroll.bind(this), { passive: true });
+    }
+  }
+
+  private handleScroll() {
+    // Ne masquer le header que sur mobile (< 768px)
+    if (window.innerWidth >= 768) {
+      this.isHeaderVisible = true;
+      return;
+    }
+
+    const currentScrollY = window.scrollY;
+
+    // Ne pas masquer si on est tout en haut
+    if (currentScrollY < 50) {
+      this.isHeaderVisible = true;
+      this.lastScrollY = currentScrollY;
+      return;
+    }
+
+    // Vérifier si on scroll vers le bas ou vers le haut
+    if (Math.abs(currentScrollY - this.lastScrollY) > this.scrollThreshold) {
+      if (currentScrollY > this.lastScrollY) {
+        // Scroll vers le bas - masquer le header
+        this.isHeaderVisible = false;
+      } else {
+        // Scroll vers le haut - afficher le header
+        this.isHeaderVisible = true;
+      }
+      this.lastScrollY = currentScrollY;
+    }
   }
 }
