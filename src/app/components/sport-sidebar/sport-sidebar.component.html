@@ -50,75 +50,87 @@
     <!-- ========== Sélection de comparaison (Compare) ========== -->
     <section class="sidebar-section comparison-section" *ngIf="isComparePage()">
       <div class="section-header">
-        <span class="section-title">Périodes à comparer</span>
+        <span class="section-title">Configuration</span>
       </div>
 
       <!-- Presets -->
-      <div class="comparison-presets">
-        <button
-          *ngFor="let preset of comparisonPresets; let i = index"
-          class="preset-btn"
-          [class.active]="selectedPresetIndex === i"
-          (click)="selectComparisonPreset(i)"
-        >
-          {{ preset.label }}
-        </button>
-        <button
-          class="preset-btn custom"
-          [class.active]="selectedPresetIndex === null && (showCustomPeriod1 || showCustomPeriod2)"
-          (click)="enableCustomMode()"
-        >
-          Personnalisé
-        </button>
-      </div>
-
-      <!-- Période 1 -->
-      <div class="comparison-period">
-        <div class="period-header">
-          <span class="period-number">1</span>
-          <span class="period-label">{{ formatPeriodLabel(comparePeriod1) }}</span>
-        </div>
-        <div *ngIf="showCustomPeriod1" class="custom-inputs">
-          <input
-            type="date"
-            [(ngModel)]="customPeriod1Start"
-            (change)="applyCustomPeriod1()"
-            class="date-input"
-            placeholder="Début"
-          />
-          <input
-            type="date"
-            [(ngModel)]="customPeriod1End"
-            (change)="applyCustomPeriod1()"
-            class="date-input"
-            placeholder="Fin"
-          />
+      <div class="presets-group">
+        <label class="presets-label">Suggestions rapides</label>
+        <div class="comparison-presets">
+          <button
+            *ngFor="let preset of comparisonPresets; let i = index"
+            class="preset-btn"
+            [class.active]="selectedPresetIndex === i"
+            (click)="selectComparisonPreset(i)"
+          >
+            {{ preset.label }}
+          </button>
+          <button
+            class="preset-btn custom"
+            [class.active]="selectedPresetIndex === null && (showCustomPeriod1 || showCustomPeriod2)"
+            (click)="enableCustomMode()"
+          >
+            📅 Personnalisé
+          </button>
         </div>
       </div>
 
-      <div class="vs-badge">VS</div>
+      <div class="periods-divider"></div>
 
-      <!-- Période 2 -->
-      <div class="comparison-period">
-        <div class="period-header">
-          <span class="period-number">2</span>
-          <span class="period-label">{{ formatPeriodLabel(comparePeriod2) }}</span>
+      <!-- Périodes sélectionnées -->
+      <div class="selected-periods">
+        <label class="periods-label">Périodes sélectionnées</label>
+
+        <!-- Période 1 -->
+        <div class="comparison-period period-1">
+          <div class="period-header">
+            <span class="period-badge">Période 1</span>
+            <span class="period-icon">📊</span>
+          </div>
+          <div class="period-label">{{ formatPeriodLabel(comparePeriod1) }}</div>
+          <div *ngIf="showCustomPeriod1" class="custom-inputs">
+            <input
+              type="date"
+              [(ngModel)]="customPeriod1Start"
+              (change)="applyCustomPeriod1()"
+              class="date-input"
+              placeholder="Début"
+            />
+            <input
+              type="date"
+              [(ngModel)]="customPeriod1End"
+              (change)="applyCustomPeriod1()"
+              class="date-input"
+              placeholder="Fin"
+            />
+          </div>
         </div>
-        <div *ngIf="showCustomPeriod2" class="custom-inputs">
-          <input
-            type="date"
-            [(ngModel)]="customPeriod2Start"
-            (change)="applyCustomPeriod2()"
-            class="date-input"
-            placeholder="Début"
-          />
-          <input
-            type="date"
-            [(ngModel)]="customPeriod2End"
-            (change)="applyCustomPeriod2()"
-            class="date-input"
-            placeholder="Fin"
-          />
+
+        <div class="vs-badge">⚡ VS</div>
+
+        <!-- Période 2 -->
+        <div class="comparison-period period-2">
+          <div class="period-header">
+            <span class="period-badge">Période 2</span>
+            <span class="period-icon">📈</span>
+          </div>
+          <div class="period-label">{{ formatPeriodLabel(comparePeriod2) }}</div>
+          <div *ngIf="showCustomPeriod2" class="custom-inputs">
+            <input
+              type="date"
+              [(ngModel)]="customPeriod2Start"
+              (change)="applyCustomPeriod2()"
+              class="date-input"
+              placeholder="Début"
+            />
+            <input
+              type="date"
+              [(ngModel)]="customPeriod2End"
+              (change)="applyCustomPeriod2()"
+              class="date-input"
+              placeholder="Fin"
+            />
+          </div>
         </div>
       </div>
 
@@ -128,7 +140,8 @@
         [disabled]="!canCompare()"
         (click)="triggerCompare()"
       >
-        Comparer
+        <span class="btn-icon">🔍</span>
+        <span>Comparer les périodes</span>
       </button>
     </section>
 

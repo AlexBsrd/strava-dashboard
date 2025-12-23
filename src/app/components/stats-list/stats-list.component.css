@@ -72,6 +72,12 @@
   background-size: contain;
 }
 
+.activity-icon .icon-emoji {
+  font-size: 24px;
+  line-height: 1;
+  filter: brightness(0) invert(1);
+}
+
 .activity-icon.run {
   color: #FF5722;
 }

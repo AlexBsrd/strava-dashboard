@@ -67,7 +67,7 @@
 
 .retry-button {
   padding: 12px 24px;
-  background: var(--primary-color);
+  background: var(--primary-500, #3b82f6);
   color: white;
   border: none;
   border-radius: 8px;
@@ -131,27 +131,95 @@
 
 .initial-state-content {
   text-align: center;
-  max-width: 600px;
+  max-width: 700px;
 }
 
-.initial-state-content svg {
-  color: var(--primary-color);
-  opacity: 0.8;
-  margin-bottom: 32px;
+.empty-icon {
+  font-size: 64px;
+  margin-bottom: 24px;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
 }
 
 .initial-state-content h3 {
   font-size: 28px;
   font-weight: 600;
   color: var(--text-primary);
-  margin: 0 0 16px 0;
+  margin: 0 0 12px 0;
 }
 
-.initial-state-content p {
+.main-instruction {
   font-size: 16px;
   color: var(--text-secondary);
-  line-height: 1.6;
-  margin: 0;
+  margin: 0 0 32px 0;
+}
+
+.steps-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  text-align: left;
+}
+
+.step {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 20px;
+  background: var(--card-background);
+  border-radius: 12px;
+  border: 2px solid var(--border-color);
+  transition: all 0.2s ease;
+}
+
+.step:hover {
+  border-color: var(--primary-500, #3b82f6);
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.step-number {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  background: var(--primary-500, #3b82f6);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.step-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.step-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.step-description {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.mobile-text {
+  display: none;
+}
+
+.desktop-text {
+  display: block;
 }
 
 /* Responsive */
@@ -176,9 +244,34 @@
     font-size: 22px;
   }
 
-  .initial-state-content svg {
-    width: 64px;
-    height: 64px;
+  .empty-icon {
+    font-size: 48px;
+  }
+
+  .step {
+    padding: 16px;
+  }
+
+  .step-number {
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+  }
+
+  .step-title {
+    font-size: 15px;
+  }
+
+  .step-description {
+    font-size: 13px;
+  }
+
+  .mobile-text {
+    display: block;
+  }
+
+  .desktop-text {
+    display: none;
   }
 
   .no-activities {

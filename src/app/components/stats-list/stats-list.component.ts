@@ -86,4 +86,47 @@ export class StatsListComponent {
         return '';
     }
   }
+
+  /**
+   * Convertit un identifiant d'icône en emoji
+   */
+  getIconEmoji(icon: string): string {
+    const iconMap: Record<string, string> = {
+      'run': '🏃',
+      'bike': '🚴',
+      'walk': '🚶',
+      'hike': '🥾',
+      'trail': '🏃‍♂️',
+      'swim': '🏊',
+      'ski': '⛷️',
+      'weight': '🏋️',
+      'yoga': '🧘',
+      'activity': '💪',
+      'fitness': '💪',
+      'workout': '🏃',
+      'crossfit': '🏋️‍♂️'
+    };
+    return iconMap[icon] || '🏃';
+  }
+
+  /**
+   * Retourne l'emoji à afficher (depuis groupIcon ou basé sur le titre)
+   */
+  getDisplayIcon(): string {
+    if (this.groupIcon) {
+      return this.getIconEmoji(this.groupIcon);
+    }
+
+    // Fallback basé sur le titre pour les types standards
+    const titleLower = this.title.toLowerCase();
+    if (titleLower.includes('course') || titleLower.includes('run')) {
+      return '🏃';
+    } else if (titleLower.includes('vélo') || titleLower.includes('bike')) {
+      return '🚴';
+    } else if (titleLower.includes('marche') || titleLower.includes('walk')) {
+      return '🚶';
+    }
+
+    return '💪'; // Icône par défaut
+  }
 }
