@@ -8,7 +8,9 @@ import { ThemeService } from './services/theme.service';
 import { SportSidebarComponent } from './components/sport-sidebar/sport-sidebar.component';
 import { SportConfigService } from './services/sport-config.service';
 import { ActivityCacheService } from './services/activity-cache.service';
+import { PeriodStateService } from './services/period-state.service';
 import { Activity } from './models/activity';
+import { PeriodType } from './types/period';
 
 @Component({
   selector: 'app-root',
@@ -27,8 +29,10 @@ export class AppComponent implements OnInit, OnDestroy {
   isDarkTheme = false;
   sportConfigOpen = false;
   activities: Activity[] = [];
+  filteredActivities: Activity[] = [];
   currentRoute = '/';
   isHeaderVisible = true;
+  private currentPeriod: PeriodType = 'week';
 
   private destroy$ = new Subject<void>();
   private lastScrollY = 0;
@@ -38,6 +42,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private themeService: ThemeService,
     private sportConfigService: SportConfigService,
     private activityCacheService: ActivityCacheService,
+    private periodStateService: PeriodStateService,
     private router: Router
   ) {}
 
@@ -55,6 +60,16 @@ export class AppComponent implements OnInit, OnDestroy {
         if (activities.length > 0) {
           this.sportConfigService.detectAvailableTypes(activities);
         }
+        // Mettre à jour les activités filtrées
+        this.updateFilteredActivities();
+      });
+
+    // S'abonner aux changements de période pour le dashboard
+    this.periodStateService.dashboardPeriod$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((period: PeriodType) => {
+        this.currentPeriod = period;
+        this.updateFilteredActivities();
       });
 
     // Mettre à jour la route courante et fermer la sidebar mobile lors d'un changement de route
@@ -64,6 +79,7 @@ export class AppComponent implements OnInit, OnDestroy {
     ).subscribe((event: any) => {
       this.currentRoute = event.urlAfterRedirects || event.url;
       this.sportConfigOpen = false;
+      this.updateFilteredActivities();
     });
 
     // Initialiser avec la route courante
@@ -93,6 +109,16 @@ export class AppComponent implements OnInit, OnDestroy {
 
   closeSportConfig() {
     this.sportConfigOpen = false;
+  }
+
+  private updateFilteredActivities() {
+    // Sur les pages Dashboard et Activities, filtrer par période
+    // Sur les autres pages, afficher toutes les activités
+    if (this.currentRoute === '/' || this.currentRoute === '' || this.currentRoute === '/activities') {
+      this.filteredActivities = this.activityCacheService.getFilteredActivities(this.currentPeriod);
+    } else {
+      this.filteredActivities = this.activities;
+    }
   }
 
   private setupScrollListener() {

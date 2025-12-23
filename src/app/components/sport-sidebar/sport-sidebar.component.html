@@ -1,13 +1,11 @@
 <aside class="sport-sidebar" [class.mobile-open]="isMobileOpen">
-  <!-- Drag handle pour mobile -->
-  <div class="drag-handle" *ngIf="isMobileOpen"></div>
-
   <!-- Header -->
   <div class="sidebar-header">
     <h2 class="sidebar-title">
       <ng-container *ngIf="isDashboardPage()">Statistiques</ng-container>
       <ng-container *ngIf="isComparePage()">Comparer</ng-container>
-      <ng-container *ngIf="!isDashboardPage() && !isComparePage()">Configuration</ng-container>
+      <ng-container *ngIf="isActivitiesPage()">Activités</ng-container>
+      <ng-container *ngIf="!isDashboardPage() && !isComparePage() && !isActivitiesPage()">Configuration</ng-container>
     </h2>
     <button class="close-btn mobile-only" (click)="closeMobile.emit()" aria-label="Fermer">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -19,8 +17,8 @@
 
   <!-- Body -->
   <div class="sidebar-body">
-    <!-- ========== Sélection de période (Dashboard) ========== -->
-    <section class="sidebar-section period-section" *ngIf="isDashboardPage()">
+    <!-- ========== Sélection de période (Dashboard et Activities) ========== -->
+    <section class="sidebar-section period-section" *ngIf="isDashboardPage() || isActivitiesPage()">
       <div class="section-header">
         <span class="section-title">Période</span>
       </div>
@@ -135,7 +133,7 @@
     </section>
 
     <!-- Séparateur si on a une section de période -->
-    <div class="section-divider" *ngIf="isDashboardPage() || isComparePage()"></div>
+    <div class="section-divider" *ngIf="isDashboardPage() || isComparePage() || isActivitiesPage()"></div>
 
     <!-- Section Groupes -->
     <section class="sidebar-section">

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, OnChanges, SimpleChanges, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
@@ -28,7 +28,7 @@ import { ComparisonPeriod, ComparisonPreset } from '../../types/comparison';
   templateUrl: './sport-sidebar.component.html',
   styleUrls: ['./sport-sidebar.component.css']
 })
-export class SportSidebarComponent implements OnInit, OnDestroy {
+export class SportSidebarComponent implements OnInit, OnDestroy, OnChanges {
   @Input() activities: Activity[] = [];
   @Input() isMobileOpen = false;
   @Input() currentRoute = '/';
@@ -138,30 +138,16 @@ export class SportSidebarComponent implements OnInit, OnDestroy {
       });
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    // Mettre à jour les compteurs quand les activités changent
+    if (changes['activities'] && !changes['activities'].firstChange) {
+      this.updateActivityCounts();
+    }
+  }
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-  }
-
-  // Fermer la sidebar mobile lors d'un swipe vers le bas
-  @HostListener('touchstart', ['$event'])
-  onTouchStart(event: TouchEvent): void {
-    if (this.isMobileOpen) {
-      const touch = event.touches[0];
-      (this as any)._touchStartY = touch.clientY;
-    }
-  }
-
-  @HostListener('touchmove', ['$event'])
-  onTouchMove(event: TouchEvent): void {
-    if (this.isMobileOpen && (this as any)._touchStartY !== undefined) {
-      const touch = event.touches[0];
-      const deltaY = touch.clientY - (this as any)._touchStartY;
-      if (deltaY > 100) {
-        this.closeMobile.emit();
-        (this as any)._touchStartY = undefined;
-      }
-    }
   }
 
   private updateActivityCounts(): void {
@@ -453,6 +439,11 @@ export class SportSidebarComponent implements OnInit, OnDestroy {
   /** Vérifie si on est sur la page Comparer */
   isComparePage(): boolean {
     return this.currentRoute === '/compare';
+  }
+
+  /** Vérifie si on est sur la page Activités */
+  isActivitiesPage(): boolean {
+    return this.currentRoute === '/activities';
   }
 
   /** Sélectionne une période pour le dashboard */

@@ -37,7 +37,7 @@
     <!-- Sidebar (desktop: toujours visible, mobile: bottom sheet) -->
     <app-sport-sidebar
       class="sidebar-desktop"
-      [activities]="activities"
+      [activities]="filteredActivities"
       [isMobileOpen]="sportConfigOpen"
       [currentRoute]="currentRoute"
       (closeMobile)="closeSportConfig()"
