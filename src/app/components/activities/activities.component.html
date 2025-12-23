@@ -8,10 +8,6 @@
   <div *ngIf="!isLoading && !error">
     <header class="activities-header">
       <h1>Mes Activités</h1>
-      <app-period-selector
-        [selectedPeriod]="selectedPeriod"
-        (periodChange)="onPeriodChange($event)">
-      </app-period-selector>
     </header>
 
     <div class="timeline">

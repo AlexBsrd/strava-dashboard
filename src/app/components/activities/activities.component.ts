@@ -1,8 +1,10 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, OnDestroy} from '@angular/core';
 import {CommonModule} from '@angular/common';
+import {Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 import {StravaService} from '../../services/strava.service';
+import {PeriodStateService} from '../../services/period-state.service';
 import {Activity} from '../../models/activity';
-import {PeriodSelectorComponent} from '../period-selector/period-selector.component';
 import {SpinnerComponent} from '../spinner/spinner.component';
 import {PeriodType} from "../../types/period";
 
@@ -11,13 +13,12 @@ import {PeriodType} from "../../types/period";
   standalone: true,
   imports: [
     CommonModule,
-    PeriodSelectorComponent,
     SpinnerComponent
   ],
   templateUrl: './activities.component.html',
   styleUrls: ['./activities.component.css']
 })
-export class ActivitiesComponent implements OnInit {
+export class ActivitiesComponent implements OnInit, OnDestroy {
   activities: Activity[] = [];
   groupedActivities: { [key: string]: Activity[] } = {};
   isLoading = false;
@@ -25,17 +26,27 @@ export class ActivitiesComponent implements OnInit {
   selectedPeriod: PeriodType = 'week';
 
   private readonly cardioActivities = ['RUN', 'RIDE', 'WALK', 'HIKE', 'ALPINESKI', 'BACKCOUNTRYSKI'];
+  private destroy$ = new Subject<void>();
 
-  constructor(private stravaService: StravaService) {
+  constructor(
+    private stravaService: StravaService,
+    private periodStateService: PeriodStateService
+  ) {
   }
 
   ngOnInit() {
-    this.loadActivities();
+    // S'abonner aux changements de période
+    this.periodStateService.dashboardPeriod$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((period: PeriodType) => {
+        this.selectedPeriod = period;
+        this.loadActivities();
+      });
   }
 
-  onPeriodChange(period: PeriodType) {
-    this.selectedPeriod = period;
-    this.loadActivities();
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   isCardioActivity(type: string): boolean {
