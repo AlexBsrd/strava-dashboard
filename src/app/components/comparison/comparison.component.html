@@ -1,6 +1,9 @@
 <div class="comparison-page">
   <!-- Loading State -->
-  <app-spinner *ngIf="isLoading"></app-spinner>
+  <div *ngIf="isLoading" class="loading-container">
+    <app-spinner></app-spinner>
+    <div class="loading-message">Comparaison en cours...</div>
+  </div>
 
   <!-- Error States -->
   <ng-container *ngIf="!isLoading">

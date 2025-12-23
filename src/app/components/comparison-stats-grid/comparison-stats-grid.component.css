@@ -97,12 +97,19 @@
 
 /* Responsive */
 @media (max-width: 768px) {
+  .stats-grid-container {
+    padding: 1rem;
+  }
+
   .comparison-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
   }
 
   .activity-header {
     flex-wrap: wrap;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
   }
 
   .activity-count {

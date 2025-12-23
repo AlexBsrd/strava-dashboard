@@ -149,16 +149,48 @@
 }
 
 /* Responsive */
-@media (max-width: 480px) {
+@media (max-width: 640px) {
+  .comparison-card {
+    padding: 1rem;
+    min-height: auto;
+  }
+
+  .values-container {
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+  }
+
+  .value {
+    align-items: flex-start;
+  }
+
+  .arrow {
+    display: none;
+  }
+
   .value-number {
-    font-size: 24px;
+    font-size: 1.5rem;
+  }
+
+  .value-unit {
+    font-size: 0.75rem;
   }
 
   .card-title {
-    font-size: 12px;
+    font-size: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .delta-container {
+    padding: 0.5rem;
   }
 
   .delta-value {
-    font-size: 14px;
+    font-size: 0.875rem;
+  }
+
+  .delta-percentage {
+    font-size: 0.75rem;
   }
 }
