@@ -44,11 +44,6 @@
     </div>
 
     <div *ngIf="!error && !authError">
-      <app-period-selector
-        [selectedPeriod]="selectedPeriod"
-        (periodChange)="onPeriodChange($event)">
-      </app-period-selector>
-
       <app-performance-dashboard
         [activities]="runningActivityData">
       </app-performance-dashboard>

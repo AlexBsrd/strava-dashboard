@@ -1,17 +1,17 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil, filter } from 'rxjs';
 import { ComparisonPeriod, StatsComparison } from '../../types/comparison';
 import { ComparisonService } from '../../services/comparison.service';
 import { StravaService } from '../../services/strava.service';
 import { StatsService } from '../../services/stats.service';
 import { Activity } from '../../models/activity';
-import { ComparisonPeriodSelectorComponent } from '../comparison-period-selector/comparison-period-selector.component';
 import { ComparisonStatsGridComponent } from '../comparison-stats-grid/comparison-stats-grid.component';
 import { ComparisonChartComponent } from '../comparison-chart/comparison-chart.component';
 import { SpinnerComponent } from '../spinner/spinner.component';
 import { SportConfigService } from '../../services/sport-config.service';
+import { PeriodStateService } from '../../services/period-state.service';
 import { SportGroup, getSportMetadata, getRecommendedMetrics } from '../../types/sport-config';
 
 /** Interface pour les comparaisons groupées par sport */
@@ -27,7 +27,6 @@ interface GroupComparisonData {
   standalone: true,
   imports: [
     CommonModule,
-    ComparisonPeriodSelectorComponent,
     ComparisonStatsGridComponent,
     ComparisonChartComponent,
     SpinnerComponent
@@ -58,7 +57,8 @@ export class ComparisonComponent implements OnInit, OnDestroy {
     private stravaService: StravaService,
     private statsService: StatsService,
     private router: Router,
-    private sportConfigService: SportConfigService
+    private sportConfigService: SportConfigService,
+    private periodStateService: PeriodStateService
   ) {}
 
   ngOnInit() {
@@ -70,6 +70,29 @@ export class ComparisonComponent implements OnInit, OnDestroy {
         if (this.hasCompared && this.activities1.length > 0) {
           this.filterAndCalculateComparisons();
         }
+      });
+
+    // S'abonner aux changements de périodes depuis la sidebar
+    this.periodStateService.comparePeriod1$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(period => {
+        this.period1 = period;
+      });
+
+    this.periodStateService.comparePeriod2$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(period => {
+        this.period2 = period;
+      });
+
+    // S'abonner au déclenchement de la comparaison
+    this.periodStateService.compareTriggered$
+      .pipe(
+        takeUntil(this.destroy$),
+        filter(triggered => triggered)
+      )
+      .subscribe(() => {
+        this.onCompare();
       });
   }
 

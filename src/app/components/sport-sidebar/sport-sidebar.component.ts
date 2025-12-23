@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { SportConfigService } from '../../services/sport-config.service';
+import { PeriodStateService } from '../../services/period-state.service';
+import { ComparisonService } from '../../services/comparison.service';
 import {
   SportGroup,
   StravaActivityType,
@@ -16,6 +18,8 @@ import {
 } from '../../types/sport-config';
 import { SportGroupItemComponent } from './sport-group-item/sport-group-item.component';
 import { Activity } from '../../models/activity';
+import { PeriodType } from '../../types/period';
+import { ComparisonPeriod, ComparisonPreset } from '../../types/comparison';
 
 @Component({
   selector: 'app-sport-sidebar',
@@ -27,6 +31,7 @@ import { Activity } from '../../models/activity';
 export class SportSidebarComponent implements OnInit, OnDestroy {
   @Input() activities: Activity[] = [];
   @Input() isMobileOpen = false;
+  @Input() currentRoute = '/';
   @Output() closeMobile = new EventEmitter<void>();
 
   private destroy$ = new Subject<void>();
@@ -57,7 +62,34 @@ export class SportSidebarComponent implements OnInit, OnDestroy {
   // Cache pour le comptage des activités
   private activityCountCache = new Map<string, number>();
 
-  constructor(private sportConfigService: SportConfigService) {}
+  // ========== Sélection de période (Dashboard) ==========
+  dashboardPeriods = [
+    { value: 'week' as PeriodType, label: '7 derniers jours' },
+    { value: 'month' as PeriodType, label: '30 derniers jours' },
+    { value: 'current_year' as PeriodType, label: 'Depuis le 1er janvier' },
+    { value: '2024' as PeriodType, label: 'Année 2024' }
+  ];
+  selectedDashboardPeriod: PeriodType = 'week';
+
+  // ========== Sélection de comparaison (Compare) ==========
+  comparisonPresets: ComparisonPreset[] = [];
+  selectedPresetIndex: number | null = null;
+  comparePeriod1: ComparisonPeriod | null = null;
+  comparePeriod2: ComparisonPeriod | null = null;
+  showCustomPeriod1 = false;
+  showCustomPeriod2 = false;
+  customPeriod1Start = '';
+  customPeriod1End = '';
+  customPeriod2Start = '';
+  customPeriod2End = '';
+
+  constructor(
+    private sportConfigService: SportConfigService,
+    private periodStateService: PeriodStateService,
+    private comparisonService: ComparisonService
+  ) {
+    this.comparisonPresets = this.comparisonService.getComparisonPresets();
+  }
 
   ngOnInit(): void {
     // S'abonner aux changements de groupes
@@ -73,6 +105,26 @@ export class SportSidebarComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(types => {
         this.ungroupedTypes = types;
+      });
+
+    // S'abonner aux changements de période du dashboard
+    this.periodStateService.dashboardPeriod$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(period => {
+        this.selectedDashboardPeriod = period;
+      });
+
+    // S'abonner aux périodes de comparaison
+    this.periodStateService.comparePeriod1$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(period => {
+        this.comparePeriod1 = period;
+      });
+
+    this.periodStateService.comparePeriod2$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(period => {
+        this.comparePeriod2 = period;
       });
   }
 
@@ -379,5 +431,92 @@ export class SportSidebarComponent implements OnInit, OnDestroy {
     // Inclure les types actuels du groupe même s'ils ne sont plus dans availableTypes
     const allTypes = new Set([...availableTypes, ...currentGroup.types]);
     return Array.from(allTypes).sort();
+  }
+
+  // ==================== Sélection de période (Dashboard) ====================
+
+  /** Vérifie si on est sur la page Dashboard */
+  isDashboardPage(): boolean {
+    return this.currentRoute === '/' || this.currentRoute === '';
+  }
+
+  /** Vérifie si on est sur la page Comparer */
+  isComparePage(): boolean {
+    return this.currentRoute === '/compare';
+  }
+
+  /** Sélectionne une période pour le dashboard */
+  selectDashboardPeriod(period: PeriodType): void {
+    this.periodStateService.setDashboardPeriod(period);
+  }
+
+  // ==================== Sélection de comparaison (Compare) ====================
+
+  /** Sélectionne un preset de comparaison */
+  selectComparisonPreset(index: number): void {
+    this.selectedPresetIndex = index;
+    const preset = this.comparisonPresets[index];
+    this.periodStateService.setComparePeriod1(preset.period1);
+    this.periodStateService.setComparePeriod2(preset.period2);
+    this.showCustomPeriod1 = false;
+    this.showCustomPeriod2 = false;
+  }
+
+  /** Active le mode personnalisé */
+  enableCustomMode(): void {
+    this.selectedPresetIndex = null;
+    this.showCustomPeriod1 = true;
+    this.showCustomPeriod2 = true;
+  }
+
+  /** Applique une période personnalisée 1 */
+  applyCustomPeriod1(): void {
+    if (this.customPeriod1Start && this.customPeriod1End) {
+      const startDate = new Date(this.customPeriod1Start);
+      const endDate = new Date(this.customPeriod1End);
+      endDate.setHours(23, 59, 59, 999);
+
+      this.periodStateService.setComparePeriod1({
+        type: 'custom',
+        label: 'Période personnalisée 1',
+        startDate,
+        endDate
+      });
+    }
+  }
+
+  /** Applique une période personnalisée 2 */
+  applyCustomPeriod2(): void {
+    if (this.customPeriod2Start && this.customPeriod2End) {
+      const startDate = new Date(this.customPeriod2Start);
+      const endDate = new Date(this.customPeriod2End);
+      endDate.setHours(23, 59, 59, 999);
+
+      this.periodStateService.setComparePeriod2({
+        type: 'custom',
+        label: 'Période personnalisée 2',
+        startDate,
+        endDate
+      });
+    }
+  }
+
+  /** Déclenche la comparaison */
+  triggerCompare(): void {
+    this.periodStateService.triggerCompare();
+    // Fermer la sidebar mobile après avoir lancé la comparaison
+    if (this.isMobileOpen) {
+      this.closeMobile.emit();
+    }
+  }
+
+  /** Vérifie si on peut comparer */
+  canCompare(): boolean {
+    return this.periodStateService.canCompare();
+  }
+
+  /** Formate une période */
+  formatPeriodLabel(period: ComparisonPeriod | null): string {
+    return this.periodStateService.formatPeriodLabel(period);
   }
 }

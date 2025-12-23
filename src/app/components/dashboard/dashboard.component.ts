@@ -2,8 +2,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {Router} from '@angular/router';
-import {Subject, takeUntil} from 'rxjs';
-import {PeriodSelectorComponent} from '../period-selector/period-selector.component';
+import {Subject, takeUntil, distinctUntilChanged} from 'rxjs';
 import {StravaService} from '../../services/strava.service';
 import {StatsService} from '../../services/stats.service';
 import {Stats} from "../../models/stats";
@@ -16,6 +15,7 @@ import {PaceScatterComponent} from "../pace-scatter/pace-scatter.component";
 import {PeriodType} from "../../types/period";
 import {ActivityCacheService} from "../../services/activity-cache.service";
 import {SportConfigService} from "../../services/sport-config.service";
+import {PeriodStateService} from "../../services/period-state.service";
 import {SportGroup, StravaActivityType, getSportMetadata, getRecommendedMetrics, ALL_METRICS} from "../../types/sport-config";
 
 /** Interface pour les données groupées par sport */
@@ -30,7 +30,6 @@ interface GroupedStatsData {
   standalone: true,
   imports: [
     CommonModule,
-    PeriodSelectorComponent,
     StatsListComponent,
     SpinnerComponent,
     PerformanceDashboardComponent,
@@ -62,7 +61,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private statsService: StatsService,
     private router: Router,
     private activityCache: ActivityCacheService,
-    private sportConfigService: SportConfigService
+    private sportConfigService: SportConfigService,
+    private periodStateService: PeriodStateService
   ) {}
 
   ngOnInit() {
@@ -77,6 +77,21 @@ export class DashboardComponent implements OnInit, OnDestroy {
         // Re-filtrer les activités quand la config change
         if (this.allActivities.length > 0) {
           this.updateActivitiesDisplay(this.allActivities);
+        }
+      });
+
+    // S'abonner aux changements de période depuis la sidebar
+    this.periodStateService.dashboardPeriod$
+      .pipe(
+        takeUntil(this.destroy$),
+        distinctUntilChanged()
+      )
+      .subscribe(period => {
+        if (period !== this.selectedPeriod) {
+          this.selectedPeriod = period;
+          if (this.allActivities.length > 0) {
+            this.loadData();
+          }
         }
       });
 

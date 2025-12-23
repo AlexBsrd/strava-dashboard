@@ -27,6 +27,7 @@ export class AppComponent implements OnInit, OnDestroy {
   isDarkTheme = false;
   sportConfigOpen = false;
   activities: Activity[] = [];
+  currentRoute = '/';
 
   private destroy$ = new Subject<void>();
 
@@ -53,13 +54,17 @@ export class AppComponent implements OnInit, OnDestroy {
         }
       });
 
-    // Fermer la sidebar mobile lors d'un changement de route
+    // Mettre à jour la route courante et fermer la sidebar mobile lors d'un changement de route
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd),
       takeUntil(this.destroy$)
-    ).subscribe(() => {
+    ).subscribe((event: any) => {
+      this.currentRoute = event.urlAfterRedirects || event.url;
       this.sportConfigOpen = false;
     });
+
+    // Initialiser avec la route courante
+    this.currentRoute = this.router.url;
   }
 
   ngOnDestroy() {

@@ -4,7 +4,11 @@
 
   <!-- Header -->
   <div class="sidebar-header">
-    <h2 class="sidebar-title">Mes Sports</h2>
+    <h2 class="sidebar-title">
+      <ng-container *ngIf="isDashboardPage()">Statistiques</ng-container>
+      <ng-container *ngIf="isComparePage()">Comparer</ng-container>
+      <ng-container *ngIf="!isDashboardPage() && !isComparePage()">Configuration</ng-container>
+    </h2>
     <button class="close-btn mobile-only" (click)="closeMobile.emit()" aria-label="Fermer">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -15,6 +19,111 @@
 
   <!-- Body -->
   <div class="sidebar-body">
+    <!-- ========== Sélection de période (Dashboard) ========== -->
+    <section class="sidebar-section period-section" *ngIf="isDashboardPage()">
+      <div class="section-header">
+        <span class="section-title">Période</span>
+      </div>
+      <div class="period-list">
+        <button
+          *ngFor="let period of dashboardPeriods"
+          class="period-btn"
+          [class.active]="selectedDashboardPeriod === period.value"
+          (click)="selectDashboardPeriod(period.value)"
+        >
+          {{ period.label }}
+        </button>
+      </div>
+    </section>
+
+    <!-- ========== Sélection de comparaison (Compare) ========== -->
+    <section class="sidebar-section comparison-section" *ngIf="isComparePage()">
+      <div class="section-header">
+        <span class="section-title">Périodes à comparer</span>
+      </div>
+
+      <!-- Presets -->
+      <div class="comparison-presets">
+        <button
+          *ngFor="let preset of comparisonPresets; let i = index"
+          class="preset-btn"
+          [class.active]="selectedPresetIndex === i"
+          (click)="selectComparisonPreset(i)"
+        >
+          {{ preset.label }}
+        </button>
+        <button
+          class="preset-btn custom"
+          [class.active]="selectedPresetIndex === null && (showCustomPeriod1 || showCustomPeriod2)"
+          (click)="enableCustomMode()"
+        >
+          Personnalisé
+        </button>
+      </div>
+
+      <!-- Période 1 -->
+      <div class="comparison-period">
+        <div class="period-header">
+          <span class="period-number">1</span>
+          <span class="period-label">{{ formatPeriodLabel(comparePeriod1) }}</span>
+        </div>
+        <div *ngIf="showCustomPeriod1" class="custom-inputs">
+          <input
+            type="date"
+            [(ngModel)]="customPeriod1Start"
+            (change)="applyCustomPeriod1()"
+            class="date-input"
+            placeholder="Début"
+          />
+          <input
+            type="date"
+            [(ngModel)]="customPeriod1End"
+            (change)="applyCustomPeriod1()"
+            class="date-input"
+            placeholder="Fin"
+          />
+        </div>
+      </div>
+
+      <div class="vs-badge">VS</div>
+
+      <!-- Période 2 -->
+      <div class="comparison-period">
+        <div class="period-header">
+          <span class="period-number">2</span>
+          <span class="period-label">{{ formatPeriodLabel(comparePeriod2) }}</span>
+        </div>
+        <div *ngIf="showCustomPeriod2" class="custom-inputs">
+          <input
+            type="date"
+            [(ngModel)]="customPeriod2Start"
+            (change)="applyCustomPeriod2()"
+            class="date-input"
+            placeholder="Début"
+          />
+          <input
+            type="date"
+            [(ngModel)]="customPeriod2End"
+            (change)="applyCustomPeriod2()"
+            class="date-input"
+            placeholder="Fin"
+          />
+        </div>
+      </div>
+
+      <!-- Bouton Comparer -->
+      <button
+        class="compare-btn"
+        [disabled]="!canCompare()"
+        (click)="triggerCompare()"
+      >
+        Comparer
+      </button>
+    </section>
+
+    <!-- Séparateur si on a une section de période -->
+    <div class="section-divider" *ngIf="isDashboardPage() || isComparePage()"></div>
+
     <!-- Section Groupes -->
     <section class="sidebar-section">
       <div class="section-header">

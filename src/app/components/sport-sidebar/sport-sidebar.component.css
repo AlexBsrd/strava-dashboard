@@ -115,6 +115,174 @@
   transform: scale(1.05);
 }
 
+/* ========== Séparateur ========== */
+.section-divider {
+  height: 1px;
+  background: var(--gray-200);
+  margin: 0.5rem 0;
+}
+
+/* ========== Sélection de période (Dashboard) ========== */
+.period-section {
+  margin-bottom: 0.5rem;
+}
+
+.period-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.period-btn {
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  font-size: 0.8125rem;
+  text-align: left;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.period-btn:hover {
+  background: var(--bg-secondary);
+  border-color: var(--gray-300);
+}
+
+.period-btn.active {
+  background: var(--primary-50, #eff6ff);
+  border-color: var(--primary-500, #3b82f6);
+  color: var(--primary-700, #1d4ed8);
+  font-weight: 500;
+}
+
+/* ========== Sélection de comparaison (Compare) ========== */
+.comparison-section {
+  margin-bottom: 0.5rem;
+}
+
+.comparison-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin-bottom: 1rem;
+}
+
+.preset-btn {
+  padding: 0.375rem 0.625rem;
+  font-size: 0.75rem;
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-full, 9999px);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.preset-btn:hover {
+  background: var(--bg-secondary);
+  border-color: var(--gray-300);
+  color: var(--text-primary);
+}
+
+.preset-btn.active {
+  background: var(--primary-500, #3b82f6);
+  border-color: var(--primary-500, #3b82f6);
+  color: white;
+}
+
+.preset-btn.custom {
+  border-style: dashed;
+}
+
+.comparison-period {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.period-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.period-number {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary-500, #3b82f6);
+  color: white;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.period-label {
+  font-size: 0.8125rem;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.custom-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  margin-top: 0.5rem;
+}
+
+.date-input {
+  width: 100%;
+  padding: 0.375rem 0.5rem;
+  font-size: 0.75rem;
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius-sm);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.date-input:focus {
+  outline: none;
+  border-color: var(--primary-500, #3b82f6);
+}
+
+.vs-badge {
+  text-align: center;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  padding: 0.25rem 0;
+}
+
+.compare-btn {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background: var(--primary-500, #3b82f6);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 0.75rem;
+}
+
+.compare-btn:hover:not(:disabled) {
+  background: var(--primary-600, #2563eb);
+}
+
+.compare-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* Liste des groupes */
 .groups-list {
   display: flex;
@@ -556,30 +724,36 @@
 }
 
 @media (max-width: 768px) {
-  /* Sur mobile, la sidebar est cachée par défaut et s'affiche en bottom sheet */
+  /* Sur mobile, la sidebar est cachée par défaut et s'affiche en plein écran */
   .sport-sidebar:not(.mobile-open) {
     display: none;
   }
 
   .sport-sidebar {
     position: fixed;
+    top: 0;
     bottom: 0;
     left: 0;
     right: 0;
     width: 100%;
-    height: 85vh;
-    max-height: 85vh;
+    height: 100vh;
+    max-height: 100vh;
     border-right: none;
-    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-    transform: translateY(100%);
+    border-radius: 0;
+    transform: translateX(-100%);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 1000;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
   }
 
   .sport-sidebar.mobile-open {
     display: flex;
-    transform: translateY(0);
+    transform: translateX(0);
+  }
+
+  /* Cacher le drag handle en plein écran */
+  .drag-handle {
+    display: none;
   }
 
   .sidebar-overlay {
@@ -597,15 +771,6 @@
   .sidebar-overlay.visible {
     opacity: 1;
     visibility: visible;
-  }
-
-  .drag-handle {
-    display: block;
-    width: 40px;
-    height: 4px;
-    background: var(--gray-300);
-    border-radius: 2px;
-    margin: 0.75rem auto;
   }
 
   .mobile-only {
@@ -660,4 +825,43 @@
 
 [data-theme="dark"] .ungrouped-item.expanded {
   background: var(--gray-800);
+}
+
+[data-theme="dark"] .section-divider {
+  background: var(--gray-700);
+}
+
+[data-theme="dark"] .period-btn {
+  background: var(--gray-800);
+  border-color: var(--gray-700);
+}
+
+[data-theme="dark"] .period-btn:hover {
+  background: var(--gray-700);
+  border-color: var(--gray-600);
+}
+
+[data-theme="dark"] .period-btn.active {
+  background: var(--primary-900, #1e3a8a);
+  border-color: var(--primary-500, #3b82f6);
+  color: var(--primary-300, #93c5fd);
+}
+
+[data-theme="dark"] .preset-btn {
+  background: var(--gray-800);
+  border-color: var(--gray-700);
+}
+
+[data-theme="dark"] .preset-btn:hover {
+  background: var(--gray-700);
+  border-color: var(--gray-600);
+}
+
+[data-theme="dark"] .comparison-period {
+  background: var(--gray-800);
+}
+
+[data-theme="dark"] .date-input {
+  background: var(--gray-900);
+  border-color: var(--gray-600);
 }
