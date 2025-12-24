@@ -37,6 +37,64 @@
   opacity: 0.6;
 }
 
+.streak-section {
+  margin: 2rem 0;
+}
+
+.goals-section {
+  margin: 2rem 0;
+}
+
+.add-goal-card {
+  background: var(--bg-primary);
+  border: 2px dashed var(--gray-300);
+  border-radius: var(--radius-md);
+  padding: 2rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  transition: all 0.2s;
+  min-height: 200px;
+  color: var(--text-secondary);
+}
+
+.add-goal-card:hover {
+  border-color: var(--primary-500);
+  background: var(--primary-50);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.add-goal-card .add-icon {
+  color: var(--primary-500);
+  opacity: 0.8;
+  transition: transform 0.2s;
+}
+
+.add-goal-card:hover .add-icon {
+  transform: scale(1.1);
+  opacity: 1;
+}
+
+.add-goal-card .add-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.add-goal-card:hover .add-label {
+  color: var(--primary-600);
+}
+
+.goals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
 .activity-type-container {
   display: flex;
   flex-direction: column;
@@ -121,12 +179,27 @@
 }
 
 /* Responsive design */
+@media (max-width: 1024px) {
+  .goals-grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  }
+}
+
 @media (max-width: 768px) {
   .dashboard-container {
     padding: 10px;
   }
 
+  .streak-section,
+  .goals-section {
+    margin: 1.5rem 0;
+  }
+
   .activity-type-container {
+    grid-template-columns: 1fr;
+  }
+
+  .goals-grid {
     grid-template-columns: 1fr;
   }
 }

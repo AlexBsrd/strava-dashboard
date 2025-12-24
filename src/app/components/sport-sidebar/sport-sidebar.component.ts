@@ -6,6 +6,7 @@ import { takeUntil } from 'rxjs/operators';
 import { SportConfigService } from '../../services/sport-config.service';
 import { PeriodStateService } from '../../services/period-state.service';
 import { ComparisonService } from '../../services/comparison.service';
+import { DisplayPreferencesService, DisplayPreferences } from '../../services/display-preferences.service';
 import {
   SportGroup,
   StravaActivityType,
@@ -79,10 +80,14 @@ export class SportSidebarComponent implements OnInit, OnDestroy, OnChanges {
   customPeriod2Start = '';
   customPeriod2End = '';
 
+  // ========== Display preferences ==========
+  displayPreferences: DisplayPreferences = { showStreaks: true, showGoals: true };
+
   constructor(
     private sportConfigService: SportConfigService,
     private periodStateService: PeriodStateService,
-    private comparisonService: ComparisonService
+    private comparisonService: ComparisonService,
+    private displayPreferencesService: DisplayPreferencesService
   ) {
     this.comparisonPresets = this.comparisonService.getComparisonPresets();
   }
@@ -135,6 +140,13 @@ export class SportSidebarComponent implements OnInit, OnDestroy, OnChanges {
       .pipe(takeUntil(this.destroy$))
       .subscribe(period => {
         this.comparePeriod2 = period;
+      });
+
+    // S'abonner aux préférences d'affichage
+    this.displayPreferencesService.getPreferences()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(prefs => {
+        this.displayPreferences = prefs;
       });
   }
 
@@ -536,5 +548,17 @@ export class SportSidebarComponent implements OnInit, OnDestroy, OnChanges {
   /** Formate une période */
   formatPeriodLabel(period: ComparisonPeriod | null): string {
     return this.periodStateService.formatPeriodLabel(period);
+  }
+
+  // ==================== Display preferences ====================
+
+  /** Toggle streaks visibility */
+  toggleStreaks(): void {
+    this.displayPreferencesService.setShowStreaks(!this.displayPreferences.showStreaks);
+  }
+
+  /** Toggle goals visibility */
+  toggleGoals(): void {
+    this.displayPreferencesService.setShowGoals(!this.displayPreferences.showGoals);
   }
 }

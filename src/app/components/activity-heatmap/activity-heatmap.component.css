@@ -1,0 +1,281 @@
+.heatmap-container {
+  background: var(--bg-primary);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: 1.5rem;
+  width: 100%;
+}
+
+.heatmap-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.heatmap-title {
+  color: var(--text-primary);
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.heatmap-legend {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.legend-label {
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  margin: 0 0.25rem;
+}
+
+.legend-box {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  border: 1px solid transparent;
+}
+
+.legend-box.intensity-0 {
+  background-color: var(--gray-200);
+  border-color: var(--gray-300);
+}
+
+.legend-box.intensity-1 {
+  background-color: #9be9a8;
+  border-color: #7dd386;
+}
+
+.legend-box.intensity-2 {
+  background-color: #40c463;
+  border-color: #30a14e;
+}
+
+.legend-box.intensity-3 {
+  background-color: #30a14e;
+  border-color: #216e39;
+}
+
+[data-theme="dark"] .legend-box.intensity-0 {
+  background-color: var(--gray-200);
+  border-color: var(--gray-300);
+}
+
+[data-theme="dark"] .legend-box.intensity-1 {
+  background-color: #0e4429;
+  border-color: #006d32;
+}
+
+[data-theme="dark"] .legend-box.intensity-2 {
+  background-color: #006d32;
+  border-color: #26a641;
+}
+
+[data-theme="dark"] .legend-box.intensity-3 {
+  background-color: #26a641;
+  border-color: #39d353;
+}
+
+.heatmap-content {
+  overflow-x: auto;
+  overflow-y: visible;
+}
+
+.heatmap-months {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 12px;
+  gap: 3px;
+  margin-bottom: 0.5rem;
+  margin-left: 50px;
+}
+
+.month-label {
+  color: var(--text-secondary);
+  font-size: 0.625rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.heatmap-grid {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.heatmap-weekdays {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding-top: 0;
+  width: 40px;
+  flex-shrink: 0;
+}
+
+.weekday-label {
+  height: 12px;
+  color: var(--text-secondary);
+  font-size: 0.625rem;
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+}
+
+.weekday-label.hide-label {
+  visibility: hidden;
+}
+
+.heatmap-weeks {
+  display: flex;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+}
+
+.heatmap-week {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.heatmap-day {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  cursor: default;
+  position: relative;
+  border: 1px solid transparent;
+  transition: opacity 0.15s ease;
+}
+
+.heatmap-day:hover {
+  opacity: 0.8;
+}
+
+.heatmap-day.empty-day {
+  opacity: 0;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* Intensity colors - Thème clair */
+.intensity-0 {
+  background-color: var(--gray-200);
+  border-color: var(--gray-300);
+}
+
+.intensity-1 {
+  background-color: #9be9a8;
+  border-color: #7dd386;
+}
+
+.intensity-2 {
+  background-color: #40c463;
+  border-color: #30a14e;
+}
+
+.intensity-3 {
+  background-color: #30a14e;
+  border-color: #216e39;
+}
+
+/* Dark mode adjustments */
+[data-theme="dark"] .intensity-0 {
+  background-color: var(--gray-200);
+  border-color: var(--gray-300);
+}
+
+[data-theme="dark"] .intensity-1 {
+  background-color: #0e4429;
+  border-color: #006d32;
+}
+
+[data-theme="dark"] .intensity-2 {
+  background-color: #006d32;
+  border-color: #26a641;
+}
+
+[data-theme="dark"] .intensity-3 {
+  background-color: #26a641;
+  border-color: #39d353;
+}
+
+/* Utilisation du tooltip natif du navigateur via l'attribut title */
+/* Pas de tooltip custom pour éviter les problèmes de performance */
+
+.heatmap-loading,
+.heatmap-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  color: var(--text-secondary);
+}
+
+.heatmap-loading p,
+.heatmap-empty p {
+  margin-top: 1rem;
+  font-size: 0.875rem;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--gray-200);
+  border-top: 3px solid var(--primary-500);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .heatmap-container {
+    padding: 1rem;
+  }
+
+  .heatmap-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .heatmap-title {
+    font-size: 1rem;
+  }
+
+  .heatmap-months {
+    margin-left: 30px;
+  }
+
+  .heatmap-weekdays {
+    width: 30px;
+  }
+
+  .weekday-label {
+    font-size: 0.5rem;
+  }
+
+  .heatmap-day {
+    width: 10px;
+    height: 10px;
+  }
+
+  .day-tooltip {
+    font-size: 0.65rem;
+    padding: 0.375rem 0.5rem;
+    min-width: 150px;
+  }
+}

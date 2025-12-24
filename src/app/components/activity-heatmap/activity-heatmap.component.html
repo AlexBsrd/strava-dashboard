@@ -1,0 +1,52 @@
+<div class="heatmap-container">
+  <div class="heatmap-header">
+    <h3 class="heatmap-title">Activité sur les 12 derniers mois</h3>
+    <div class="heatmap-legend">
+      <span class="legend-label">Moins</span>
+      <div class="legend-box intensity-0" title="0 activité"></div>
+      <div class="legend-box intensity-1" title="1 activité"></div>
+      <div class="legend-box intensity-2" title="2 activités"></div>
+      <div class="legend-box intensity-3" title="3+ activités"></div>
+      <span class="legend-label">Plus</span>
+    </div>
+  </div>
+
+  <div class="heatmap-content" *ngIf="!loading && weeks.length > 0">
+    <div class="heatmap-months">
+      <div class="month-label"
+           *ngFor="let month of monthLabels"
+           [style.grid-column]="month.weekIndex + 1">
+        {{ month.label }}
+      </div>
+    </div>
+
+    <div class="heatmap-grid">
+      <div class="heatmap-weekdays">
+        <div class="weekday-label" *ngFor="let day of weekdays; let i = index"
+             [class.hide-label]="i % 2 === 0">
+          {{ day }}
+        </div>
+      </div>
+
+      <div class="heatmap-weeks">
+        <div class="heatmap-week" *ngFor="let week of weeks">
+          <div class="heatmap-day"
+               *ngFor="let day of week.days"
+               [class]="getIntensityClass(day)"
+               [attr.title]="day ? getTooltipText(day) : null"
+               [class.empty-day]="!day">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="heatmap-loading" *ngIf="loading">
+    <div class="loading-spinner"></div>
+    <p>Chargement du calendrier...</p>
+  </div>
+
+  <div class="heatmap-empty" *ngIf="!loading && weeks.length === 0">
+    <p>Aucune donnée disponible pour afficher le calendrier d'activité.</p>
+  </div>
+</div>

@@ -17,6 +17,13 @@ import {ActivityCacheService} from "../../services/activity-cache.service";
 import {SportConfigService} from "../../services/sport-config.service";
 import {PeriodStateService} from "../../services/period-state.service";
 import {SportGroup, StravaActivityType, getSportMetadata, getRecommendedMetrics, ALL_METRICS} from "../../types/sport-config";
+import {StreakService, StreakInfo} from "../../services/streak.service";
+import {StreakBadgeComponent} from "../streak-badge/streak-badge.component";
+import {GoalService} from "../../services/goal.service";
+import {Goal, GoalProgress} from "../../models/goal";
+import {GoalCardComponent} from "../goal-card/goal-card.component";
+import {GoalFormComponent} from "../goal-form/goal-form.component";
+import {DisplayPreferencesService, DisplayPreferences} from "../../services/display-preferences.service";
 
 /** Interface pour les données groupées par sport */
 interface GroupedStatsData {
@@ -34,7 +41,10 @@ interface GroupedStatsData {
     SpinnerComponent,
     PerformanceDashboardComponent,
     ModernActivityChartComponent,
-    PaceScatterComponent
+    PaceScatterComponent,
+    StreakBadgeComponent,
+    GoalCardComponent,
+    GoalFormComponent
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
@@ -56,19 +66,41 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   allActivities: Activity[] = [];
 
+  // Données pour les streaks
+  streakInfo: StreakInfo | null = null;
+
+  // Données pour les goals
+  goalProgresses: GoalProgress[] = [];
+  showGoalForm: boolean = false;
+  editingGoal: Goal | null = null;
+  availableSports: string[] = [];
+
+  // Display preferences
+  displayPreferences: DisplayPreferences = { showStreaks: true, showGoals: true };
+
   constructor(
     private stravaService: StravaService,
     private statsService: StatsService,
     private router: Router,
     private activityCache: ActivityCacheService,
     private sportConfigService: SportConfigService,
-    private periodStateService: PeriodStateService
+    private periodStateService: PeriodStateService,
+    private streakService: StreakService,
+    private goalService: GoalService,
+    private displayPreferencesService: DisplayPreferencesService
   ) {}
 
   ngOnInit() {
     if (!this.checkAuth()) {
       return;
     }
+
+    // S'abonner aux préférences d'affichage
+    this.displayPreferencesService.getPreferences()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(prefs => {
+        this.displayPreferences = prefs;
+      });
 
     // S'abonner aux changements de configuration des sports (config complète pour détecter les changements de types)
     this.sportConfigService.config$
@@ -184,6 +216,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private updateActivitiesDisplay(activities: Activity[]) {
     this.allActivities = activities;
 
+    // Calculer les streaks
+    this.streakInfo = this.streakService.calculateStreaks(activities);
+
+    // Calculer la progression des goals
+    this.updateGoalProgresses(activities);
+
     // Détecter les types d'activités disponibles
     this.sportConfigService.detectAvailableTypes(activities);
 
@@ -277,5 +315,83 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.authError = true;
     this.error = null;
     this.isLoading = false;
+  }
+
+  /** Update goal progresses based on ALL cached activities (not filtered by dashboard period) */
+  private updateGoalProgresses(activities: Activity[]): void {
+    const activeGoals = this.goalService.getActiveGoals();
+    // Get ALL activities from cache, not just the filtered ones for the current period
+    const allCachedActivities = this.activityCache.getAllActivities();
+    this.goalProgresses = activeGoals.map(goal =>
+      this.goalService.calculateProgress(goal, allCachedActivities)
+    );
+  }
+
+  /** Open form to create a new goal */
+  openCreateGoalForm(): void {
+    this.editingGoal = null;
+    this.updateAvailableSports();
+    this.showGoalForm = true;
+  }
+
+  /** Open form to edit an existing goal */
+  onEditGoal(goalId: string): void {
+    const goal = this.goalService.getGoalById(goalId);
+    if (goal) {
+      this.editingGoal = goal;
+      this.updateAvailableSports();
+      this.showGoalForm = true;
+    }
+  }
+
+  /** Handle goal form save */
+  onSaveGoal(goalData: Partial<Goal>): void {
+    if (this.editingGoal) {
+      // Update existing goal
+      this.goalService.updateGoal(this.editingGoal.id, goalData);
+    } else {
+      // Create new goal - ensure all required fields are present
+      if (goalData.name && goalData.type && goalData.target && goalData.period) {
+        this.goalService.createGoal({
+          name: goalData.name,
+          type: goalData.type,
+          target: goalData.target,
+          period: goalData.period,
+          sportTypes: goalData.sportTypes,
+          startDate: goalData.startDate,
+          endDate: goalData.endDate
+        });
+      }
+    }
+    this.showGoalForm = false;
+    this.editingGoal = null;
+    this.updateGoalProgresses(this.activityCache.getAllActivities());
+  }
+
+  /** Handle goal form cancel */
+  onCancelGoalForm(): void {
+    this.showGoalForm = false;
+    this.editingGoal = null;
+  }
+
+  /** Handle goal delete */
+  onDeleteGoal(goalId: string): void {
+    this.goalService.deleteGoal(goalId);
+    this.updateGoalProgresses(this.activityCache.getAllActivities());
+  }
+
+  /** Update available sports list from activities */
+  private updateAvailableSports(): void {
+    const allActivities = this.activityCache.getAllActivities();
+    const sportsSet = new Set<string>();
+    allActivities.forEach(activity => {
+      sportsSet.add(activity.sport_type || activity.type);
+    });
+    this.availableSports = Array.from(sportsSet).sort();
+  }
+
+  /** Get limited goal progresses (max 4) */
+  get limitedGoalProgresses(): GoalProgress[] {
+    return this.goalProgresses.slice(0, 4);
   }
 }

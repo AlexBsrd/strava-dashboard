@@ -148,6 +148,33 @@
     <!-- Séparateur si on a une section de période -->
     <div class="section-divider" *ngIf="isDashboardPage() || isComparePage() || isActivitiesPage()"></div>
 
+    <!-- ========== Options d'affichage (Dashboard uniquement) ========== -->
+    <section class="sidebar-section display-options-section" *ngIf="isDashboardPage()">
+      <div class="section-header">
+        <span class="section-title">Affichage</span>
+      </div>
+      <div class="display-options">
+        <label class="display-option">
+          <input
+            type="checkbox"
+            [checked]="displayPreferences.showStreaks"
+            (change)="toggleStreaks()"
+          />
+          <span class="option-label">Afficher les streaks</span>
+        </label>
+        <label class="display-option">
+          <input
+            type="checkbox"
+            [checked]="displayPreferences.showGoals"
+            (change)="toggleGoals()"
+          />
+          <span class="option-label">Afficher les objectifs</span>
+        </label>
+      </div>
+    </section>
+
+    <div class="section-divider" *ngIf="isDashboardPage()"></div>
+
     <!-- Section Groupes -->
     <section class="sidebar-section">
       <div class="section-header">

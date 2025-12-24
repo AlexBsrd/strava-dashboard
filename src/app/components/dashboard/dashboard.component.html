@@ -36,6 +36,35 @@
         [activities]="runningActivityData">
       </app-performance-dashboard>
 
+      <!-- Streak Section -->
+      <div class="streak-section" *ngIf="displayPreferences.showStreaks">
+        <app-streak-badge
+          [streakInfo]="streakInfo"
+          [loading]="isLoading">
+        </app-streak-badge>
+      </div>
+
+      <!-- Goals Section -->
+      <div class="goals-section" *ngIf="displayPreferences.showGoals && !isLoading">
+        <div class="goals-grid">
+          <!-- Add Goal Card -->
+          <button class="add-goal-card" (click)="openCreateGoalForm()">
+            <svg viewBox="0 0 24 24" width="32" height="32" class="add-icon">
+              <path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+            </svg>
+            <span class="add-label">Ajouter un objectif</span>
+          </button>
+
+          <!-- Goal Cards (limited to 4) -->
+          <app-goal-card
+            *ngFor="let progress of limitedGoalProgresses"
+            [progress]="progress"
+            (edit)="onEditGoal($event)"
+            (delete)="onDeleteGoal($event)">
+          </app-goal-card>
+        </div>
+      </div>
+
       <div class="activity-type-container">
         <!-- Stats par groupe de sports (dynamique) -->
         <ng-container *ngFor="let groupData of groupedStatsData; trackBy: trackByGroupId">
@@ -71,4 +100,13 @@
       <span>Application en développement</span>
     </div>
   </div>
+
+  <!-- Goal Form Modal -->
+  <app-goal-form
+    *ngIf="showGoalForm"
+    [goal]="editingGoal"
+    [availableSports]="availableSports"
+    (save)="onSaveGoal($event)"
+    (cancel)="onCancelGoalForm()">
+  </app-goal-form>
 </div>

@@ -108,6 +108,13 @@ export class ActivityCacheService {
     });
   }
 
+  /**
+   * Get all cached activities (not filtered by period)
+   */
+  getAllActivities(): Activity[] {
+    return this.activities;
+  }
+
   needsRefresh(period: PeriodType): boolean {
     if (!this.lastUpdate || this.activities.length === 0) {
       return true;

@@ -1,0 +1,39 @@
+<div class="streak-container">
+  <div class="streak-card current-streak" *ngIf="!loading">
+    <div class="streak-icon">🔥</div>
+    <div class="streak-content">
+      <div class="streak-label">Streak Actuel</div>
+      <div class="streak-value">
+        <span class="streak-number">{{ streakInfo?.currentStreak || 0 }}</span>
+        <span class="streak-unit">{{ getDayLabel(streakInfo?.currentStreak || 0) }}</span>
+      </div>
+      <div class="streak-date" *ngIf="hasCurrentStreak">
+        {{ formatDateRange(streakInfo?.currentStreakStart, streakInfo?.currentStreakEnd) }}
+      </div>
+      <div class="streak-empty" *ngIf="!hasCurrentStreak">
+        Commencez votre streak aujourd'hui !
+      </div>
+    </div>
+  </div>
+
+  <div class="streak-card longest-streak" *ngIf="!loading">
+    <div class="streak-icon">🏆</div>
+    <div class="streak-content">
+      <div class="streak-label">Meilleur Streak</div>
+      <div class="streak-value">
+        <span class="streak-number">{{ streakInfo?.longestStreak || 0 }}</span>
+        <span class="streak-unit">{{ getDayLabel(streakInfo?.longestStreak || 0) }}</span>
+      </div>
+      <div class="streak-date" *ngIf="hasLongestStreak">
+        {{ formatDateRange(streakInfo?.longestStreakStart, streakInfo?.longestStreakEnd) }}
+      </div>
+      <div class="streak-empty" *ngIf="!hasLongestStreak">
+        Aucune activité pour le moment
+      </div>
+    </div>
+  </div>
+
+  <div class="streak-loading" *ngIf="loading">
+    <div class="loading-spinner"></div>
+  </div>
+</div>

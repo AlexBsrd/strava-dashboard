@@ -1,0 +1,113 @@
+<div class="modal-overlay" (mousedown)="onOverlayMouseDown($event)">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 class="modal-title">{{ isEditMode ? 'Modifier l\'objectif' : 'Nouvel objectif' }}</h2>
+      <button class="close-btn" (click)="onCancel()" type="button">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+        </svg>
+      </button>
+    </div>
+
+    <form [formGroup]="goalForm" (ngSubmit)="onSubmit()" class="goal-form">
+      <!-- Nom de l'objectif -->
+      <div class="form-group">
+        <label for="name">Nom de l'objectif</label>
+        <input
+          type="text"
+          id="name"
+          formControlName="name"
+          placeholder="Ex: 100 km ce mois"
+          class="form-input">
+        <div class="error-message" *ngIf="goalForm.get('name')?.invalid && goalForm.get('name')?.touched">
+          Le nom est requis (max 50 caractères)
+        </div>
+      </div>
+
+      <!-- Type d'objectif -->
+      <div class="form-group">
+        <label>Type d'objectif</label>
+        <div class="radio-group">
+          <label *ngFor="let type of goalTypes" class="radio-label">
+            <input
+              type="radio"
+              [value]="type.value"
+              formControlName="type">
+            <span>{{ type.label }}</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Objectif cible -->
+      <div class="form-group">
+        <label for="target">Objectif ({{ currentUnit }})</label>
+        <input
+          type="number"
+          id="target"
+          formControlName="target"
+          [min]="1"
+          [step]="selectedType === 'distance' ? 0.1 : 1"
+          class="form-input">
+        <div class="error-message" *ngIf="goalForm.get('target')?.invalid && goalForm.get('target')?.touched">
+          L'objectif doit être supérieur à 0
+        </div>
+      </div>
+
+      <!-- Période -->
+      <div class="form-group">
+        <label for="period">Période</label>
+        <select id="period" formControlName="period" class="form-select">
+          <option *ngFor="let period of periods" [value]="period.value">
+            {{ period.label }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Dates personnalisées (si période custom) -->
+      <div class="custom-dates" *ngIf="selectedPeriod === 'custom'">
+        <div class="form-group">
+          <label for="startDate">Date de début</label>
+          <input
+            type="date"
+            id="startDate"
+            formControlName="startDate"
+            class="form-input">
+        </div>
+        <div class="form-group">
+          <label for="endDate">Date de fin</label>
+          <input
+            type="date"
+            id="endDate"
+            formControlName="endDate"
+            class="form-input">
+        </div>
+      </div>
+
+      <!-- Filtrer par sport (optionnel) -->
+      <div class="form-group">
+        <label>Sports concernés (optionnel)</label>
+        <p class="hint">Laisser vide pour tous les sports</p>
+        <div class="sport-chips">
+          <button
+            type="button"
+            *ngFor="let sport of availableSports"
+            class="sport-chip"
+            [class.selected]="isSportSelected(sport)"
+            (click)="onSportToggle(sport)">
+            {{ getSportLabel(sport) }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" (click)="onCancel()">
+          Annuler
+        </button>
+        <button type="submit" class="btn btn-primary" [disabled]="goalForm.invalid">
+          {{ isEditMode ? 'Enregistrer' : 'Créer l\'objectif' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -77,6 +77,22 @@ npm run deploy                 # Deploy to GitHub Pages with auto-commit message
 - Persists theme preference in localStorage
 - Supports system preference detection
 
+**StreakService** ([streak.service.ts](src/app/services/streak.service.ts))
+- Calculates current and longest activity streaks
+- Generates heatmap data for calendar visualization
+- Groups activities by date (ignoring time)
+- Provides helpers to check if activities exist on specific dates
+- Supports both yearly and monthly heatmap generation
+
+**GoalService** ([goal.service.ts](src/app/services/goal.service.ts))
+- Manages user-defined fitness goals (CRUD operations)
+- Calculates real-time progress and projections for goals
+- Supports 3 goal types: distance, time, activity count
+- Supports 4 time periods: week, month, year, custom
+- Stores goals in localStorage for persistence
+- Filters activities by sport type when calculating progress
+- Provides smart projection based on current pace
+
 ### Authentication Flow
 
 1. User initiates login via LoginComponent
@@ -129,6 +145,20 @@ npm run deploy                 # Deploy to GitHub Pages with auto-commit message
 - ComparisonStatsGridComponent: Grid of comparison cards for one activity type
 - ComparisonStatsCardComponent: Individual metric comparison with delta visualization
 - ComparisonChartComponent: Chart.js time-series comparison with metric selection
+
+**Streak & Consistency Components**
+- StreakBadgeComponent: Displays current streak and longest streak with date ranges
+- Both components support theme switching and responsive design
+- Integrated into DashboardComponent for immediate visibility
+
+**Goal Tracking Components**
+- GoalCardComponent: Displays goal progress with animated progress bar, projection, and status
+- Shows current vs target, percentage complete, and days remaining
+- Color-coded by status: green (completed), blue (on track), orange (behind)
+- Smart projection: "À ce rythme : 95 km (95%)"
+- Edit/Delete actions built-in
+- Supports all goal types (distance, time, count) with proper formatting
+- Integrated into DashboardComponent with grid layout
 
 ## Configuration
 
