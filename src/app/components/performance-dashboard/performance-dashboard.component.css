@@ -70,6 +70,17 @@
   margin-left: 1rem;
 }
 
+.mobile-hint {
+  display: none;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  margin: 0 0 1rem 0;
+  padding: 0.5rem 0.75rem;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--primary-500);
+}
+
 h2 {
   color: var(--text-primary);
   font-size: 1.25rem;
@@ -172,6 +183,10 @@ h2 {
 }
 
 @media (max-width: 768px) {
+  .mobile-hint {
+    display: block;
+  }
+
   .performance-container {
     padding: 1rem;
   }
@@ -181,7 +196,7 @@ h2 {
   }
 
   .records-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 1rem;
   }
 
