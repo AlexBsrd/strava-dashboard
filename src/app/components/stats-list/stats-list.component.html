@@ -6,7 +6,7 @@
     </div>
     <div class="activity-info">
       <h2>{{ title }}</h2>
-      <span class="activity-count">{{ stats.numberOfActivities }} activité(s)</span>
+      <span class="activity-count">{{ 'activities.count_other' | translate:{ count: stats.numberOfActivities } }}</span>
     </div>
   </div>
 
@@ -24,7 +24,7 @@
   <app-stats-card
     *ngIf="isMetricVisible('totalElapsedTime')"
     class="double-row"
-    title="Temps total"
+    [title]="'metrics.labels.totalElapsedTime' | translate"
     [value]="stats.totalElapsedTime"
     unit=""
     [isTime]="true">
@@ -33,35 +33,35 @@
   <app-stats-card
     *ngIf="isMetricVisible('averageSpeed')"
     class="double-row"
-    title="Vitesse moyenne"
+    [title]="'metrics.labels.averageSpeed' | translate"
     [value]="stats.averageSpeed"
     unit="km/h">
   </app-stats-card>
 
   <app-stats-card
     *ngIf="isMetricVisible('totalDistance')"
-    title="Distance totale"
+    [title]="'metrics.labels.totalDistance' | translate"
     [value]="stats.totalDistance"
     unit="km">
   </app-stats-card>
 
   <app-stats-card
     *ngIf="isMetricVisible('averageDistance')"
-    title="Distance moyenne/sortie"
+    [title]="'metrics.labels.averageDistance' | translate"
     [value]="stats.averageDistance"
     unit="km">
   </app-stats-card>
 
   <app-stats-card
     *ngIf="isMetricVisible('totalElevation')"
-    title="Dénivelé total"
+    [title]="'metrics.labels.totalElevation' | translate"
     [value]="stats.totalElevation"
     unit="m">
   </app-stats-card>
 
   <app-stats-card
     *ngIf="isMetricVisible('averageElevation')"
-    title="Dénivelé moyen/sortie"
+    [title]="'metrics.labels.averageElevation' | translate"
     [value]="stats.averageElevation"
     unit="m">
   </app-stats-card>

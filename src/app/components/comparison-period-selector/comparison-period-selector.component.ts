@@ -1,13 +1,14 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ComparisonPeriod, ComparisonPreset } from '../../types/comparison';
 import { ComparisonService } from '../../services/comparison.service';
 
 @Component({
   selector: 'app-comparison-period-selector',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './comparison-period-selector.component.html',
   styleUrls: ['./comparison-period-selector.component.css']
 })
@@ -29,7 +30,10 @@ export class ComparisonPeriodSelectorComponent {
   customPeriod2Start = '';
   customPeriod2End = '';
 
-  constructor(private comparisonService: ComparisonService) {
+  constructor(
+    private comparisonService: ComparisonService,
+    private translateService: TranslateService
+  ) {
     this.presets = this.comparisonService.getComparisonPresets();
   }
 
@@ -93,7 +97,7 @@ export class ComparisonPeriodSelectorComponent {
   }
 
   formatPeriod(period: ComparisonPeriod | null): string {
-    if (!period) return 'Sélectionnez une période';
+    if (!period) return this.translateService.instant('sidebar.comparison.selectPeriod');
     return this.comparisonService.formatPeriodLabel(period);
   }
 }

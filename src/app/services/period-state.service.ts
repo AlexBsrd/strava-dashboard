@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
 import { PeriodType } from '../types/period';
 import { ComparisonPeriod, ComparisonPreset } from '../types/comparison';
 import { ComparisonService } from './comparison.service';
@@ -24,7 +25,10 @@ export class PeriodStateService {
   // Presets de comparaison
   comparisonPresets: ComparisonPreset[] = [];
 
-  constructor(private comparisonService: ComparisonService) {
+  constructor(
+    private comparisonService: ComparisonService,
+    private translateService: TranslateService
+  ) {
     this.comparisonPresets = this.comparisonService.getComparisonPresets();
   }
 
@@ -67,7 +71,7 @@ export class PeriodStateService {
   }
 
   formatPeriodLabel(period: ComparisonPeriod | null): string {
-    if (!period) return 'Sélectionnez une période';
+    if (!period) return this.translateService.instant('sidebar.comparison.selectPeriod');
     return this.comparisonService.formatPeriodLabel(period);
   }
 }

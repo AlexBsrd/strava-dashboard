@@ -7,7 +7,7 @@
 
   <div *ngIf="!isLoading && !error">
     <header class="activities-header">
-      <h1>Mes Activités</h1>
+      <h1>{{ 'activities.title' | translate }}</h1>
     </header>
 
     <div class="timeline">
@@ -34,26 +34,26 @@
             <div class="activity-stats">
               <ng-container *ngIf="isCardioActivity(activity.type)">
                 <div class="stat">
-                  <span class="stat-label">Distance</span>
+                  <span class="stat-label">{{ 'activities.table.distance' | translate }}</span>
                   <span class="stat-value">{{ activity.distance.toFixed(1) }} km</span>
                 </div>
                 <div class="stat">
-                  <span class="stat-label">Durée</span>
+                  <span class="stat-label">{{ 'activities.table.duration' | translate }}</span>
                   <span class="stat-value">{{ formatDuration(activity.elapsed_time) }}</span>
                 </div>
                 <div class="stat">
-                  <span class="stat-label">Vitesse moy.</span>
+                  <span class="stat-label">{{ 'activities.table.avg_speed' | translate }}</span>
                   <span class="stat-value">{{ activity.average_speed.toFixed(1) }} km/h</span>
                 </div>
                 <div class="stat">
-                  <span class="stat-label">Dénivelé</span>
+                  <span class="stat-label">{{ 'activities.table.elevation' | translate }}</span>
                   <span class="stat-value">{{ activity.total_elevation_gain }}m</span>
                 </div>
               </ng-container>
 
               <ng-container *ngIf="!isCardioActivity(activity.type)">
                 <div class="stat full-width">
-                  <span class="stat-label">Durée de séance</span>
+                  <span class="stat-label">{{ 'activities.table.session_duration' | translate }}</span>
                   <span class="stat-value">{{ formatDuration(activity.elapsed_time) }}</span>
                 </div>
               </ng-container>

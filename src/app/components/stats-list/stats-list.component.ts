@@ -1,5 +1,6 @@
 import {Component, Input} from '@angular/core';
 import {CommonModule} from '@angular/common';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
 import {Stats} from '../../models/stats';
 import {StatsCardComponent} from '../stats-card/stats-card.component';
 import {ShareModalComponent} from '../share-modal/share-modal.component';
@@ -11,6 +12,7 @@ import {MetricKey, ALL_METRICS} from "../../types/sport-config";
   standalone: true,
   imports: [
     CommonModule,
+    TranslateModule,
     StatsCardComponent,
     ShareModalComponent
   ],
@@ -26,6 +28,8 @@ export class StatsListComponent {
   @Input() visibleMetrics?: MetricKey[];
 
   showShareModal = false;
+
+  constructor(private translateService: TranslateService) {}
 
   /**
    * Vérifie si une métrique doit être affichée
@@ -72,16 +76,16 @@ export class StatsListComponent {
   getPeriodLabel(): string {
     switch (this.selectedPeriod) {
       case 'week':
-        return '7 derniers jours';
+        return this.translateService.instant('sidebar.period.last7days');
       case 'month':
-        return '30 derniers jours';
+        return this.translateService.instant('sidebar.period.last30days');
       case 'current_year':
-        return 'Depuis le 1er janvier';
+        return this.translateService.instant('sidebar.period.sinceJan1');
       default:
         // Si c'est une année (format YYYY)
         const year = parseInt(this.selectedPeriod, 10);
         if (!isNaN(year)) {
-          return `Année ${year}`;
+          return this.translateService.instant('sidebar.period.year', { year });
         }
         return '';
     }

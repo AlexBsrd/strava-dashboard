@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SportConfigService } from '../../services/sport-config.service';
 import { PeriodStateService } from '../../services/period-state.service';
 import { ComparisonService } from '../../services/comparison.service';
@@ -25,7 +26,7 @@ import { ComparisonPeriod, ComparisonPreset } from '../../types/comparison';
 @Component({
   selector: 'app-sport-sidebar',
   standalone: true,
-  imports: [CommonModule, FormsModule, SportGroupItemComponent],
+  imports: [CommonModule, FormsModule, TranslateModule, SportGroupItemComponent],
   templateUrl: './sport-sidebar.component.html',
   styleUrls: ['./sport-sidebar.component.css']
 })
@@ -64,7 +65,7 @@ export class SportSidebarComponent implements OnInit, OnDestroy, OnChanges {
   private activityCountCache = new Map<string, number>();
 
   // ========== Sélection de période (Dashboard) ==========
-  dashboardPeriods: { value: PeriodType; label: string }[] = [];
+  dashboardPeriods: { value: PeriodType; labelKey: string }[] = [];
   availableYears: number[] = [];
   selectedDashboardPeriod: PeriodType = 'week';
 
@@ -87,7 +88,8 @@ export class SportSidebarComponent implements OnInit, OnDestroy, OnChanges {
     private sportConfigService: SportConfigService,
     private periodStateService: PeriodStateService,
     private comparisonService: ComparisonService,
-    private displayPreferencesService: DisplayPreferencesService
+    private displayPreferencesService: DisplayPreferencesService,
+    private translateService: TranslateService
   ) {
     this.comparisonPresets = this.comparisonService.getComparisonPresets();
   }
@@ -95,9 +97,9 @@ export class SportSidebarComponent implements OnInit, OnDestroy, OnChanges {
   ngOnInit(): void {
     // Générer la liste des périodes standards (sans les années)
     this.dashboardPeriods = [
-      { value: 'week', label: '7 derniers jours' },
-      { value: 'month', label: '30 derniers jours' },
-      { value: 'current_year', label: 'Depuis le 1er janvier' }
+      { value: 'week', labelKey: 'sidebar.period.last7days' },
+      { value: 'month', labelKey: 'sidebar.period.last30days' },
+      { value: 'current_year', labelKey: 'sidebar.period.sinceJan1' }
     ];
 
     // Générer la liste des années disponibles (de l'année en cours à 2020)
@@ -249,8 +251,8 @@ export class SportSidebarComponent implements OnInit, OnDestroy, OnChanges {
     return getRecommendedMetrics([type]);
   }
 
-  getSportLabel(type: StravaActivityType): string {
-    return getSportMetadata(type).label;
+  getSportLabelKey(type: StravaActivityType): string {
+    return getSportMetadata(type).labelKey;
   }
 
   getSportIcon(type: StravaActivityType): string {
@@ -262,10 +264,10 @@ export class SportSidebarComponent implements OnInit, OnDestroy, OnChanges {
     return this.sportConfigService.isTypeInAnyGroup(type);
   }
 
-  /** Retourne le nom du groupe contenant ce sport */
-  getGroupNameForType(type: StravaActivityType): string | null {
+  /** Retourne la clé de traduction du nom du groupe contenant ce sport */
+  getGroupNameKeyForType(type: StravaActivityType): string | null {
     const group = this.sportConfigService.getGroupContainingType(type);
-    return group ? group.name : null;
+    return group ? group.nameKey : null;
   }
 
   // Formulaire de création de groupe
@@ -338,7 +340,8 @@ export class SportSidebarComponent implements OnInit, OnDestroy, OnChanges {
 
   // Réinitialiser aux valeurs par défaut
   resetToDefaults(): void {
-    if (confirm('Réinitialiser tous les paramètres aux valeurs par défaut ?')) {
+    const confirmMessage = this.translateService.instant('sidebar.groups.confirmReset');
+    if (confirm(confirmMessage)) {
       this.sportConfigService.resetToDefaults();
     }
   }
@@ -348,8 +351,8 @@ export class SportSidebarComponent implements OnInit, OnDestroy, OnChanges {
     return this.sportConfigService.getAvailableTypes();
   }
 
-  getMetricLabel(metric: MetricKey): string {
-    return METRIC_METADATA[metric].label;
+  getMetricLabelKey(metric: MetricKey): string {
+    return METRIC_METADATA[metric].labelKey;
   }
 
   trackByGroupId(index: number, group: SportGroup): string {
@@ -360,7 +363,10 @@ export class SportSidebarComponent implements OnInit, OnDestroy, OnChanges {
 
   startEditGroup(group: SportGroup): void {
     this.editingGroupId = group.id;
-    this.editGroupName = group.name;
+    // For default groups, get the translated name; for custom groups, use the key as-is
+    this.editGroupName = group.isDefault
+      ? this.translateService.instant(group.nameKey)
+      : group.nameKey;
     this.editGroupColor = group.color;
     this.editGroupTypes = [...group.types];
     this.editGroupMetrics = [...group.visibleMetrics];
@@ -411,7 +417,7 @@ export class SportSidebarComponent implements OnInit, OnDestroy, OnChanges {
     if (!this.editingGroupId || !this.canSaveEditGroup()) return;
 
     this.sportConfigService.updateGroup(this.editingGroupId, {
-      name: this.editGroupName.trim(),
+      nameKey: this.editGroupName.trim(),
       color: this.editGroupColor,
       types: this.editGroupTypes,
       visibleMetrics: this.editGroupMetrics
@@ -423,7 +429,9 @@ export class SportSidebarComponent implements OnInit, OnDestroy, OnChanges {
   deleteGroup(groupId: string): void {
     const group = this.groups.find(g => g.id === groupId);
     if (group && !group.isDefault) {
-      if (confirm(`Supprimer le groupe "${group.name}" ?`)) {
+      const groupName = this.translateService.instant(group.nameKey);
+      const confirmMessage = this.translateService.instant('sidebar.groups.confirmDelete', { name: groupName });
+      if (confirm(confirmMessage)) {
         this.sportConfigService.deleteGroup(groupId);
         this.editingGroupId = null;
       }
@@ -508,7 +516,7 @@ export class SportSidebarComponent implements OnInit, OnDestroy, OnChanges {
 
       this.periodStateService.setComparePeriod1({
         type: 'custom',
-        label: 'Période personnalisée 1',
+        label: this.translateService.instant('sidebar.comparison.customPeriod1'),
         startDate,
         endDate
       });
@@ -524,7 +532,7 @@ export class SportSidebarComponent implements OnInit, OnDestroy, OnChanges {
 
       this.periodStateService.setComparePeriod2({
         type: 'custom',
-        label: 'Période personnalisée 2',
+        label: this.translateService.instant('sidebar.comparison.customPeriod2'),
         startDate,
         endDate
       });

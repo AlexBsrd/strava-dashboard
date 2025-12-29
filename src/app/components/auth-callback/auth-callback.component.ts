@@ -1,12 +1,13 @@
 import {Component, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
+import {TranslateModule} from '@ngx-translate/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {StravaService} from '../../services/strava.service';
 
 @Component({
   selector: 'app-auth-callback',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   templateUrl: './auth-callback.component.html',
   styleUrls: ['./auth-callback.component.css']
 })

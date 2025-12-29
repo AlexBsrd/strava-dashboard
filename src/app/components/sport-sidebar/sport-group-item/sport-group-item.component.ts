@@ -1,11 +1,12 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 import { SportGroup, MetricKey, METRIC_METADATA, ALL_METRICS } from '../../../types/sport-config';
 
 @Component({
   selector: 'app-sport-group-item',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   templateUrl: './sport-group-item.component.html',
   styleUrls: ['./sport-group-item.component.css']
 })
@@ -49,8 +50,8 @@ export class SportGroupItemComponent {
     return this.group.visibleMetrics.includes(metric);
   }
 
-  getMetricLabel(metric: MetricKey): string {
-    return METRIC_METADATA[metric].label;
+  getMetricLabelKey(metric: MetricKey): string {
+    return METRIC_METADATA[metric].labelKey;
   }
 
   getTypesCount(): number {

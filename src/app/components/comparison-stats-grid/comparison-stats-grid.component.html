@@ -5,7 +5,7 @@
     </div>
     <h2 class="activity-title">{{ activityType }}</h2>
     <span class="activity-count">
-      {{ comparison.period1Stats.numberOfActivities }} activité(s) → {{ comparison.period2Stats.numberOfActivities }} activité(s)
+      {{ 'activities.count_other' | translate:{ count: comparison.period1Stats.numberOfActivities } }} → {{ 'activities.count_other' | translate:{ count: comparison.period2Stats.numberOfActivities } }}
     </span>
   </div>
 
@@ -13,7 +13,7 @@
     <!-- Total Distance -->
     <app-comparison-stats-card
       *ngIf="isMetricVisible('totalDistance')"
-      title="Distance totale"
+      [title]="'metrics.labels.totalDistance' | translate"
       [value1]="comparison.period1Stats.totalDistance"
       [value2]="comparison.period2Stats.totalDistance"
       [delta]="comparison.deltas.totalDistance"
@@ -23,7 +23,7 @@
     <!-- Average Distance -->
     <app-comparison-stats-card
       *ngIf="isMetricVisible('averageDistance')"
-      title="Distance moyenne/sortie"
+      [title]="'metrics.labels.averageDistance' | translate"
       [value1]="comparison.period1Stats.averageDistance"
       [value2]="comparison.period2Stats.averageDistance"
       [delta]="comparison.deltas.averageDistance"
@@ -33,7 +33,7 @@
     <!-- Average Speed -->
     <app-comparison-stats-card
       *ngIf="isMetricVisible('averageSpeed')"
-      title="Vitesse moyenne"
+      [title]="'metrics.labels.averageSpeed' | translate"
       [value1]="comparison.period1Stats.averageSpeed"
       [value2]="comparison.period2Stats.averageSpeed"
       [delta]="comparison.deltas.averageSpeed"
@@ -43,7 +43,7 @@
     <!-- Total Elevation -->
     <app-comparison-stats-card
       *ngIf="isMetricVisible('totalElevation')"
-      title="Dénivelé total"
+      [title]="'metrics.labels.totalElevation' | translate"
       [value1]="comparison.period1Stats.totalElevation"
       [value2]="comparison.period2Stats.totalElevation"
       [delta]="comparison.deltas.totalElevation"
@@ -53,7 +53,7 @@
     <!-- Average Elevation -->
     <app-comparison-stats-card
       *ngIf="isMetricVisible('averageElevation')"
-      title="Dénivelé moyen/sortie"
+      [title]="'metrics.labels.averageElevation' | translate"
       [value1]="comparison.period1Stats.averageElevation"
       [value2]="comparison.period2Stats.averageElevation"
       [delta]="comparison.deltas.averageElevation"
@@ -63,7 +63,7 @@
     <!-- Total Time -->
     <app-comparison-stats-card
       *ngIf="isMetricVisible('totalElapsedTime')"
-      title="Temps total"
+      [title]="'metrics.labels.totalElapsedTime' | translate"
       [value1]="comparison.period1Stats.totalElapsedTime"
       [value2]="comparison.period2Stats.totalElapsedTime"
       [delta]="comparison.deltas.totalElapsedTime"
@@ -73,5 +73,5 @@
 </div>
 
 <div class="no-data" *ngIf="!comparison">
-  <p>Aucune donnée disponible pour cette comparaison.</p>
+  <p>{{ 'comparison.no_activities.message' | translate }}</p>
 </div>

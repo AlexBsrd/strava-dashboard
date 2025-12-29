@@ -1,11 +1,12 @@
 import {Component} from '@angular/core';
 import {CommonModule} from '@angular/common';
+import {TranslateModule} from '@ngx-translate/core';
 import {StravaService} from '../../services/strava.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })

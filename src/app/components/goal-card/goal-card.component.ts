@@ -1,11 +1,12 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { GoalProgress } from '../../models/goal';
 
 @Component({
   selector: 'app-goal-card',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   templateUrl: './goal-card.component.html',
   styleUrl: './goal-card.component.css'
 })
@@ -14,6 +15,8 @@ export class GoalCardComponent {
   @Input() showActions: boolean = true;
   @Output() edit = new EventEmitter<string>();
   @Output() delete = new EventEmitter<string>();
+
+  constructor(private translateService: TranslateService) {}
 
   get progressBarColor(): string {
     if (!this.progress) return 'var(--gray-300)';
@@ -36,6 +39,7 @@ export class GoalCardComponent {
   }
 
   formatValue(value: number, type: string): string {
+    const count = Math.floor(value);
     switch (type) {
       case 'distance':
         return `${value.toFixed(1)} km`;
@@ -44,20 +48,18 @@ export class GoalCardComponent {
         const minutes = Math.floor((value % 3600) / 60);
         return `${hours}h ${minutes}min`;
       case 'count':
-        return `${Math.floor(value)} activité${Math.floor(value) > 1 ? 's' : ''}`;
+        const activityLabel = count === 1
+          ? this.translateService.instant('common.plurals.activity_one')
+          : this.translateService.instant('common.plurals.activity_other');
+        return `${count} ${activityLabel}`;
       default:
         return value.toFixed(1);
     }
   }
 
   getPeriodLabel(period: string): string {
-    const labels: Record<string, string> = {
-      'week': 'cette semaine',
-      'month': 'ce mois',
-      'year': 'cette année',
-      'custom': 'période personnalisée'
-    };
-    return labels[period] || period;
+    const key = `goals.periods.${period}`;
+    return this.translateService.instant(key);
   }
 
   onEdit(): void {
@@ -67,8 +69,11 @@ export class GoalCardComponent {
   }
 
   onDelete(): void {
-    if (this.progress && confirm('Êtes-vous sûr de vouloir supprimer cet objectif ?')) {
-      this.delete.emit(this.progress.goal.id);
+    if (this.progress) {
+      const message = this.translateService.instant('goals.card.delete_confirmation');
+      if (confirm(message)) {
+        this.delete.emit(this.progress.goal.id);
+      }
     }
   }
 }

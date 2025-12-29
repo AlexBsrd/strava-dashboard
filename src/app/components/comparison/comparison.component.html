@@ -2,16 +2,16 @@
   <!-- Loading State -->
   <div *ngIf="isLoading" class="loading-container">
     <app-spinner></app-spinner>
-    <div class="loading-message">Comparaison en cours...</div>
+    <div class="loading-message">{{ 'comparison.loading.message' | translate }}</div>
   </div>
 
   <!-- Error States -->
   <ng-container *ngIf="!isLoading">
     <div *ngIf="authError" class="error-container">
       <div class="error-message">
-        <p>Votre session a expiré ou n'est plus valide.</p>
+        <p>{{ 'errors.session_expired.title' | translate }}</p>
         <button class="retry-button" (click)="reconnectToStrava()">
-          Se reconnecter à Strava
+          {{ 'errors.session_expired.action' | translate }}
         </button>
       </div>
     </div>
@@ -20,7 +20,7 @@
       <div class="error-message">
         <p>{{ error }}</p>
         <button class="retry-button" (click)="onCompare()">
-          Réessayer
+          {{ 'errors.loading_error.action' | translate }}
         </button>
       </div>
     </div>
@@ -33,7 +33,7 @@
       <div *ngIf="hasGroupActivities(groupData)">
         <app-comparison-stats-grid
           [comparison]="groupData.comparison"
-          [activityType]="groupData.group.name"
+          [activityType]="groupData.group.nameKey | translate"
           [groupColor]="groupData.group.color"
           [visibleMetrics]="groupData.group.visibleMetrics">
         </app-comparison-stats-grid>
@@ -43,7 +43,7 @@
           [activities2]="groupData.activities2"
           [period1]="period1"
           [period2]="period2"
-          [activityType]="groupData.group.name"
+          [activityType]="groupData.group.nameKey | translate"
           [groupColor]="groupData.group.color">
         </app-comparison-chart>
       </div>
@@ -58,8 +58,8 @@
           <line x1="12" y1="8" x2="12" y2="12"/>
           <line x1="12" y1="16" x2="12.01" y2="16"/>
         </svg>
-        <h3>Aucune activité trouvée</h3>
-        <p>Il n'y a pas d'activités pour les périodes sélectionnées.</p>
+        <h3>{{ 'comparison.no_activities.title' | translate }}</h3>
+        <p>{{ 'comparison.no_activities.message' | translate }}</p>
       </div>
     </div>
   </div>
@@ -68,32 +68,32 @@
   <div *ngIf="!hasCompared && !isLoading" class="initial-state">
     <div class="initial-state-content">
       <div class="empty-icon">📊</div>
-      <h3>Comparez vos performances</h3>
-      <p class="main-instruction">Suivez ces étapes pour analyser votre progression :</p>
+      <h3>{{ 'comparison.instructions.title' | translate }}</h3>
+      <p class="main-instruction">{{ 'comparison.instructions.subtitle' | translate }}</p>
 
       <div class="steps-container">
         <div class="step">
           <div class="step-number">1</div>
           <div class="step-content">
-            <span class="step-title">Ouvrez le menu de réglages</span>
-            <span class="step-description mobile-text">Cliquez sur l'icône ⚙️ pour accéder aux réglages</span>
-            <span class="step-description desktop-text">Le menu de réglages est déjà ouvert à gauche</span>
+            <span class="step-title">{{ 'comparison.instructions.step1_title' | translate }}</span>
+            <span class="step-description mobile-text">{{ 'comparison.instructions.step1_mobile' | translate }}</span>
+            <span class="step-description desktop-text">{{ 'comparison.instructions.step1_desktop' | translate }}</span>
           </div>
         </div>
 
         <div class="step">
           <div class="step-number">2</div>
           <div class="step-content">
-            <span class="step-title">Choisissez deux périodes</span>
-            <span class="step-description">Sélectionnez un preset ou des dates personnalisées</span>
+            <span class="step-title">{{ 'comparison.instructions.step2_title' | translate }}</span>
+            <span class="step-description">{{ 'comparison.instructions.step2_description' | translate }}</span>
           </div>
         </div>
 
         <div class="step">
           <div class="step-number">3</div>
           <div class="step-content">
-            <span class="step-title">Lancez la comparaison</span>
-            <span class="step-description">Cliquez sur le bouton "Comparer"</span>
+            <span class="step-title">{{ 'comparison.instructions.step3_title' | translate }}</span>
+            <span class="step-description">{{ 'comparison.instructions.step3_description' | translate }}</span>
           </div>
         </div>
       </div>

@@ -1,5 +1,6 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { HeatmapDay } from '../../services/streak.service';
 
 interface HeatmapWeek {
@@ -9,17 +10,41 @@ interface HeatmapWeek {
 @Component({
   selector: 'app-activity-heatmap',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   templateUrl: './activity-heatmap.component.html',
   styleUrl: './activity-heatmap.component.css'
 })
-export class ActivityHeatmapComponent implements OnChanges {
+export class ActivityHeatmapComponent implements OnChanges, OnInit {
   @Input() heatmapData: HeatmapDay[] = [];
   @Input() loading: boolean = false;
 
   weeks: HeatmapWeek[] = [];
   monthLabels: { label: string; weekIndex: number }[] = [];
-  weekdays = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+  weekdays: string[] = [];
+
+  constructor(private translateService: TranslateService) {}
+
+  ngOnInit(): void {
+    this.updateWeekdays();
+    this.translateService.onLangChange.subscribe(() => {
+      this.updateWeekdays();
+      this.organizeDataIntoWeeks();
+    });
+  }
+
+  private updateWeekdays(): void {
+    const locale = this.translateService.currentLang === 'en' ? 'en-US' : 'fr-FR';
+    // Generate weekday names using JavaScript's Date
+    this.weekdays = [];
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(2024, 0, i + 1); // Jan 1, 2024 was a Monday
+      this.weekdays.push(date.toLocaleDateString(locale, { weekday: 'short' }));
+    }
+  }
+
+  private getLocale(): string {
+    return this.translateService.currentLang === 'en' ? 'en-US' : 'fr-FR';
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['heatmapData']) {
@@ -114,8 +139,8 @@ export class ActivityHeatmapComponent implements OnChanges {
   }
 
   private getMonthLabel(month: number): string {
-    const months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jui', 'Jui', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
-    return months[month];
+    const date = new Date(2024, month, 1);
+    return date.toLocaleDateString(this.getLocale(), { month: 'short' });
   }
 
   getIntensityClass(day: HeatmapDay | null): string {
@@ -139,7 +164,7 @@ export class ActivityHeatmapComponent implements OnChanges {
       return '';
     }
 
-    const dateStr = day.date.toLocaleDateString('fr-FR', {
+    const dateStr = day.date.toLocaleDateString(this.getLocale(), {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
@@ -147,15 +172,17 @@ export class ActivityHeatmapComponent implements OnChanges {
     });
 
     if (day.count === 0) {
-      return `${dateStr} - Aucune activité`;
+      const noActivity = this.translateService.instant('heatmap.no_activity');
+      return `${dateStr} - ${noActivity}`;
     }
 
-    const activityText = day.count === 1 ? 'activité' : 'activités';
+    const key = day.count === 1 ? 'common.plurals.activity_one' : 'common.plurals.activity_other';
+    const activityText = this.translateService.instant(key);
     return `${dateStr} - ${day.count} ${activityText}`;
   }
 
   formatDate(date: Date): string {
-    return date.toLocaleDateString('fr-FR', {
+    return date.toLocaleDateString(this.getLocale(), {
       day: 'numeric',
       month: 'short'
     });

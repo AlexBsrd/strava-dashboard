@@ -1,7 +1,7 @@
 <div class="card">
   <div class="card-header">
     <div class="header-main">
-      <h2 class="card-title">Évolution des performances</h2>
+      <h2 class="card-title">{{ 'chart.performance_evolution' | translate }}</h2>
       <div class="primary-controls">
         <select
           class="select"
@@ -23,7 +23,7 @@
                 [checked]="groupingType === 'none'"
                 (change)="onGroupingChange('none')"
               >
-              Aucun
+              {{ 'chart.grouping.none' | translate }}
             </label>
             <label class="grouping-label">
               <input
@@ -33,7 +33,7 @@
                 [checked]="groupingType === 'week'"
                 (change)="onGroupingChange('week')"
               >
-              Par semaine
+              {{ 'chart.grouping.by_week' | translate }}
             </label>
             <label class="grouping-label">
               <input
@@ -43,7 +43,7 @@
                 [checked]="groupingType === 'month'"
                 (change)="onGroupingChange('month')"
               >
-              Par mois
+              {{ 'chart.grouping.by_month' | translate }}
             </label>
           </div>
         </div>
@@ -55,7 +55,7 @@
             [class.active]="isMetricSelected(metric.value)"
             [style.--metric-color]="metric.color"
             (click)="toggleMetric(metric.value)">
-            {{ metric.label }}
+            {{ getMetricLabel(metric) }}
           </button>
         </div>
       </div>
@@ -77,7 +77,7 @@
       <button
         class="fullscreen-button"
         (click)="toggleFullscreen()"
-        [attr.aria-label]="(isFullscreen$ | async) ? 'Quitter le plein écran' : 'Passer en plein écran'"
+        [attr.aria-label]="(isFullscreen$ | async) ? ('chart.exit_fullscreen' | translate) : ('chart.enter_fullscreen' | translate)"
       >
         <svg class="fullscreen-icon" viewBox="0 0 24 24">
           <path *ngIf="!(isFullscreen$ | async)"

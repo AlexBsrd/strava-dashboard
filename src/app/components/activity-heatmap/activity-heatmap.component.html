@@ -1,13 +1,13 @@
 <div class="heatmap-container">
   <div class="heatmap-header">
-    <h3 class="heatmap-title">Activité sur les 12 derniers mois</h3>
+    <h3 class="heatmap-title">{{ 'heatmap.title' | translate }}</h3>
     <div class="heatmap-legend">
-      <span class="legend-label">Moins</span>
-      <div class="legend-box intensity-0" title="0 activité"></div>
-      <div class="legend-box intensity-1" title="1 activité"></div>
-      <div class="legend-box intensity-2" title="2 activités"></div>
-      <div class="legend-box intensity-3" title="3+ activités"></div>
-      <span class="legend-label">Plus</span>
+      <span class="legend-label">{{ 'heatmap.less' | translate }}</span>
+      <div class="legend-box intensity-0" [title]="'heatmap.legend.zero' | translate"></div>
+      <div class="legend-box intensity-1" [title]="'heatmap.legend.one' | translate"></div>
+      <div class="legend-box intensity-2" [title]="'heatmap.legend.two' | translate"></div>
+      <div class="legend-box intensity-3" [title]="'heatmap.legend.three_plus' | translate"></div>
+      <span class="legend-label">{{ 'heatmap.more' | translate }}</span>
     </div>
   </div>
 
@@ -43,10 +43,10 @@
 
   <div class="heatmap-loading" *ngIf="loading">
     <div class="loading-spinner"></div>
-    <p>Chargement du calendrier...</p>
+    <p>{{ 'heatmap.loading' | translate }}</p>
   </div>
 
   <div class="heatmap-empty" *ngIf="!loading && weeks.length === 0">
-    <p>Aucune donnée disponible pour afficher le calendrier d'activité.</p>
+    <p>{{ 'heatmap.no_data' | translate }}</p>
   </div>
 </div>

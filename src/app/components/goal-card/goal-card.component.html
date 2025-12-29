@@ -8,12 +8,12 @@
       </div>
     </div>
     <div class="goal-actions" *ngIf="showActions">
-      <button class="action-btn edit-btn" (click)="onEdit()" title="Modifier">
+      <button class="action-btn edit-btn" (click)="onEdit()" [title]="'goals.card.edit' | translate">
         <svg viewBox="0 0 24 24" width="16" height="16">
           <path fill="currentColor" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
         </svg>
       </button>
-      <button class="action-btn delete-btn" (click)="onDelete()" title="Supprimer">
+      <button class="action-btn delete-btn" (click)="onDelete()" [title]="'goals.card.delete' | translate">
         <svg viewBox="0 0 24 24" width="16" height="16">
           <path fill="currentColor" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
         </svg>
@@ -23,13 +23,13 @@
 
   <div class="goal-stats">
     <div class="stat">
-      <span class="stat-label">Progression</span>
+      <span class="stat-label">{{ 'goals.card.progression' | translate }}</span>
       <span class="stat-value">
         {{ formatValue(progress.current, progress.goal.type) }} / {{ formatValue(progress.goal.target, progress.goal.type) }}
       </span>
     </div>
     <div class="stat">
-      <span class="stat-label">Complété</span>
+      <span class="stat-label">{{ 'goals.card.completed' | translate }}</span>
       <span class="stat-value">{{ progress.percentage.toFixed(1) }}%</span>
     </div>
   </div>
@@ -49,24 +49,29 @@
         <path fill="currentColor" d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
       </svg>
       <span *ngIf="!progress.isCompleted">
-        À ce rythme : {{ formatValue(progress.projection, progress.goal.type) }}
-        ({{ progress.projectionPercentage.toFixed(0) }}%)
+        {{ 'goals.card.at_this_pace' | translate: {
+          value: formatValue(progress.projection, progress.goal.type),
+          percentage: progress.projectionPercentage.toFixed(0)
+        } }}
       </span>
       <span *ngIf="progress.isCompleted" class="completed-text">
-        🎉 Objectif atteint !
+        {{ 'goals.card.goal_achieved' | translate }}
       </span>
     </div>
     <div class="days-remaining">
-      <span *ngIf="progress.daysRemaining > 0">
-        {{ progress.daysRemaining }} jour{{ progress.daysRemaining > 1 ? 's' : '' }} restant{{ progress.daysRemaining > 1 ? 's' : '' }}
+      <span *ngIf="progress.daysRemaining > 1">
+        {{ progress.daysRemaining }} {{ 'common.plurals.day_other' | translate }} {{ 'common.plurals.remaining_other' | translate }}
+      </span>
+      <span *ngIf="progress.daysRemaining === 1">
+        {{ progress.daysRemaining }} {{ 'common.plurals.day_one' | translate }} {{ 'common.plurals.remaining_one' | translate }}
       </span>
       <span *ngIf="progress.daysRemaining === 0">
-        Dernier jour !
+        {{ 'goals.card.last_day' | translate }}
       </span>
     </div>
   </div>
 </div>
 
 <div class="goal-card-empty" *ngIf="!progress">
-  <p>Aucun objectif défini</p>
+  <p>{{ 'dashboard.goals.none' | translate }}</p>
 </div>

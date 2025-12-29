@@ -1,6 +1,7 @@
-import {Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild} from '@angular/core';
+import {Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
 import {
   CategoryScale,
   Chart,
@@ -64,11 +65,11 @@ type GroupingType = 'none' | 'week' | 'month';
 @Component({
   selector: 'app-modern-activity-chart',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './modern-activity-chart.component.html',
   styleUrls: ['./modern-activity-chart.component.css']
 })
-export class ModernActivityChartComponent implements OnChanges {
+export class ModernActivityChartComponent implements OnChanges, OnInit {
   @Input() activities: Activity[] = [];
   @Input() period: PeriodType = 'week';
 
@@ -78,20 +79,37 @@ export class ModernActivityChartComponent implements OnChanges {
   groupingType: GroupingType = 'none';
 
   activityTypes: string[] = ['Run', 'Ride', 'Walk/Hike'];
-  metrics = [
-    {value: 'speed', label: 'Vitesse (km/h)', color: '#2196F3'},
-    {value: 'distance', label: 'Distance (km)', color: '#4CAF50'},
-    {value: 'elevation', label: 'Dénivelé (m)', color: '#FF9800'},
-    {value: 'duration', label: 'Durée (h)', color: '#9C27B0'}
+  metrics: Array<{value: string, labelKey: string, color: string}> = [
+    {value: 'speed', labelKey: 'chart.metrics.speed', color: '#2196F3'},
+    {value: 'distance', labelKey: 'chart.metrics.distance', color: '#4CAF50'},
+    {value: 'elevation', labelKey: 'chart.metrics.elevation', color: '#FF9800'},
+    {value: 'duration', labelKey: 'chart.metrics.duration', color: '#9C27B0'}
   ];
 
   @ViewChild('chartContainer') chartContainer!: ElementRef;
   isFullscreen$;
 
   constructor(
-    private fullscreenService: FullscreenService
+    private fullscreenService: FullscreenService,
+    private translateService: TranslateService
   ) {
     this.isFullscreen$ = this.fullscreenService.isFullscreen$;
+  }
+
+  ngOnInit(): void {
+    this.translateService.onLangChange.subscribe(() => {
+      if (this.chart) {
+        this.updateChart();
+      }
+    });
+  }
+
+  private getLocale(): string {
+    return this.translateService.currentLang === 'en' ? 'en-US' : 'fr-FR';
+  }
+
+  getMetricLabel(metric: {value: string, labelKey: string, color: string}): string {
+    return this.translateService.instant(metric.labelKey);
   }
 
   toggleFullscreen() {
@@ -564,7 +582,7 @@ export class ModernActivityChartComponent implements OnChanges {
       });
 
       return {
-        label: metric.label,
+        label: this.getMetricLabel(metric),
         data: data,
         borderColor: metric.color,
         backgroundColor: `${metric.color}33`,
@@ -577,17 +595,19 @@ export class ModernActivityChartComponent implements OnChanges {
       };
     });
 
+    const locale = this.getLocale();
+    const weekAbbrev = this.translateService.instant('chart.week_abbrev');
     const data = {
       labels: dateLabels.map(date => {
         if (!date) return '';
         if ((this.period === 'current_year' || isYearPeriod(this.period)) && this.groupingType === 'week') {
           const weekNum = this.getWeekNumber(date);
-          return `Sem. ${weekNum}`;
+          return `${weekAbbrev} ${weekNum}`;
         }
         if ((this.period === 'current_year' || isYearPeriod(this.period)) && this.groupingType === 'month') {
-          return date.toLocaleDateString('fr-FR', {month: 'short'});
+          return date.toLocaleDateString(locale, {month: 'short'});
         }
-        return date.toLocaleDateString('fr-FR', {month: 'short', day: 'numeric'});
+        return date.toLocaleDateString(locale, {month: 'short', day: 'numeric'});
       }),
       datasets
     };
@@ -612,7 +632,7 @@ export class ModernActivityChartComponent implements OnChanges {
         },
         title: {
           display: true,
-          text: metric.label
+          text: this.getMetricLabel(metric)
         },
         beginAtZero: true
       };
@@ -624,11 +644,15 @@ export class ModernActivityChartComponent implements OnChanges {
         const weekData = dataMap.get(weekNum.toString()) as WeeklyData;
         if (!weekData) return '';
 
-        let title = `Semaine ${weekData.weekNumber}\n`;
-        title += `Du ${weekData.weekStart.toLocaleDateString('fr-FR')} au ${weekData.weekEnd.toLocaleDateString('fr-FR')}\n\n`;
-        title += 'Activités de la semaine:\n';
+        const weekLabel = this.translateService.instant('chart.week');
+        const fromLabel = this.translateService.instant('chart.from');
+        const toLabel = this.translateService.instant('chart.to');
+        const activitiesLabel = this.translateService.instant('chart.activities_of_week');
+        let title = `${weekLabel} ${weekData.weekNumber}\n`;
+        title += `${fromLabel} ${weekData.weekStart.toLocaleDateString(locale)} ${toLabel} ${weekData.weekEnd.toLocaleDateString(locale)}\n\n`;
+        title += `${activitiesLabel}:\n`;
         weekData.activities.forEach(activity => {
-          title += `- ${activity.date.toLocaleDateString('fr-FR')}: ${activity.name}\n`;
+          title += `- ${activity.date.toLocaleDateString(locale)}: ${activity.name}\n`;
         });
         return title;
       } else if ((this.period === 'current_year' || isYearPeriod(this.period)) && this.groupingType === 'month') {
@@ -636,11 +660,14 @@ export class ModernActivityChartComponent implements OnChanges {
         const monthData = dataMap.get(monthNum.toString()) as MonthlyData;
         if (!monthData) return '';
 
+        const fromLabel = this.translateService.instant('chart.from');
+        const toLabel = this.translateService.instant('chart.to');
+        const activitiesLabel = this.translateService.instant('chart.activities_of_month');
         let title = `${monthData.monthLabel.charAt(0).toUpperCase() + monthData.monthLabel.slice(1)}\n`;
-        title += `Du ${monthData.monthStart.toLocaleDateString('fr-FR')} au ${monthData.monthEnd.toLocaleDateString('fr-FR')}\n\n`;
-        title += 'Activités du mois:\n';
+        title += `${fromLabel} ${monthData.monthStart.toLocaleDateString(locale)} ${toLabel} ${monthData.monthEnd.toLocaleDateString(locale)}\n\n`;
+        title += `${activitiesLabel}:\n`;
         monthData.activities.forEach(activity => {
-          title += `- ${activity.date.toLocaleDateString('fr-FR')}: ${activity.name}\n`;
+          title += `- ${activity.date.toLocaleDateString(locale)}: ${activity.name}\n`;
         });
         return title;
       } else {
@@ -648,7 +675,7 @@ export class ModernActivityChartComponent implements OnChanges {
         const activity = dataMap.get(key) as Activity;
         if (!activity) return '';
 
-        return `${date.toLocaleDateString('fr-FR', {
+        return `${date.toLocaleDateString(locale, {
           weekday: 'long',
           day: 'numeric',
           month: 'long'

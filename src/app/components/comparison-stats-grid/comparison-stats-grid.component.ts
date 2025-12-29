@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 import { StatsComparison } from '../../types/comparison';
 import { ComparisonStatsCardComponent } from '../comparison-stats-card/comparison-stats-card.component';
 import { MetricKey, ALL_METRICS } from '../../types/sport-config';
@@ -7,7 +8,7 @@ import { MetricKey, ALL_METRICS } from '../../types/sport-config';
 @Component({
   selector: 'app-comparison-stats-grid',
   standalone: true,
-  imports: [CommonModule, ComparisonStatsCardComponent],
+  imports: [CommonModule, TranslateModule, ComparisonStatsCardComponent],
   templateUrl: './comparison-stats-grid.component.html',
   styleUrls: ['./comparison-stats-grid.component.css']
 })

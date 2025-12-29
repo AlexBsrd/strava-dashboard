@@ -215,12 +215,12 @@ export class SportConfigService {
   /**
    * Crée un nouveau groupe personnalisé
    */
-  createGroup(name: string, types: StravaActivityType[], icon: string, color: string, visibleMetrics?: MetricKey[]): SportGroup {
+  createGroup(nameKey: string, types: StravaActivityType[], icon: string, color: string, visibleMetrics?: MetricKey[]): SportGroup {
     const config = this.config.value;
 
     const newGroup: SportGroup = {
       id: generateGroupId(),
-      name,
+      nameKey,
       types,
       icon,
       color,

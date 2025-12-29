@@ -6,7 +6,7 @@
       class="toggle-switch"
       [class.active]="group.isEnabled"
       (click)="onToggle($event)"
-      [attr.aria-label]="group.isEnabled ? 'Désactiver ' + group.name : 'Activer ' + group.name"
+      [attr.aria-label]="(group.isEnabled ? 'sidebar.sports.disable' : 'sidebar.sports.enable') | translate:{ name: (group.nameKey | translate) }"
     >
       <span class="toggle-slider"></span>
     </button>
@@ -57,15 +57,15 @@
 
     <!-- Nom du groupe -->
     <div class="group-info">
-      <span class="group-name">{{ group.name }}</span>
+      <span class="group-name">{{ group.nameKey | translate }}</span>
       <div class="group-meta-row">
-        <span class="group-meta types-count">{{ getTypesCount() }} sport(s)</span>
-        <span class="group-meta" *ngIf="activityCount > 0">{{ activityCount }} activité(s)</span>
+        <span class="group-meta types-count">{{ 'sidebar.sports.sport_other' | translate:{ count: getTypesCount() } }}</span>
+        <span class="group-meta" *ngIf="activityCount > 0">{{ 'sidebar.sports.activity_other' | translate:{ count: activityCount } }}</span>
       </div>
     </div>
 
     <!-- Edit button -->
-    <button class="edit-btn" (click)="onEdit($event)" aria-label="Modifier le groupe">
+    <button class="edit-btn" (click)="onEdit($event)" [attr.aria-label]="'sidebar.sports.editGroup' | translate">
       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
@@ -73,7 +73,7 @@
     </button>
 
     <!-- Expand icon -->
-    <button class="expand-btn" [class.rotated]="isExpanded" aria-label="Configurer les métriques">
+    <button class="expand-btn" [class.rotated]="isExpanded" [attr.aria-label]="'sidebar.sports.configureMetrics' | translate">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <polyline points="6 9 12 15 18 9"></polyline>
       </svg>
@@ -83,7 +83,7 @@
   <!-- Panel des métriques (expandable) -->
   <div class="metrics-panel" [class.open]="isExpanded">
     <div class="metrics-header">
-      <span class="metrics-label">Métriques affichées</span>
+      <span class="metrics-label">{{ 'sidebar.groups.metricsDisplayed' | translate }}</span>
       <span class="metrics-count">{{ getMetricsCount() }}/{{ allMetrics.length }}</span>
     </div>
     <div class="metrics-list">
@@ -97,11 +97,11 @@
           [class.active]="isMetricEnabled(metric)"
           (click)="onMetricToggle(metric, $event)"
           [disabled]="group.visibleMetrics.length === 1 && isMetricEnabled(metric)"
-          [attr.aria-label]="getMetricLabel(metric)"
+          [attr.aria-label]="getMetricLabelKey(metric) | translate"
         >
           <span class="metric-slider"></span>
         </button>
-        <span class="metric-label">{{ getMetricLabel(metric) }}</span>
+        <span class="metric-label">{{ getMetricLabelKey(metric) | translate }}</span>
       </div>
     </div>
   </div>

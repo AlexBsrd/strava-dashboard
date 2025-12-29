@@ -2,6 +2,7 @@ import {Component, OnInit, OnDestroy} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
 import {StravaService} from '../../services/strava.service';
 import {PeriodStateService} from '../../services/period-state.service';
 import {Activity} from '../../models/activity';
@@ -13,6 +14,7 @@ import {PeriodType} from "../../types/period";
   standalone: true,
   imports: [
     CommonModule,
+    TranslateModule,
     SpinnerComponent
   ],
   templateUrl: './activities.component.html',
@@ -30,7 +32,8 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
 
   constructor(
     private stravaService: StravaService,
-    private periodStateService: PeriodStateService
+    private periodStateService: PeriodStateService,
+    private translateService: TranslateService
   ) {
   }
 
@@ -63,7 +66,8 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
   }
 
   formatDayHeader(date: string): string {
-    return new Date(date).toLocaleDateString('fr-FR', {
+    const locale = this.translateService.currentLang === 'en' ? 'en-US' : 'fr-FR';
+    return new Date(date).toLocaleDateString(locale, {
       weekday: 'long',
       day: 'numeric',
       month: 'long'
@@ -71,7 +75,8 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
   }
 
   formatTime(date: Date | string): string {
-    return new Date(date).toLocaleTimeString('fr-FR', {
+    const locale = this.translateService.currentLang === 'en' ? 'en-US' : 'fr-FR';
+    return new Date(date).toLocaleTimeString(locale, {
       hour: '2-digit',
       minute: '2-digit'
     });
@@ -94,7 +99,7 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
       error: (error) => {
         console.error('Error loading activities:', error);
         this.isLoading = false;
-        this.error = 'Une erreur est survenue lors du chargement des activités.';
+        this.error = this.translateService.instant('errors.loading_error.title');
       }
     });
   }

@@ -7,7 +7,8 @@ import { PeriodType } from './period';
  */
 export interface ComparisonPeriod {
   type: PeriodType | 'custom';
-  label: string;
+  label: string; // Display label (translated or formatted date range)
+  labelKey?: string; // Translation key for preset labels
   startDate: Date;
   endDate: Date;
 }
@@ -59,7 +60,8 @@ export interface ComparisonData {
  * Preset comparison suggestions
  */
 export interface ComparisonPreset {
-  label: string;
+  label: string; // Fallback label
+  labelKey: string; // Translation key
   period1: ComparisonPeriod;
-  period2: ComparisonPeriod;  
+  period2: ComparisonPeriod;
 }

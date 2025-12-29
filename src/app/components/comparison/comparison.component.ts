@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Subject, takeUntil, filter } from 'rxjs';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ComparisonPeriod, StatsComparison } from '../../types/comparison';
 import { ComparisonService } from '../../services/comparison.service';
 import { StravaService } from '../../services/strava.service';
@@ -27,6 +28,7 @@ interface GroupComparisonData {
   standalone: true,
   imports: [
     CommonModule,
+    TranslateModule,
     ComparisonStatsGridComponent,
     ComparisonChartComponent,
     SpinnerComponent
@@ -58,7 +60,8 @@ export class ComparisonComponent implements OnInit, OnDestroy {
     private statsService: StatsService,
     private router: Router,
     private sportConfigService: SportConfigService,
-    private periodStateService: PeriodStateService
+    private periodStateService: PeriodStateService,
+    private translateService: TranslateService
   ) {}
 
   ngOnInit() {
@@ -163,7 +166,7 @@ export class ComparisonComponent implements OnInit, OnDestroy {
     if (error.status === 401) {
       this.handleAuthError();
     } else {
-      this.error = 'Une erreur est survenue lors du chargement des données.';
+      this.error = this.translateService.instant('errors.loading_error.title');
       this.authError = false;
     }
   }
@@ -212,7 +215,7 @@ export class ComparisonComponent implements OnInit, OnDestroy {
       // Créer un groupe virtuel pour ce sport individuel
       const virtualGroup: SportGroup = {
         id: `individual-${type}`,
-        name: metadata.label,
+        nameKey: metadata.labelKey,
         types: [type],
         icon: metadata.icon,
         color: this.getColorForCategory(metadata.category),

@@ -3,6 +3,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {Router} from '@angular/router';
 import {Subject, takeUntil, distinctUntilChanged} from 'rxjs';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
 import {StravaService} from '../../services/strava.service';
 import {StatsService} from '../../services/stats.service';
 import {Stats} from "../../models/stats";
@@ -37,6 +38,7 @@ interface GroupedStatsData {
   standalone: true,
   imports: [
     CommonModule,
+    TranslateModule,
     StatsListComponent,
     SpinnerComponent,
     PerformanceDashboardComponent,
@@ -87,7 +89,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private periodStateService: PeriodStateService,
     private streakService: StreakService,
     private goalService: GoalService,
-    private displayPreferencesService: DisplayPreferencesService
+    private displayPreferencesService: DisplayPreferencesService,
+    private translateService: TranslateService
   ) {}
 
   ngOnInit() {
@@ -181,7 +184,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         if (error.status === 401) {
           this.handleAuthError();
         } else {
-          this.error = 'Une erreur est survenue lors du chargement des données.';
+          this.error = this.translateService.instant('errors.loading_error.title');
           this.authError = false;
         }
       }
@@ -206,7 +209,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         if (error.status === 401) {
           this.handleAuthError();
         } else {
-          this.error = 'Une erreur est survenue lors du chargement des données.';
+          this.error = this.translateService.instant('errors.loading_error.title');
           this.authError = false;
         }
       }
@@ -252,7 +255,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         // Créer un groupe virtuel pour ce sport individuel
         const virtualGroup: SportGroup = {
           id: `individual-${type}`,
-          name: metadata.label,
+          nameKey: metadata.labelKey,
           types: [type],
           icon: metadata.icon,
           color: this.getColorForCategory(metadata.category),

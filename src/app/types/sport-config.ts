@@ -17,14 +17,15 @@ export type MetricKey =
 
 /**
  * Métadonnées des métriques pour l'UI
+ * Les labels sont des clés de traduction (metrics.labels.*)
  */
-export const METRIC_METADATA: Record<MetricKey, { label: string; unit: string; isTime?: boolean }> = {
-  totalElapsedTime: { label: 'Temps total', unit: '', isTime: true },
-  averageSpeed: { label: 'Vitesse moyenne', unit: 'km/h' },
-  totalDistance: { label: 'Distance totale', unit: 'km' },
-  averageDistance: { label: 'Distance moyenne/sortie', unit: 'km' },
-  totalElevation: { label: 'Dénivelé total', unit: 'm' },
-  averageElevation: { label: 'Dénivelé moyen/sortie', unit: 'm' }
+export const METRIC_METADATA: Record<MetricKey, { labelKey: string; unit: string; isTime?: boolean }> = {
+  totalElapsedTime: { labelKey: 'metrics.labels.totalElapsedTime', unit: '', isTime: true },
+  averageSpeed: { labelKey: 'metrics.labels.averageSpeed', unit: 'km/h' },
+  totalDistance: { labelKey: 'metrics.labels.totalDistance', unit: 'km' },
+  averageDistance: { labelKey: 'metrics.labels.averageDistance', unit: 'km' },
+  totalElevation: { labelKey: 'metrics.labels.totalElevation', unit: 'm' },
+  averageElevation: { labelKey: 'metrics.labels.averageElevation', unit: 'm' }
 };
 
 /**
@@ -95,7 +96,7 @@ export type SportCategory = 'running' | 'cycling' | 'walking' | 'fitness' | 'wat
  */
 export interface SportTypeMetadata {
   type: StravaActivityType;
-  label: string;           // Label français pour l'affichage
+  labelKey: string;        // Clé de traduction (sports.types.*)
   icon: string;            // Identifiant d'icône
   category: SportCategory; // Catégorie parente
   hasDistance: boolean;    // Si true, affiche les stats de distance/vitesse
@@ -107,7 +108,7 @@ export interface SportTypeMetadata {
  */
 export interface SportGroup {
   id: string;                      // Identifiant unique (ex: 'running', 'custom-1')
-  name: string;                    // Nom affiché (ex: 'Course', 'Vélo')
+  nameKey: string;                 // Clé de traduction (sports.groups.*) ou nom personnalisé
   types: StravaActivityType[];     // Types d'activités inclus
   icon: string;                    // Icône du groupe
   color: string;                   // Couleur CSS du groupe
@@ -147,54 +148,55 @@ export interface GroupedActivities {
 
 /**
  * Métadonnées pour tous les types de sports connus
+ * Les labelKey sont des clés de traduction (sports.types.*)
  */
 export const SPORT_TYPE_METADATA: Record<string, SportTypeMetadata> = {
   // Course - distance et dénivelé
-  'Run': { type: 'Run', label: 'Course', icon: 'run', category: 'running', hasDistance: true, hasElevation: true },
-  'VirtualRun': { type: 'VirtualRun', label: 'Course virtuelle', icon: 'run', category: 'running', hasDistance: true, hasElevation: false },
-  'TrailRun': { type: 'TrailRun', label: 'Trail', icon: 'trail', category: 'running', hasDistance: true, hasElevation: true },
+  'Run': { type: 'Run', labelKey: 'sports.types.Run', icon: 'run', category: 'running', hasDistance: true, hasElevation: true },
+  'VirtualRun': { type: 'VirtualRun', labelKey: 'sports.types.VirtualRun', icon: 'run', category: 'running', hasDistance: true, hasElevation: false },
+  'TrailRun': { type: 'TrailRun', labelKey: 'sports.types.TrailRun', icon: 'trail', category: 'running', hasDistance: true, hasElevation: true },
 
   // Vélo - distance et dénivelé
-  'Ride': { type: 'Ride', label: 'Vélo', icon: 'bike', category: 'cycling', hasDistance: true, hasElevation: true },
-  'MountainBikeRide': { type: 'MountainBikeRide', label: 'VTT', icon: 'mtb', category: 'cycling', hasDistance: true, hasElevation: true },
-  'GravelRide': { type: 'GravelRide', label: 'Gravel', icon: 'bike', category: 'cycling', hasDistance: true, hasElevation: true },
-  'VirtualRide': { type: 'VirtualRide', label: 'Vélo virtuel', icon: 'bike', category: 'cycling', hasDistance: true, hasElevation: false },
-  'EBikeRide': { type: 'EBikeRide', label: 'Vélo électrique', icon: 'ebike', category: 'cycling', hasDistance: true, hasElevation: true },
+  'Ride': { type: 'Ride', labelKey: 'sports.types.Ride', icon: 'bike', category: 'cycling', hasDistance: true, hasElevation: true },
+  'MountainBikeRide': { type: 'MountainBikeRide', labelKey: 'sports.types.MountainBikeRide', icon: 'mtb', category: 'cycling', hasDistance: true, hasElevation: true },
+  'GravelRide': { type: 'GravelRide', labelKey: 'sports.types.GravelRide', icon: 'bike', category: 'cycling', hasDistance: true, hasElevation: true },
+  'VirtualRide': { type: 'VirtualRide', labelKey: 'sports.types.VirtualRide', icon: 'bike', category: 'cycling', hasDistance: true, hasElevation: false },
+  'EBikeRide': { type: 'EBikeRide', labelKey: 'sports.types.EBikeRide', icon: 'ebike', category: 'cycling', hasDistance: true, hasElevation: true },
 
   // Marche - distance et dénivelé
-  'Walk': { type: 'Walk', label: 'Marche', icon: 'walk', category: 'walking', hasDistance: true, hasElevation: true },
-  'Hike': { type: 'Hike', label: 'Randonnée', icon: 'hike', category: 'walking', hasDistance: true, hasElevation: true },
+  'Walk': { type: 'Walk', labelKey: 'sports.types.Walk', icon: 'walk', category: 'walking', hasDistance: true, hasElevation: true },
+  'Hike': { type: 'Hike', labelKey: 'sports.types.Hike', icon: 'hike', category: 'walking', hasDistance: true, hasElevation: true },
 
   // Fitness - pas de distance, pas de dénivelé
-  'WeightTraining': { type: 'WeightTraining', label: 'Musculation', icon: 'weight', category: 'fitness', hasDistance: false, hasElevation: false },
-  'Yoga': { type: 'Yoga', label: 'Yoga', icon: 'yoga', category: 'fitness', hasDistance: false, hasElevation: false },
-  'Workout': { type: 'Workout', label: 'Entraînement', icon: 'workout', category: 'fitness', hasDistance: false, hasElevation: false },
-  'CrossFit': { type: 'CrossFit', label: 'CrossFit', icon: 'crossfit', category: 'fitness', hasDistance: false, hasElevation: false },
-  'Elliptical': { type: 'Elliptical', label: 'Elliptique', icon: 'elliptical', category: 'fitness', hasDistance: false, hasElevation: false },
-  'StairStepper': { type: 'StairStepper', label: 'Stepper', icon: 'stairs', category: 'fitness', hasDistance: false, hasElevation: false },
+  'WeightTraining': { type: 'WeightTraining', labelKey: 'sports.types.WeightTraining', icon: 'weight', category: 'fitness', hasDistance: false, hasElevation: false },
+  'Yoga': { type: 'Yoga', labelKey: 'sports.types.Yoga', icon: 'yoga', category: 'fitness', hasDistance: false, hasElevation: false },
+  'Workout': { type: 'Workout', labelKey: 'sports.types.Workout', icon: 'workout', category: 'fitness', hasDistance: false, hasElevation: false },
+  'CrossFit': { type: 'CrossFit', labelKey: 'sports.types.CrossFit', icon: 'crossfit', category: 'fitness', hasDistance: false, hasElevation: false },
+  'Elliptical': { type: 'Elliptical', labelKey: 'sports.types.Elliptical', icon: 'elliptical', category: 'fitness', hasDistance: false, hasElevation: false },
+  'StairStepper': { type: 'StairStepper', labelKey: 'sports.types.StairStepper', icon: 'stairs', category: 'fitness', hasDistance: false, hasElevation: false },
 
   // Eau - distance mais pas de dénivelé
-  'Swim': { type: 'Swim', label: 'Natation', icon: 'swim', category: 'water', hasDistance: true, hasElevation: false },
-  'Rowing': { type: 'Rowing', label: 'Aviron', icon: 'rowing', category: 'water', hasDistance: true, hasElevation: false },
-  'Kayaking': { type: 'Kayaking', label: 'Kayak', icon: 'kayak', category: 'water', hasDistance: true, hasElevation: false },
-  'Canoeing': { type: 'Canoeing', label: 'Canoë', icon: 'canoe', category: 'water', hasDistance: true, hasElevation: false },
-  'StandUpPaddling': { type: 'StandUpPaddling', label: 'Paddle', icon: 'paddle', category: 'water', hasDistance: true, hasElevation: false },
-  'Surfing': { type: 'Surfing', label: 'Surf', icon: 'surf', category: 'water', hasDistance: false, hasElevation: false },
+  'Swim': { type: 'Swim', labelKey: 'sports.types.Swim', icon: 'swim', category: 'water', hasDistance: true, hasElevation: false },
+  'Rowing': { type: 'Rowing', labelKey: 'sports.types.Rowing', icon: 'rowing', category: 'water', hasDistance: true, hasElevation: false },
+  'Kayaking': { type: 'Kayaking', labelKey: 'sports.types.Kayaking', icon: 'kayak', category: 'water', hasDistance: true, hasElevation: false },
+  'Canoeing': { type: 'Canoeing', labelKey: 'sports.types.Canoeing', icon: 'canoe', category: 'water', hasDistance: true, hasElevation: false },
+  'StandUpPaddling': { type: 'StandUpPaddling', labelKey: 'sports.types.StandUpPaddling', icon: 'paddle', category: 'water', hasDistance: true, hasElevation: false },
+  'Surfing': { type: 'Surfing', labelKey: 'sports.types.Surfing', icon: 'surf', category: 'water', hasDistance: false, hasElevation: false },
 
   // Hiver - distance et dénivelé
-  'AlpineSki': { type: 'AlpineSki', label: 'Ski alpin', icon: 'ski', category: 'winter', hasDistance: true, hasElevation: true },
-  'BackcountrySki': { type: 'BackcountrySki', label: 'Ski de randonnée', icon: 'ski', category: 'winter', hasDistance: true, hasElevation: true },
-  'NordicSki': { type: 'NordicSki', label: 'Ski de fond', icon: 'nordic', category: 'winter', hasDistance: true, hasElevation: true },
-  'Snowboard': { type: 'Snowboard', label: 'Snowboard', icon: 'snowboard', category: 'winter', hasDistance: true, hasElevation: true },
-  'IceSkate': { type: 'IceSkate', label: 'Patinage', icon: 'skate', category: 'winter', hasDistance: true, hasElevation: false },
+  'AlpineSki': { type: 'AlpineSki', labelKey: 'sports.types.AlpineSki', icon: 'ski', category: 'winter', hasDistance: true, hasElevation: true },
+  'BackcountrySki': { type: 'BackcountrySki', labelKey: 'sports.types.BackcountrySki', icon: 'ski', category: 'winter', hasDistance: true, hasElevation: true },
+  'NordicSki': { type: 'NordicSki', labelKey: 'sports.types.NordicSki', icon: 'nordic', category: 'winter', hasDistance: true, hasElevation: true },
+  'Snowboard': { type: 'Snowboard', labelKey: 'sports.types.Snowboard', icon: 'snowboard', category: 'winter', hasDistance: true, hasElevation: true },
+  'IceSkate': { type: 'IceSkate', labelKey: 'sports.types.IceSkate', icon: 'skate', category: 'winter', hasDistance: true, hasElevation: false },
 
   // Autres
-  'Skateboard': { type: 'Skateboard', label: 'Skateboard', icon: 'skateboard', category: 'other', hasDistance: true, hasElevation: false },
-  'InlineSkate': { type: 'InlineSkate', label: 'Roller', icon: 'roller', category: 'other', hasDistance: true, hasElevation: false },
-  'RockClimbing': { type: 'RockClimbing', label: 'Escalade', icon: 'climbing', category: 'other', hasDistance: false, hasElevation: true },
-  'Golf': { type: 'Golf', label: 'Golf', icon: 'golf', category: 'other', hasDistance: true, hasElevation: false },
-  'Tennis': { type: 'Tennis', label: 'Tennis', icon: 'tennis', category: 'other', hasDistance: false, hasElevation: false },
-  'Soccer': { type: 'Soccer', label: 'Football', icon: 'soccer', category: 'other', hasDistance: true, hasElevation: false },
+  'Skateboard': { type: 'Skateboard', labelKey: 'sports.types.Skateboard', icon: 'skateboard', category: 'other', hasDistance: true, hasElevation: false },
+  'InlineSkate': { type: 'InlineSkate', labelKey: 'sports.types.InlineSkate', icon: 'roller', category: 'other', hasDistance: true, hasElevation: false },
+  'RockClimbing': { type: 'RockClimbing', labelKey: 'sports.types.RockClimbing', icon: 'climbing', category: 'other', hasDistance: false, hasElevation: true },
+  'Golf': { type: 'Golf', labelKey: 'sports.types.Golf', icon: 'golf', category: 'other', hasDistance: true, hasElevation: false },
+  'Tennis': { type: 'Tennis', labelKey: 'sports.types.Tennis', icon: 'tennis', category: 'other', hasDistance: false, hasElevation: false },
+  'Soccer': { type: 'Soccer', labelKey: 'sports.types.Soccer', icon: 'soccer', category: 'other', hasDistance: true, hasElevation: false },
 };
 
 /**
@@ -203,7 +205,7 @@ export const SPORT_TYPE_METADATA: Record<string, SportTypeMetadata> = {
 export const DEFAULT_SPORT_GROUPS: SportGroup[] = [
   {
     id: 'running',
-    name: 'Course',
+    nameKey: 'sports.groups.running',
     types: ['Run', 'VirtualRun', 'TrailRun'],
     icon: 'run',
     color: '#ef4444',
@@ -214,7 +216,7 @@ export const DEFAULT_SPORT_GROUPS: SportGroup[] = [
   },
   {
     id: 'walking',
-    name: 'Marche',
+    nameKey: 'sports.groups.walking',
     types: ['Walk', 'Hike'],
     icon: 'walk',
     color: '#22c55e',
@@ -225,7 +227,7 @@ export const DEFAULT_SPORT_GROUPS: SportGroup[] = [
   },
   {
     id: 'cycling',
-    name: 'Vélo',
+    nameKey: 'sports.groups.cycling',
     types: ['Ride', 'MountainBikeRide', 'GravelRide', 'VirtualRide', 'EBikeRide'],
     icon: 'bike',
     color: '#3b82f6',
@@ -275,7 +277,7 @@ export const GROUP_COLORS: string[] = [
 export function getSportMetadata(type: string): SportTypeMetadata {
   return SPORT_TYPE_METADATA[type] || {
     type: type as StravaActivityType,
-    label: type,
+    labelKey: type, // Pour les types inconnus, utiliser le type comme clé
     icon: 'activity',
     category: 'other' as SportCategory,
     hasDistance: false,

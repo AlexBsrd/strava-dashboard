@@ -1,6 +1,6 @@
 <div class="chart-container">
   <div class="chart-header">
-    <h3 class="chart-title">Évolution comparative - {{ activityType }}</h3>
+    <h3 class="chart-title">{{ 'comparison_chart.title' | translate }} - {{ activityType }}</h3>
 
     <div class="chart-controls">
       <div class="metric-selector">
@@ -8,26 +8,26 @@
           class="metric-button"
           [class.active]="selectedMetric === 'distance'"
           (click)="selectMetric('distance')"
-          title="Distance cumulée">
-          Distance
+          [title]="'comparison_chart.distance_cumulated' | translate">
+          {{ 'metrics.short_labels.distance' | translate }}
         </button>
         <button
           class="metric-button"
           [class.active]="selectedMetric === 'speed'"
           (click)="selectMetric('speed')"
-          title="Vitesse moyenne pondérée">
-          Vitesse
+          [title]="'comparison_chart.speed_weighted' | translate">
+          {{ 'metrics.short_labels.speed' | translate }}
         </button>
         <button
           class="metric-button"
           [class.active]="selectedMetric === 'elevation'"
           (click)="selectMetric('elevation')"
-          title="Dénivelé cumulé">
-          Dénivelé
+          [title]="'comparison_chart.elevation_cumulated' | translate">
+          {{ 'metrics.short_labels.elevation' | translate }}
         </button>
       </div>
 
-      <button class="reset-zoom-button" (click)="resetZoom()" title="Réinitialiser le zoom">
+      <button class="reset-zoom-button" (click)="resetZoom()" [title]="'comparison_chart.reset_zoom' | translate">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
@@ -44,10 +44,10 @@
   </div>
 
   <div class="chart-hint">
-    <span *ngIf="!isMobile">💡 Astuce : Maintenez Ctrl + Molette pour zoomer, cliquez-glissez pour naviguer</span>
-    <span *ngIf="isMobile">💡 Astuce : Pincez pour zoomer, glissez pour naviguer</span>
-    <span class="metric-info" *ngIf="selectedMetric === 'distance'">• Distance cumulée affichée</span>
-    <span class="metric-info" *ngIf="selectedMetric === 'speed'">• Vitesse moyenne pondérée par distance</span>
-    <span class="metric-info" *ngIf="selectedMetric === 'elevation'">• Dénivelé cumulé affiché</span>
+    <span *ngIf="!isMobile">{{ 'comparison_chart.hint_desktop' | translate }}</span>
+    <span *ngIf="isMobile">{{ 'comparison_chart.hint_mobile' | translate }}</span>
+    <span class="metric-info" *ngIf="selectedMetric === 'distance'">{{ 'comparison_chart.info_distance' | translate }}</span>
+    <span class="metric-info" *ngIf="selectedMetric === 'speed'">{{ 'comparison_chart.info_speed' | translate }}</span>
+    <span class="metric-info" *ngIf="selectedMetric === 'elevation'">{{ 'comparison_chart.info_elevation' | translate }}</span>
   </div>
 </div>

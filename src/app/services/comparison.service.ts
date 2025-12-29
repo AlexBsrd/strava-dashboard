@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { Stats } from '../models/stats';
 import { Activity } from '../models/activity';
 import { ComparisonPeriod, StatDelta, StatsComparison, ComparisonPreset } from '../types/comparison';
@@ -7,6 +8,7 @@ import { ComparisonPeriod, StatDelta, StatsComparison, ComparisonPreset } from '
   providedIn: 'root'
 })
 export class ComparisonService {
+  constructor(private translateService: TranslateService) {}
 
   /**
    * Calculate delta between two values
@@ -66,16 +68,19 @@ export class ComparisonService {
     lastWeekEnd.setSeconds(lastWeekEnd.getSeconds() - 1);
 
     presets.push({
-      label: 'Semaine actuelle vs Semaine précédente',
+      label: 'Current week vs Previous week',
+      labelKey: 'comparison_presets.current_week_vs_previous',
       period1: {
         type: 'custom',
-        label: 'Semaine précédente',
+        label: 'Previous week',
+        labelKey: 'comparison_labels.previous_week',
         startDate: lastWeekStart,
         endDate: lastWeekEnd
       },
       period2: {
         type: 'custom',
-        label: 'Semaine actuelle',
+        label: 'Current week',
+        labelKey: 'comparison_labels.current_week',
         startDate: thisWeekStart,
         endDate: thisWeekEnd
       }
@@ -88,16 +93,19 @@ export class ComparisonService {
     const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59);
 
     presets.push({
-      label: 'Mois actuel vs Mois précédent',
+      label: 'Current month vs Previous month',
+      labelKey: 'comparison_presets.current_month_vs_previous',
       period1: {
         type: 'custom',
-        label: 'Mois précédent',
+        label: 'Previous month',
+        labelKey: 'comparison_labels.previous_month',
         startDate: lastMonthStart,
         endDate: lastMonthEnd
       },
       period2: {
         type: 'custom',
-        label: 'Mois actuel',
+        label: 'Current month',
+        labelKey: 'comparison_labels.current_month',
         startDate: thisMonthStart,
         endDate: thisMonthEnd
       }
@@ -114,16 +122,19 @@ export class ComparisonService {
     prev30End.setSeconds(prev30End.getSeconds() - 1);
 
     presets.push({
-      label: '30 derniers jours vs 30 jours précédents',
+      label: 'Last 30 days vs Previous 30 days',
+      labelKey: 'comparison_presets.last_30_vs_previous_30',
       period1: {
         type: 'custom',
-        label: '30 jours précédents',
+        label: 'Previous 30 days',
+        labelKey: 'comparison_labels.previous_30_days',
         startDate: prev30Start,
         endDate: prev30End
       },
       period2: {
         type: 'custom',
-        label: '30 derniers jours',
+        label: 'Last 30 days',
+        labelKey: 'comparison_labels.last_30_days',
         startDate: last30Start,
         endDate: last30End
       }
@@ -137,42 +148,21 @@ export class ComparisonService {
     const lastYearEnd = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate(), 23, 59, 59);
 
     presets.push({
-      label: 'Cette année vs Année précédente',
+      label: 'This year vs Last year',
+      labelKey: 'comparison_presets.current_year_vs_previous',
       period1: {
         type: 'custom',
-        label: `Année ${now.getFullYear() - 1}`,
+        label: `Year ${now.getFullYear() - 1}`,
+        labelKey: 'comparison_labels.year',
         startDate: lastYearStart,
         endDate: lastYearEnd
       },
       period2: {
         type: 'custom',
-        label: `Année ${now.getFullYear()}`,
+        label: `Year ${now.getFullYear()}`,
+        labelKey: 'comparison_labels.year',
         startDate: thisYearStart,
         endDate: thisYearEnd
-      }
-    });
-
-    // Same month last year (same day-of-month)
-    const sameMonthThisYear = new Date(now.getFullYear(), now.getMonth(), 1);
-    const sameMonthThisYearEnd = new Date(now);
-    const sameMonthLastYear = new Date(now.getFullYear() - 1, now.getMonth(), 1);
-    // Last year end should be the same day-of-month as today
-    const sameMonthLastYearEnd = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate(), 23, 59, 59);
-
-    const monthName = now.toLocaleDateString('fr-FR', { month: 'long' });
-    presets.push({
-      label: `${monthName} ${now.getFullYear()} vs ${monthName} ${now.getFullYear() - 1}`,
-      period1: {
-        type: 'custom',
-        label: `${monthName} ${now.getFullYear() - 1}`,
-        startDate: sameMonthLastYear,
-        endDate: sameMonthLastYearEnd
-      },
-      period2: {
-        type: 'custom',
-        label: `${monthName} ${now.getFullYear()}`,
-        startDate: sameMonthThisYear,
-        endDate: sameMonthThisYearEnd
       }
     });
 
@@ -203,12 +193,13 @@ export class ComparisonService {
    * Format period label for display
    */
   formatPeriodLabel(period: ComparisonPeriod): string {
-    const startStr = period.startDate.toLocaleDateString('fr-FR', {
+    const locale = this.translateService.currentLang === 'en' ? 'en-US' : 'fr-FR';
+    const startStr = period.startDate.toLocaleDateString(locale, {
       day: 'numeric',
       month: 'short',
       year: 'numeric'
     });
-    const endStr = period.endDate.toLocaleDateString('fr-FR', {
+    const endStr = period.endDate.toLocaleDateString(locale, {
       day: 'numeric',
       month: 'short',
       year: 'numeric'

@@ -1,17 +1,20 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { StreakInfo } from '../../services/streak.service';
 
 @Component({
   selector: 'app-streak-badge',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   templateUrl: './streak-badge.component.html',
   styleUrl: './streak-badge.component.css'
 })
 export class StreakBadgeComponent {
   @Input() streakInfo: StreakInfo | null = null;
   @Input() loading: boolean = false;
+
+  constructor(private translateService: TranslateService) {}
 
   get hasCurrentStreak(): boolean {
     return !!this.streakInfo && this.streakInfo.currentStreak > 0;
@@ -32,15 +35,17 @@ export class StreakBadgeComponent {
   }
 
   private formatDate(date: Date): string {
+    const locale = this.translateService.currentLang === 'en' ? 'en-US' : 'fr-FR';
     const options: Intl.DateTimeFormatOptions = {
       month: 'short',
       day: 'numeric',
       year: date.getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined
     };
-    return date.toLocaleDateString('fr-FR', options);
+    return date.toLocaleDateString(locale, options);
   }
 
   getDayLabel(count: number): string {
-    return count === 1 ? 'jour' : 'jours';
+    const key = count === 1 ? 'common.plurals.day_one' : 'common.plurals.day_other';
+    return this.translateService.instant(key);
   }
 }

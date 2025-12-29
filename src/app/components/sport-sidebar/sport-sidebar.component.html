@@ -2,12 +2,12 @@
   <!-- Header -->
   <div class="sidebar-header">
     <h2 class="sidebar-title">
-      <ng-container *ngIf="isDashboardPage()">Statistiques</ng-container>
-      <ng-container *ngIf="isComparePage()">Comparer</ng-container>
-      <ng-container *ngIf="isActivitiesPage()">Activités</ng-container>
-      <ng-container *ngIf="!isDashboardPage() && !isComparePage() && !isActivitiesPage()">Configuration</ng-container>
+      <ng-container *ngIf="isDashboardPage()">{{ 'sidebar.titles.stats' | translate }}</ng-container>
+      <ng-container *ngIf="isComparePage()">{{ 'sidebar.titles.compare' | translate }}</ng-container>
+      <ng-container *ngIf="isActivitiesPage()">{{ 'sidebar.titles.activities' | translate }}</ng-container>
+      <ng-container *ngIf="!isDashboardPage() && !isComparePage() && !isActivitiesPage()">{{ 'sidebar.titles.configuration' | translate }}</ng-container>
     </h2>
-    <button class="close-btn mobile-only" (click)="closeMobile.emit()" aria-label="Fermer">
+    <button class="close-btn mobile-only" (click)="closeMobile.emit()" [attr.aria-label]="'sidebar.close' | translate">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <line x1="18" y1="6" x2="6" y2="18"></line>
         <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -20,7 +20,7 @@
     <!-- ========== Sélection de période (Dashboard et Activities) ========== -->
     <section class="sidebar-section period-section" *ngIf="isDashboardPage() || isActivitiesPage()">
       <div class="section-header">
-        <span class="section-title">Période</span>
+        <span class="section-title">{{ 'sidebar.period.title' | translate }}</span>
       </div>
       <div class="period-list">
         <button
@@ -29,7 +29,7 @@
           [class.active]="selectedDashboardPeriod === period.value"
           (click)="selectDashboardPeriod(period.value)"
         >
-          {{ period.label }}
+          {{ period.labelKey | translate }}
         </button>
 
         <!-- Sélecteur d'année -->
@@ -39,9 +39,9 @@
           [value]="getSelectedYear() || ''"
           (change)="selectDashboardYear(+$any($event.target).value)"
         >
-          <option value="" disabled>Sélectionner une année</option>
+          <option value="" disabled>{{ 'sidebar.period.selectYear' | translate }}</option>
           <option *ngFor="let year of availableYears" [value]="year">
-            Année {{ year }}
+            {{ 'sidebar.period.year' | translate:{ year: year } }}
           </option>
         </select>
       </div>
@@ -50,12 +50,12 @@
     <!-- ========== Sélection de comparaison (Compare) ========== -->
     <section class="sidebar-section comparison-section" *ngIf="isComparePage()">
       <div class="section-header">
-        <span class="section-title">Configuration</span>
+        <span class="section-title">{{ 'sidebar.comparison.title' | translate }}</span>
       </div>
 
       <!-- Presets -->
       <div class="presets-group">
-        <label class="presets-label">Suggestions rapides</label>
+        <label class="presets-label">{{ 'sidebar.comparison.quickSuggestions' | translate }}</label>
         <div class="comparison-presets">
           <button
             *ngFor="let preset of comparisonPresets; let i = index"
@@ -63,14 +63,14 @@
             [class.active]="selectedPresetIndex === i"
             (click)="selectComparisonPreset(i)"
           >
-            {{ preset.label }}
+            {{ preset.labelKey | translate }}
           </button>
           <button
             class="preset-btn custom"
             [class.active]="selectedPresetIndex === null && (showCustomPeriod1 || showCustomPeriod2)"
             (click)="enableCustomMode()"
           >
-            📅 Personnalisé
+            📅 {{ 'sidebar.comparison.custom' | translate }}
           </button>
         </div>
       </div>
@@ -79,12 +79,12 @@
 
       <!-- Périodes sélectionnées -->
       <div class="selected-periods">
-        <label class="periods-label">Périodes sélectionnées</label>
+        <label class="periods-label">{{ 'sidebar.comparison.selectedPeriods' | translate }}</label>
 
         <!-- Période 1 -->
         <div class="comparison-period period-1">
           <div class="period-header">
-            <span class="period-badge">Période 1</span>
+            <span class="period-badge">{{ 'sidebar.comparison.period1' | translate }}</span>
             <span class="period-icon">📊</span>
           </div>
           <div class="period-label">{{ formatPeriodLabel(comparePeriod1) }}</div>
@@ -111,7 +111,7 @@
         <!-- Période 2 -->
         <div class="comparison-period period-2">
           <div class="period-header">
-            <span class="period-badge">Période 2</span>
+            <span class="period-badge">{{ 'sidebar.comparison.period2' | translate }}</span>
             <span class="period-icon">📈</span>
           </div>
           <div class="period-label">{{ formatPeriodLabel(comparePeriod2) }}</div>
@@ -141,7 +141,7 @@
         (click)="triggerCompare()"
       >
         <span class="btn-icon">🔍</span>
-        <span>Comparer les périodes</span>
+        <span>{{ 'sidebar.comparison.comparePeriods' | translate }}</span>
       </button>
     </section>
 
@@ -151,7 +151,7 @@
     <!-- ========== Options d'affichage (Dashboard uniquement) ========== -->
     <section class="sidebar-section display-options-section" *ngIf="isDashboardPage()">
       <div class="section-header">
-        <span class="section-title">Affichage</span>
+        <span class="section-title">{{ 'sidebar.display.title' | translate }}</span>
       </div>
       <div class="display-options">
         <label class="display-option">
@@ -160,7 +160,7 @@
             [checked]="displayPreferences.showStreaks"
             (change)="toggleStreaks()"
           />
-          <span class="option-label">Afficher les streaks</span>
+          <span class="option-label">{{ 'sidebar.display.showStreaks' | translate }}</span>
         </label>
         <label class="display-option">
           <input
@@ -168,7 +168,7 @@
             [checked]="displayPreferences.showGoals"
             (change)="toggleGoals()"
           />
-          <span class="option-label">Afficher les objectifs</span>
+          <span class="option-label">{{ 'sidebar.display.showGoals' | translate }}</span>
         </label>
       </div>
     </section>
@@ -178,8 +178,8 @@
     <!-- Section Groupes -->
     <section class="sidebar-section">
       <div class="section-header">
-        <span class="section-title">Groupes</span>
-        <button class="add-btn" (click)="startCreateGroup()" aria-label="Créer un groupe">
+        <span class="section-title">{{ 'sidebar.groups.title' | translate }}</span>
+        <button class="add-btn" (click)="startCreateGroup()" [attr.aria-label]="'sidebar.groups.createGroup' | translate">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="12" y1="5" x2="12" y2="19"></line>
             <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -190,8 +190,8 @@
       <!-- Formulaire de création de groupe (déplacé en haut) -->
       <div class="create-form" *ngIf="showCreateForm">
         <div class="form-header">
-          <h3>Nouveau groupe</h3>
-          <button class="close-form-btn" (click)="cancelCreateGroup()" aria-label="Annuler">
+          <h3>{{ 'sidebar.groups.newGroup' | translate }}</h3>
+          <button class="close-form-btn" (click)="cancelCreateGroup()" [attr.aria-label]="'sidebar.groups.cancel' | translate">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -201,17 +201,17 @@
 
         <div class="form-body">
           <div class="form-field">
-            <label class="form-label">Nom</label>
+            <label class="form-label">{{ 'sidebar.groups.name' | translate }}</label>
             <input
               type="text"
               class="form-input"
               [(ngModel)]="newGroupName"
-              placeholder="Ex: Trail, CrossFit..."
+              [placeholder]="'sidebar.groups.namePlaceholder' | translate"
             />
           </div>
 
           <div class="form-field">
-            <label class="form-label">Couleur</label>
+            <label class="form-label">{{ 'sidebar.groups.color' | translate }}</label>
             <div class="color-picker">
               <button
                 *ngFor="let color of availableColors"
@@ -219,13 +219,13 @@
                 [style.backgroundColor]="color"
                 [class.selected]="newGroupColor === color"
                 (click)="newGroupColor = color"
-                aria-label="Couleur"
+                [attr.aria-label]="'sidebar.groups.color' | translate"
               ></button>
             </div>
           </div>
 
           <div class="form-field">
-            <label class="form-label">Types d'activités</label>
+            <label class="form-label">{{ 'sidebar.groups.activityTypes' | translate }}</label>
             <div class="chip-list">
               <button
                 *ngFor="let type of getAvailableTypesForNewGroup()"
@@ -234,16 +234,16 @@
                 [class.selected]="isNewGroupTypeSelected(type)"
                 (click)="toggleNewGroupType(type)"
               >
-                {{ getSportLabel(type) }}
+                {{ getSportLabelKey(type) | translate }}
               </button>
             </div>
             <p class="form-hint" *ngIf="getAvailableTypesForNewGroup().length === 0">
-              Chargez d'abord vos activités.
+              {{ 'sidebar.groups.loadActivitiesFirst' | translate }}
             </p>
           </div>
 
           <div class="form-field">
-            <label class="form-label">Métriques</label>
+            <label class="form-label">{{ 'sidebar.groups.metrics' | translate }}</label>
             <div class="chip-list">
               <button
                 *ngFor="let metric of allMetrics"
@@ -254,20 +254,20 @@
                 (click)="toggleNewGroupMetric(metric)"
                 [disabled]="newGroupMetrics.length === 1 && isNewGroupMetricSelected(metric)"
               >
-                {{ getMetricLabel(metric) }}
+                {{ getMetricLabelKey(metric) | translate }}
               </button>
             </div>
           </div>
         </div>
 
         <div class="form-actions">
-          <button class="btn btn-secondary" (click)="cancelCreateGroup()">Annuler</button>
+          <button class="btn btn-secondary" (click)="cancelCreateGroup()">{{ 'sidebar.groups.cancel' | translate }}</button>
           <button
             class="btn btn-primary"
             [disabled]="!canCreateGroup()"
             (click)="createGroup()"
           >
-            Créer
+            {{ 'sidebar.groups.create' | translate }}
           </button>
         </div>
       </div>
@@ -289,8 +289,8 @@
           <!-- Mode édition -->
           <div class="edit-form" *ngIf="editingGroupId === group.id">
             <div class="form-header">
-              <h3>Modifier "{{ group.name }}"</h3>
-              <button class="close-form-btn" (click)="cancelEditGroup()" aria-label="Annuler">
+              <h3>{{ 'sidebar.groups.editGroup' | translate:{ name: (group.isDefault ? (group.nameKey | translate) : group.nameKey) } }}</h3>
+              <button class="close-form-btn" (click)="cancelEditGroup()" [attr.aria-label]="'sidebar.groups.cancel' | translate">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <line x1="18" y1="6" x2="6" y2="18"></line>
                   <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -300,17 +300,17 @@
 
             <div class="form-body">
               <div class="form-field">
-                <label class="form-label">Nom</label>
+                <label class="form-label">{{ 'sidebar.groups.name' | translate }}</label>
                 <input
                   type="text"
                   class="form-input"
                   [(ngModel)]="editGroupName"
-                  placeholder="Nom du groupe"
+                  [placeholder]="'sidebar.groups.namePlaceholder' | translate"
                 />
               </div>
 
               <div class="form-field">
-                <label class="form-label">Couleur</label>
+                <label class="form-label">{{ 'sidebar.groups.color' | translate }}</label>
                 <div class="color-picker">
                   <button
                     *ngFor="let color of availableColors"
@@ -318,13 +318,13 @@
                     [style.backgroundColor]="color"
                     [class.selected]="editGroupColor === color"
                     (click)="editGroupColor = color"
-                    aria-label="Couleur"
+                    [attr.aria-label]="'sidebar.groups.color' | translate"
                   ></button>
                 </div>
               </div>
 
               <div class="form-field">
-                <label class="form-label">Types d'activités inclus</label>
+                <label class="form-label">{{ 'sidebar.groups.activityTypesIncluded' | translate }}</label>
                 <div class="chip-list">
                   <button
                     *ngFor="let type of getAvailableTypesForEdit()"
@@ -333,13 +333,13 @@
                     [class.selected]="isEditGroupTypeSelected(type)"
                     (click)="toggleEditGroupType(type)"
                   >
-                    {{ getSportLabel(type) }}
+                    {{ getSportLabelKey(type) | translate }}
                   </button>
                 </div>
               </div>
 
               <div class="form-field">
-                <label class="form-label">Métriques affichées</label>
+                <label class="form-label">{{ 'sidebar.groups.metricsDisplayed' | translate }}</label>
                 <div class="chip-list">
                   <button
                     *ngFor="let metric of allMetrics"
@@ -350,7 +350,7 @@
                     (click)="toggleEditGroupMetric(metric)"
                     [disabled]="editGroupMetrics.length === 1 && isEditGroupMetricSelected(metric)"
                   >
-                    {{ getMetricLabel(metric) }}
+                    {{ getMetricLabelKey(metric) | translate }}
                   </button>
                 </div>
               </div>
@@ -362,16 +362,16 @@
                 class="btn btn-danger"
                 (click)="deleteGroup(group.id)"
               >
-                Supprimer
+                {{ 'sidebar.groups.delete' | translate }}
               </button>
               <div class="form-actions-right">
-                <button class="btn btn-secondary" (click)="cancelEditGroup()">Annuler</button>
+                <button class="btn btn-secondary" (click)="cancelEditGroup()">{{ 'sidebar.groups.cancel' | translate }}</button>
                 <button
                   class="btn btn-primary"
                   [disabled]="!canSaveEditGroup()"
                   (click)="saveEditGroup()"
                 >
-                  Enregistrer
+                  {{ 'sidebar.groups.save' | translate }}
                 </button>
               </div>
             </div>
@@ -383,7 +383,7 @@
     <!-- Section Sports Détectés -->
     <section class="sidebar-section" *ngIf="ungroupedTypes.length > 0">
       <div class="section-header">
-        <span class="section-title">Sports détectés</span>
+        <span class="section-title">{{ 'sidebar.sports.title' | translate }}</span>
         <span class="section-badge">{{ ungroupedTypes.length }}</span>
       </div>
 
@@ -400,7 +400,7 @@
               class="toggle-switch"
               [class.active]="isUngroupedSportEnabled(type)"
               (click)="toggleUngroupedSport(type)"
-              [attr.aria-label]="isUngroupedSportEnabled(type) ? 'Désactiver ' + getSportLabel(type) : 'Activer ' + getSportLabel(type)"
+              [attr.aria-label]="(isUngroupedSportEnabled(type) ? 'sidebar.sports.disable' : 'sidebar.sports.enable') | translate:{ name: (getSportLabelKey(type) | translate) }"
             >
               <span class="toggle-slider"></span>
             </button>
@@ -410,10 +410,10 @@
                 [class.clickable]="isUngroupedSportEnabled(type)"
                 (click)="isUngroupedSportEnabled(type) && expandUngroupedType(type)"
               >
-                {{ getSportLabel(type) }}
+                {{ getSportLabelKey(type) | translate }}
               </span>
               <span class="group-badge" *ngIf="isTypeInGroup(type)">
-                {{ getGroupNameForType(type) }}
+                {{ getGroupNameKeyForType(type) | translate }}
               </span>
             </div>
             <span class="ungrouped-count" *ngIf="getUngroupedActivityCount(type) > 0">
@@ -424,7 +424,7 @@
               class="expand-btn"
               (click)="expandUngroupedType(type)"
               [class.expanded]="expandedUngroupedType === type"
-              aria-label="Configurer les métriques"
+              [attr.aria-label]="'sidebar.sports.configureMetrics' | translate"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="6 9 12 15 18 9"></polyline>
@@ -446,7 +446,7 @@
                   (change)="toggleUngroupedMetric(type, metric)"
                   [disabled]="getUngroupedSportMetrics(type).length === 1 && isUngroupedMetricSelected(type, metric)"
                 />
-                <span class="metric-label">{{ getMetricLabel(metric) }}</span>
+                <span class="metric-label">{{ getMetricLabelKey(metric) | translate }}</span>
               </label>
             </div>
           </div>
@@ -462,7 +462,7 @@
         <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
         <path d="M3 3v5h5"/>
       </svg>
-      Réinitialiser
+      {{ 'sidebar.footer.reset' | translate }}
     </button>
   </div>
 </aside>

@@ -1,13 +1,14 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 import { Goal, GoalType, GoalPeriod } from '../../models/goal';
 import { getSportMetadata } from '../../types/sport-config';
 
 @Component({
   selector: 'app-goal-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule],
   templateUrl: './goal-form.component.html',
   styleUrl: './goal-form.component.css'
 })
@@ -20,17 +21,17 @@ export class GoalFormComponent implements OnInit {
   goalForm!: FormGroup;
   isEditMode = false;
 
-  goalTypes: { value: GoalType; label: string; unit: string }[] = [
-    { value: 'distance', label: 'Distance', unit: 'km' },
-    { value: 'time', label: 'Temps', unit: 'heures' },
-    { value: 'count', label: 'Nombre d\'activités', unit: 'activités' }
+  goalTypes: { value: GoalType; labelKey: string; unitKey: string }[] = [
+    { value: 'distance', labelKey: 'goals.form.type_distance', unitKey: 'units.km' },
+    { value: 'time', labelKey: 'goals.form.type_time', unitKey: 'goals.form.target_hours' },
+    { value: 'count', labelKey: 'goals.form.type_count', unitKey: 'goals.form.target_activities' }
   ];
 
-  periods: { value: GoalPeriod; label: string }[] = [
-    { value: 'week', label: 'Cette semaine' },
-    { value: 'month', label: 'Ce mois' },
-    { value: 'year', label: 'Cette année' },
-    { value: 'custom', label: 'Période personnalisée' }
+  periods: { value: GoalPeriod; labelKey: string }[] = [
+    { value: 'week', labelKey: 'goals.form.period_week' },
+    { value: 'month', labelKey: 'goals.form.period_month' },
+    { value: 'year', labelKey: 'goals.form.period_year' },
+    { value: 'custom', labelKey: 'goals.form.period_custom' }
   ];
 
   constructor(private fb: FormBuilder) {}
@@ -73,9 +74,9 @@ export class GoalFormComponent implements OnInit {
     return this.goalForm.get('period')?.value;
   }
 
-  get currentUnit(): string {
+  get currentUnitKey(): string {
     const type = this.goalTypes.find(t => t.value === this.selectedType);
-    return type?.unit || '';
+    return type?.unitKey || '';
   }
 
   onSportToggle(sport: string): void {
@@ -96,8 +97,8 @@ export class GoalFormComponent implements OnInit {
     return sportTypes.includes(sport);
   }
 
-  getSportLabel(sport: string): string {
-    return getSportMetadata(sport).label;
+  getSportLabelKey(sport: string): string {
+    return getSportMetadata(sport).labelKey;
   }
 
   onSubmit(): void {

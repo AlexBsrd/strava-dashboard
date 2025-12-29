@@ -4,6 +4,7 @@ import { RouterLink, RouterLinkActive, RouterOutlet, Router, NavigationEnd } fro
 import { CommonModule } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ThemeService } from './services/theme.service';
 import { SportSidebarComponent } from './components/sport-sidebar/sport-sidebar.component';
 import { SportConfigService } from './services/sport-config.service';
@@ -11,6 +12,10 @@ import { ActivityCacheService } from './services/activity-cache.service';
 import { PeriodStateService } from './services/period-state.service';
 import { Activity } from './models/activity';
 import { PeriodType } from './types/period';
+
+const STORAGE_KEY = 'strava_language';
+const SUPPORTED_LANGS = ['fr', 'en'];
+const DEFAULT_LANG = 'fr';
 
 @Component({
   selector: 'app-root',
@@ -20,7 +25,8 @@ import { PeriodType } from './types/period';
     RouterOutlet,
     RouterLink,
     RouterLinkActive,
-    SportSidebarComponent
+    SportSidebarComponent,
+    TranslateModule
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
@@ -32,6 +38,7 @@ export class AppComponent implements OnInit, OnDestroy {
   filteredActivities: Activity[] = [];
   currentRoute = '/';
   isHeaderVisible = true;
+  currentLang = 'fr';
   private currentPeriod: PeriodType = 'week';
 
   private destroy$ = new Subject<void>();
@@ -40,13 +47,21 @@ export class AppComponent implements OnInit, OnDestroy {
 
   constructor(
     private themeService: ThemeService,
+    private translateService: TranslateService,
     private sportConfigService: SportConfigService,
     private activityCacheService: ActivityCacheService,
     private periodStateService: PeriodStateService,
     private router: Router
-  ) {}
+  ) {
+    // Configure available languages
+    this.translateService.addLangs(SUPPORTED_LANGS);
+    this.translateService.setDefaultLang(DEFAULT_LANG);
+  }
 
   ngOnInit() {
+    // Initialize language from localStorage or browser preference
+    this.initializeLanguage();
+
     this.themeService.theme$.pipe(takeUntil(this.destroy$)).subscribe(theme => {
       this.isDarkTheme = theme === 'dark';
     });
@@ -101,6 +116,28 @@ export class AppComponent implements OnInit, OnDestroy {
 
   toggleTheme() {
     this.themeService.toggleTheme();
+  }
+
+  toggleLanguage() {
+    const newLang = this.currentLang === 'fr' ? 'en' : 'fr';
+    this.translateService.use(newLang);
+    localStorage.setItem(STORAGE_KEY, newLang);
+    this.currentLang = newLang;
+  }
+
+  private initializeLanguage(): void {
+    const storedLang = localStorage.getItem(STORAGE_KEY);
+
+    if (storedLang && SUPPORTED_LANGS.includes(storedLang)) {
+      this.translateService.use(storedLang);
+      this.currentLang = storedLang;
+    } else {
+      // Detect browser language
+      const browserLang = navigator.language?.split('-')[0]?.toLowerCase() || DEFAULT_LANG;
+      const lang = SUPPORTED_LANGS.includes(browserLang) ? browserLang : DEFAULT_LANG;
+      this.translateService.use(lang);
+      this.currentLang = lang;
+    }
   }
 
   toggleSportConfig() {

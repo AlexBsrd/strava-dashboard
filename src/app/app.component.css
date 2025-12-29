@@ -166,6 +166,42 @@ h1 {
   }
 }
 
+/* Language toggle button */
+.language-toggle {
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.language-toggle:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.language-toggle:active {
+  transform: scale(0.95);
+}
+
+@media (max-width: 768px) {
+  .language-toggle {
+    padding: 0.35rem 0.6rem;
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .language-toggle {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.7rem;
+  }
+}
+
 /* Modern theme toggle button */
 .theme-toggle {
   position: relative;

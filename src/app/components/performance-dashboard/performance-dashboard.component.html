@@ -1,8 +1,8 @@
 <ng-container *ngIf="hasRecords(); else noRecords">
   <div class="performance-container">
     <div class="section best-performances">
-      <p class="mobile-hint">💡 Cliquez sur ⚙️ en bas à droite pour changer la période</p>
-      <h2>Records Personnels (sur la période)</h2>
+      <p class="mobile-hint">{{ 'performance.mobile_hint' | translate }}</p>
+      <h2>{{ 'performance.title' | translate }}</h2>
       <div class="records-grid">
         <!-- 5km Record -->
         <div class="record-card" *ngIf="metrics?.bestRaces?.fiveKm?.value">
@@ -28,7 +28,7 @@
 
         <!-- Semi-Marathon Record -->
         <div class="record-card" *ngIf="metrics?.bestRaces?.semi?.value">
-          <div class="record-title">Semi-Marathon</div>
+          <div class="record-title">{{ 'performance.races.half_marathon' | translate }}</div>
           <div class="record-value">{{ metrics.bestRaces.semi.value | number:'1.1-1' }} km/h</div>
           <div class="record-pace">{{ calculatePace(metrics.bestRaces.semi.value) }} min/km</div>
           <div class="record-details">
@@ -58,12 +58,12 @@
       <div class="empty-state-content">
         <i class="empty-state-icon">🏃</i>
         <div class="empty-state-text">
-          <h2>Aucun record sur cette période</h2>
-          <p>Continuez à vous entraîner pour établir de nouveaux records sur :</p>
+          <h2>{{ 'performance.no_records' | translate }}</h2>
+          <p>{{ 'performance.keep_training' | translate }}</p>
           <ul>
-            <li>5 kilomètres</li>
-            <li>10 kilomètres</li>
-            <li>Semi-marathon</li>
+            <li>{{ 'performance.races.five_km' | translate }}</li>
+            <li>{{ 'performance.races.ten_km' | translate }}</li>
+            <li>{{ 'performance.races.half_marathon' | translate }}</li>
             <li>Marathon</li>
           </ul>
         </div>

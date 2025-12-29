@@ -1,6 +1,7 @@
 // src/app/components/profile/profile.component.ts
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
 import {AthleteProfile, AthleteService, AthleteSummary} from '../../services/athlete.service';
 import {ProfileCacheService} from '../../services/profile-cache.service';
 import {Subject, takeUntil} from 'rxjs';
@@ -18,7 +19,7 @@ export const fadeIn = trigger('fadeIn', [
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, ProfileSkeletonComponent],
+  imports: [CommonModule, TranslateModule, ProfileSkeletonComponent],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css']
 })
@@ -33,7 +34,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
   constructor(
     private athleteService: AthleteService,
     private profileCache: ProfileCacheService,
-    private stravaService: StravaService
+    private stravaService: StravaService,
+    private translateService: TranslateService
   ) {
   }
 
@@ -76,11 +78,20 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   formatDate(date: string): string {
-    return new Date(date).toLocaleDateString('fr-FR', {
+    const locale = this.translateService.currentLang === 'en' ? 'en-US' : 'fr-FR';
+    return new Date(date).toLocaleDateString(locale, {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
       day: 'numeric'
+    });
+  }
+
+  formatMemberSince(date: string): string {
+    const locale = this.translateService.currentLang === 'en' ? 'en-US' : 'fr-FR';
+    return new Date(date).toLocaleDateString(locale, {
+      month: 'long',
+      year: 'numeric'
     });
   }
 
@@ -113,7 +124,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           console.error('Error loading profile:', error);
-          this.error = 'Une erreur est survenue lors du chargement du profil.';
+          this.error = this.translateService.instant('errors.loading_error.title');
           this.isLoadingProfile = false;
           this.isLoadingSummary = false;
         }
@@ -133,7 +144,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           console.error('Error loading summary:', error);
-          this.error = 'Une erreur est survenue lors du chargement des statistiques.';
+          this.error = this.translateService.instant('errors.loading_error.title');
           this.isLoadingSummary = false;
         }
       });

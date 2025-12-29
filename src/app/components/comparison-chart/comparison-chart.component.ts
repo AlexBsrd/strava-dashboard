@@ -1,5 +1,6 @@
 import { Component, Input, OnChanges, SimpleChanges, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
 import zoomPlugin from 'chartjs-plugin-zoom';
 import { Activity } from '../../models/activity';
@@ -12,7 +13,7 @@ type MetricType = 'distance' | 'speed' | 'elevation';
 @Component({
   selector: 'app-comparison-chart',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   templateUrl: './comparison-chart.component.html',
   styleUrls: ['./comparison-chart.component.css']
 })

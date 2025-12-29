@@ -1,21 +1,20 @@
 <div class="login-container">
   <div class="login-card">
     <img src="assets/images/strava-logo.png" alt="Strava" class="strava-logo"/>
-    <h1>Bienvenue sur Strava Dashboard</h1>
-    <p class="subtitle">Connectez-vous avec votre compte Strava pour accéder à vos statistiques détaillées.</p>
+    <h1>{{ 'auth.login.title' | translate }}</h1>
+    <p class="subtitle">{{ 'auth.login.description' | translate }}</p>
 
     <div class="privacy-notice">
       <div class="privacy-content">
         <div class="lock-container">
           <span class="lock-icon">🔒</span>
         </div>
-        <p>Vos données d'activités ne sont jamais stockées sur nos serveurs. Toutes les analyses sont effectuées
-          directement dans votre navigateur et ne persistent que pendant la durée de votre session.</p>
+        <p>{{ 'auth.login.privacy' | translate }}</p>
       </div>
     </div>
 
     <button class="strava-button" (click)="login()">
-      Se connecter avec Strava
+      {{ 'auth.login.button' | translate }}
     </button>
   </div>
 </div>
