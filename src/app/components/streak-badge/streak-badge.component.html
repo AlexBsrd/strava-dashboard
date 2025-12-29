@@ -5,7 +5,7 @@
       <div class="streak-label">{{ 'streaks.current_streak' | translate }}</div>
       <div class="streak-value">
         <span class="streak-number">{{ streakInfo?.currentStreak || 0 }}</span>
-        <span class="streak-unit">{{ getDayLabel(streakInfo?.currentStreak || 0) }}</span>
+        <span class="streak-unit">{{ getUnitLabel(streakInfo?.currentStreak || 0) }}</span>
       </div>
       <div class="streak-date" *ngIf="hasCurrentStreak">
         {{ formatDateRange(streakInfo?.currentStreakStart, streakInfo?.currentStreakEnd) }}
@@ -22,7 +22,7 @@
       <div class="streak-label">{{ 'streaks.best_streak' | translate }}</div>
       <div class="streak-value">
         <span class="streak-number">{{ streakInfo?.longestStreak || 0 }}</span>
-        <span class="streak-unit">{{ getDayLabel(streakInfo?.longestStreak || 0) }}</span>
+        <span class="streak-unit">{{ getUnitLabel(streakInfo?.longestStreak || 0) }}</span>
       </div>
       <div class="streak-date" *ngIf="hasLongestStreak">
         {{ formatDateRange(streakInfo?.longestStreakStart, streakInfo?.longestStreakEnd) }}

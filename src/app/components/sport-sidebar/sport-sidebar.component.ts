@@ -7,7 +7,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SportConfigService } from '../../services/sport-config.service';
 import { PeriodStateService } from '../../services/period-state.service';
 import { ComparisonService } from '../../services/comparison.service';
-import { DisplayPreferencesService, DisplayPreferences } from '../../services/display-preferences.service';
+import { DisplayPreferencesService, DisplayPreferences, StreakMode } from '../../services/display-preferences.service';
 import {
   SportGroup,
   StravaActivityType,
@@ -82,7 +82,8 @@ export class SportSidebarComponent implements OnInit, OnDestroy, OnChanges {
   customPeriod2End = '';
 
   // ========== Display preferences ==========
-  displayPreferences: DisplayPreferences = { showStreaks: true, showGoals: true };
+  displayPreferences: DisplayPreferences = { showStreaks: true, showGoals: true, streakMode: 'weeks' };
+  streaksExpanded = false;
 
   constructor(
     private sportConfigService: SportConfigService,
@@ -568,5 +569,15 @@ export class SportSidebarComponent implements OnInit, OnDestroy, OnChanges {
   /** Toggle goals visibility */
   toggleGoals(): void {
     this.displayPreferencesService.setShowGoals(!this.displayPreferences.showGoals);
+  }
+
+  /** Toggle streaks expanded state */
+  toggleStreaksExpanded(): void {
+    this.streaksExpanded = !this.streaksExpanded;
+  }
+
+  /** Set streak mode */
+  setStreakMode(mode: StreakMode): void {
+    this.displayPreferencesService.setStreakMode(mode);
   }
 }

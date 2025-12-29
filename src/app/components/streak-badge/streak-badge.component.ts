@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { StreakInfo } from '../../services/streak.service';
+import { StreakMode } from '../../services/display-preferences.service';
 
 @Component({
   selector: 'app-streak-badge',
@@ -13,6 +14,7 @@ import { StreakInfo } from '../../services/streak.service';
 export class StreakBadgeComponent {
   @Input() streakInfo: StreakInfo | null = null;
   @Input() loading: boolean = false;
+  @Input() streakMode: StreakMode = 'weeks';
 
   constructor(private translateService: TranslateService) {}
 
@@ -44,8 +46,13 @@ export class StreakBadgeComponent {
     return date.toLocaleDateString(locale, options);
   }
 
-  getDayLabel(count: number): string {
-    const key = count === 1 ? 'common.plurals.day_one' : 'common.plurals.day_other';
-    return this.translateService.instant(key);
+  getUnitLabel(count: number): string {
+    if (this.streakMode === 'weeks') {
+      const key = count === 1 ? 'common.plurals.week_one' : 'common.plurals.week_other';
+      return this.translateService.instant(key);
+    } else {
+      const key = count === 1 ? 'common.plurals.day_one' : 'common.plurals.day_other';
+      return this.translateService.instant(key);
+    }
   }
 }

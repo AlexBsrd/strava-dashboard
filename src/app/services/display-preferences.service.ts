@@ -1,14 +1,18 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
+export type StreakMode = 'days' | 'weeks';
+
 export interface DisplayPreferences {
   showStreaks: boolean;
   showGoals: boolean;
+  streakMode: StreakMode;
 }
 
 const DEFAULT_PREFERENCES: DisplayPreferences = {
   showStreaks: true,
-  showGoals: true
+  showGoals: true,
+  streakMode: 'weeks'
 };
 
 const STORAGE_KEY = 'dashboard_display_preferences';
@@ -37,6 +41,11 @@ export class DisplayPreferencesService {
   setShowGoals(show: boolean): void {
     const current = this.preferences$.value;
     this.savePreferences({ ...current, showGoals: show });
+  }
+
+  setStreakMode(mode: StreakMode): void {
+    const current = this.preferences$.value;
+    this.savePreferences({ ...current, streakMode: mode });
   }
 
   private loadPreferences(): DisplayPreferences {

@@ -108,6 +108,8 @@
     "plurals": {
       "day_one": "day",
       "day_other": "days",
+      "week_one": "week",
+      "week_other": "weeks",
       "activity_one": "activity",
       "activity_other": "activities",
       "outing_one": "outing",
@@ -375,7 +377,10 @@
     "display": {
       "title": "Display",
       "showStreaks": "Show streaks",
-      "showGoals": "Show goals"
+      "showGoals": "Show goals",
+      "configureStreaks": "Configure streaks",
+      "streakModeWeeks": "Weeks",
+      "streakModeDays": "Days"
     },
     "groups": {
       "title": "Groups",

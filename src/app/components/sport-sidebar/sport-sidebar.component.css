@@ -1026,3 +1026,98 @@
 [data-theme="dark"] .display-option:hover {
   background-color: var(--gray-800);
 }
+
+/* Display option group (expandable) */
+.display-option-group {
+  border-radius: 6px;
+  transition: background-color 0.15s ease;
+}
+
+.display-option-group.expanded {
+  background-color: var(--bg-secondary);
+}
+
+.display-option-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.display-option-header .display-option {
+  flex: 1;
+}
+
+.display-option-header .expand-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.display-option-header .expand-btn:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.display-option-header .expand-btn.expanded {
+  transform: rotate(180deg);
+}
+
+/* Streak mode panel */
+.streak-mode-panel {
+  padding: 0.5rem 0.75rem 0.75rem 2.25rem;
+}
+
+.streak-mode-toggle {
+  display: flex;
+  gap: 0.25rem;
+  background: var(--bg-primary);
+  border-radius: 6px;
+  padding: 0.25rem;
+  border: 1px solid var(--border-color);
+}
+
+.streak-mode-toggle .mode-btn {
+  flex: 1;
+  padding: 0.375rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.streak-mode-toggle .mode-btn:hover:not(.active) {
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+}
+
+.streak-mode-toggle .mode-btn.active {
+  color: white;
+  background: var(--primary-500);
+}
+
+/* Dark mode for streak options */
+[data-theme="dark"] .display-option-group.expanded {
+  background-color: var(--gray-800);
+}
+
+[data-theme="dark"] .streak-mode-toggle {
+  background: var(--gray-900);
+  border-color: var(--gray-700);
+}
+
+[data-theme="dark"] .streak-mode-toggle .mode-btn:hover:not(.active) {
+  background: var(--gray-700);
+}

@@ -154,14 +154,50 @@
         <span class="section-title">{{ 'sidebar.display.title' | translate }}</span>
       </div>
       <div class="display-options">
-        <label class="display-option">
-          <input
-            type="checkbox"
-            [checked]="displayPreferences.showStreaks"
-            (change)="toggleStreaks()"
-          />
-          <span class="option-label">{{ 'sidebar.display.showStreaks' | translate }}</span>
-        </label>
+        <!-- Streaks option with expandable submenu -->
+        <div class="display-option-group" [class.expanded]="streaksExpanded && displayPreferences.showStreaks">
+          <div class="display-option-header">
+            <label class="display-option">
+              <input
+                type="checkbox"
+                [checked]="displayPreferences.showStreaks"
+                (change)="toggleStreaks()"
+              />
+              <span class="option-label">{{ 'sidebar.display.showStreaks' | translate }}</span>
+            </label>
+            <button
+              *ngIf="displayPreferences.showStreaks"
+              class="expand-btn"
+              [class.expanded]="streaksExpanded"
+              (click)="toggleStreaksExpanded()"
+              [attr.aria-label]="'sidebar.display.configureStreaks' | translate"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+          </div>
+          <!-- Streak mode selector -->
+          <div class="streak-mode-panel" *ngIf="streaksExpanded && displayPreferences.showStreaks">
+            <div class="streak-mode-toggle">
+              <button
+                class="mode-btn"
+                [class.active]="displayPreferences.streakMode === 'weeks'"
+                (click)="setStreakMode('weeks')"
+              >
+                {{ 'sidebar.display.streakModeWeeks' | translate }}
+              </button>
+              <button
+                class="mode-btn"
+                [class.active]="displayPreferences.streakMode === 'days'"
+                (click)="setStreakMode('days')"
+              >
+                {{ 'sidebar.display.streakModeDays' | translate }}
+              </button>
+            </div>
+          </div>
+        </div>
+
         <label class="display-option">
           <input
             type="checkbox"

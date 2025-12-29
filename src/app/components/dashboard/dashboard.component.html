@@ -40,7 +40,8 @@
       <div class="streak-section" *ngIf="displayPreferences.showStreaks">
         <app-streak-badge
           [streakInfo]="streakInfo"
-          [loading]="isLoading">
+          [loading]="isLoading"
+          [streakMode]="displayPreferences.streakMode">
         </app-streak-badge>
       </div>
 

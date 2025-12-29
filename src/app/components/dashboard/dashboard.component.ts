@@ -78,7 +78,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   availableSports: string[] = [];
 
   // Display preferences
-  displayPreferences: DisplayPreferences = { showStreaks: true, showGoals: true };
+  displayPreferences: DisplayPreferences = { showStreaks: true, showGoals: true, streakMode: 'weeks' };
 
   constructor(
     private stravaService: StravaService,
@@ -102,7 +102,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.displayPreferencesService.getPreferences()
       .pipe(takeUntil(this.destroy$))
       .subscribe(prefs => {
+        const streakModeChanged = this.displayPreferences.streakMode !== prefs.streakMode;
         this.displayPreferences = prefs;
+        // Recalculer les streaks si le mode a changé
+        if (streakModeChanged && this.allActivities.length > 0) {
+          this.updateStreakInfo(this.allActivities);
+        }
       });
 
     // S'abonner aux changements de configuration des sports (config complète pour détecter les changements de types)
@@ -219,8 +224,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private updateActivitiesDisplay(activities: Activity[]) {
     this.allActivities = activities;
 
-    // Calculer les streaks
-    this.streakInfo = this.streakService.calculateStreaks(activities);
+    // Calculer les streaks selon le mode
+    this.updateStreakInfo(activities);
 
     // Calculer la progression des goals
     this.updateGoalProgresses(activities);
@@ -318,6 +323,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.authError = true;
     this.error = null;
     this.isLoading = false;
+  }
+
+  /** Calculate streaks based on the current mode (days or weeks) */
+  private updateStreakInfo(activities: Activity[]): void {
+    if (this.displayPreferences.streakMode === 'weeks') {
+      this.streakInfo = this.streakService.calculateWeekStreaks(activities);
+    } else {
+      this.streakInfo = this.streakService.calculateStreaks(activities);
+    }
   }
 
   /** Update goal progresses based on ALL cached activities (not filtered by dashboard period) */
