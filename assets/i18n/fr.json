@@ -1,0 +1,448 @@
+{
+  "auth": {
+    "login": {
+      "title": "Bienvenue sur Strava Dashboard",
+      "description": "Connectez-vous avec votre compte Strava pour accéder à vos statistiques détaillées.",
+      "privacy": "Vos données d'activités ne sont jamais stockées sur nos serveurs. Toutes les analyses sont effectuées directement dans votre navigateur et ne persistent que pendant la durée de votre session.",
+      "button": "Se connecter avec Strava"
+    },
+    "callback": {
+      "authenticating": "Authentification en cours..."
+    }
+  },
+  "navigation": {
+    "menu": {
+      "stats": "Statistiques",
+      "compare": "Comparer",
+      "activities": "Activités",
+      "profile": "Profil",
+      "dashboard": "Dashboard",
+      "configuration": "Configuration"
+    },
+    "footer": {
+      "powered_by": "Powered with 🧡 by Strava API"
+    }
+  },
+  "dashboard": {
+    "loading": {
+      "all_activities": "Chargement de toutes vos activités des deux dernières années...",
+      "may_take_time": "Cela peut prendre quelques secondes",
+      "activities": "Chargement des activités..."
+    },
+    "goals": {
+      "title": "Mes Objectifs",
+      "add": "Ajouter un objectif",
+      "none": "Aucun objectif défini"
+    },
+    "dev_banner": {
+      "title": "Application en développement"
+    }
+  },
+  "errors": {
+    "session_expired": {
+      "title": "Votre session a expiré ou n'est plus valide.",
+      "action": "Se reconnecter à Strava"
+    },
+    "loading_error": {
+      "title": "Une erreur est survenue lors du chargement des données.",
+      "action": "Réessayer"
+    }
+  },
+  "goals": {
+    "card": {
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "progression": "Progression",
+      "completed": "Complété",
+      "at_this_pace": "À ce rythme : {{value}} ({{percentage}}%)",
+      "goal_achieved": "Objectif atteint !",
+      "days_remaining_one": "{{count}} jour restant",
+      "days_remaining_other": "{{count}} jours restants",
+      "last_day": "Dernier jour !",
+      "delete_confirmation": "Êtes-vous sûr de vouloir supprimer cet objectif ?"
+    },
+    "periods": {
+      "week": "Cette semaine",
+      "month": "Ce mois",
+      "year": "Cette année",
+      "custom": "Personnalisé"
+    },
+    "types": {
+      "distance": "Distance",
+      "time": "Temps",
+      "count": "Nombre d'activités"
+    },
+    "form": {
+      "title_edit": "Modifier l'objectif",
+      "title_new": "Nouvel objectif",
+      "name_label": "Nom de l'objectif",
+      "name_placeholder": "Ex: 100 km ce mois",
+      "name_error": "Le nom est requis (max 50 caractères)",
+      "type_label": "Type d'objectif",
+      "type_distance": "Distance",
+      "type_time": "Temps",
+      "type_count": "Nombre d'activités",
+      "target_label": "Objectif",
+      "target_km": "Objectif (km)",
+      "target_hours": "Objectif (heures)",
+      "target_activities": "Objectif (activités)",
+      "target_error": "L'objectif doit être supérieur à 0",
+      "period_label": "Période",
+      "period_week": "Cette semaine",
+      "period_month": "Ce mois",
+      "period_year": "Cette année",
+      "period_custom": "Période personnalisée",
+      "start_date": "Date de début",
+      "end_date": "Date de fin",
+      "sports_label": "Sports concernés (optionnel)",
+      "sports_placeholder": "Laisser vide pour tous les sports",
+      "button_create": "Créer l'objectif",
+      "button_save": "Enregistrer"
+    }
+  },
+  "common": {
+    "loading": "Chargement...",
+    "no_data": "Aucune donnée",
+    "error": "Erreur",
+    "success": "Succès",
+    "plurals": {
+      "day_one": "jour",
+      "day_other": "jours",
+      "week_one": "semaine",
+      "week_other": "semaines",
+      "activity_one": "activité",
+      "activity_other": "activités",
+      "outing_one": "sortie",
+      "outing_other": "sorties",
+      "remaining_one": "restant",
+      "remaining_other": "restants"
+    }
+  },
+  "buttons": {
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "create": "Créer",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "close": "Fermer",
+    "retry": "Réessayer",
+    "download": "Télécharger",
+    "reset": "Réinitialiser",
+    "compare": "Comparer"
+  },
+  "units": {
+    "km": "km",
+    "km_h": "km/h",
+    "m": "m",
+    "h": "h",
+    "min": "min",
+    "s": "s"
+  },
+  "comparison": {
+    "loading": {
+      "message": "Comparaison en cours..."
+    },
+    "no_activities": {
+      "title": "Aucune activité trouvée",
+      "message": "Il n'y a pas d'activités pour les périodes sélectionnées."
+    },
+    "instructions": {
+      "title": "Comparez vos performances",
+      "subtitle": "Suivez ces étapes pour analyser votre progression :",
+      "step1_title": "Ouvrez le menu de réglages",
+      "step1_desktop": "Le menu de réglages est déjà ouvert à gauche",
+      "step1_mobile": "Cliquez sur l'icône ⚙️ pour accéder aux réglages",
+      "step2_title": "Choisissez deux périodes",
+      "step2_description": "Sélectionnez un preset ou des dates personnalisées",
+      "step3_title": "Lancez la comparaison",
+      "step3_description": "Cliquez sur le bouton \"Comparer\""
+    },
+    "period_selector": {
+      "title": "Comparer les périodes",
+      "suggestions": "Suggestions",
+      "custom": "Personnalisé",
+      "period_1": "Période 1",
+      "period_2": "Période 2",
+      "start_date": "Date de début",
+      "end_date": "Date de fin",
+      "customize": "Personnaliser",
+      "button": "Comparer les périodes"
+    },
+    "presets": {
+      "current_week_vs_previous": "Semaine actuelle vs Semaine précédente",
+      "current_month_vs_previous": "Mois actuel vs Mois précédent",
+      "last_30_vs_previous_30": "30 derniers jours vs 30 jours précédents",
+      "current_year_vs_previous": "Cette année vs Année précédente"
+    },
+    "period_labels": {
+      "previous_week": "Semaine précédente",
+      "current_week": "Semaine actuelle",
+      "previous_month": "Mois précédent",
+      "current_month": "Mois actuel",
+      "last_30_days": "30 derniers jours",
+      "previous_30_days": "30 jours précédents",
+      "year": "Année {{year}}"
+    }
+  },
+  "activities": {
+    "title": "Mes Activités",
+    "no_activities": "Aucune activité pour le moment",
+    "table": {
+      "distance": "Distance",
+      "duration": "Durée",
+      "avg_speed": "Vitesse moy.",
+      "elevation": "Dénivelé",
+      "session_duration": "Durée de séance"
+    },
+    "count_one": "{{count}} activité",
+    "count_other": "{{count}} activités"
+  },
+  "profile": {
+    "member_since": "Membre depuis {{date}}",
+    "loading": "Chargement de vos statistiques...",
+    "loading_details": "Nous récupérons toutes vos activités Strava pour calculer vos totaux et records.",
+    "loading_subtext": "Cette opération peut prendre quelques instants selon le nombre d'activités.",
+    "reconnect": "Se reconnecter à Strava",
+    "stats": {
+      "running_total": "Course à pied - Total",
+      "running_year": "Course à pied - Cette année",
+      "cycling_total": "Vélo - Total",
+      "cycling_year": "Vélo - Cette année",
+      "records_running": "Records (Course/Marche uniquement)",
+      "records_cycling": "Records (Vélo uniquement)",
+      "total_distance": "distance totale",
+      "total_time": "temps total",
+      "outings": "sorties",
+      "total_elevation": "dénivelé total",
+      "distance_covered": "distance parcourue",
+      "max_elevation": "Plus grand dénivelé",
+      "longest_outing": "Plus longue sortie"
+    }
+  },
+  "performance": {
+    "title": "Records Personnels (sur la période)",
+    "mobile_hint": "Cliquez sur l'icône ⚙️ en bas à droite pour changer la période",
+    "no_records": "Aucun record sur cette période",
+    "keep_training": "Continuez à vous entraîner pour établir de nouveaux records sur :",
+    "races": {
+      "five_km": "5 kilomètres",
+      "ten_km": "10 kilomètres",
+      "half_marathon": "Semi-Marathon"
+    }
+  },
+  "heatmap": {
+    "title": "Activité sur les 12 derniers mois",
+    "loading": "Chargement du calendrier...",
+    "no_data": "Aucune donnée disponible pour afficher le calendrier d'activité.",
+    "no_activity": "Aucune activité",
+    "less": "Moins",
+    "more": "Plus",
+    "legend": {
+      "zero": "0 activité",
+      "one": "1 activité",
+      "two": "2 activités",
+      "three_plus": "3+ activités"
+    }
+  },
+  "share_modal": {
+    "title": "Créer une story Instagram",
+    "cancel": "Annuler"
+  },
+  "chart": {
+    "none": "Aucun",
+    "week": "Semaine",
+    "week_abbrev": "Sem.",
+    "from": "Du",
+    "to": "au",
+    "activities_of_week": "Activités de la semaine",
+    "activities_of_month": "Activités du mois",
+    "performance_evolution": "Évolution des performances",
+    "exit_fullscreen": "Quitter le plein écran",
+    "enter_fullscreen": "Passer en plein écran",
+    "grouping": {
+      "none": "Aucun",
+      "by_week": "Par semaine",
+      "by_month": "Par mois"
+    },
+    "metrics": {
+      "speed": "Vitesse (km/h)",
+      "distance": "Distance (km)",
+      "elevation": "Dénivelé (m)",
+      "duration": "Durée (h)"
+    }
+  },
+  "streaks": {
+    "current_streak": "Streak Actuel",
+    "best_streak": "Meilleur Streak",
+    "start_today": "Commencez votre streak aujourd'hui !",
+    "no_activity": "Aucune activité pour le moment"
+  },
+  "sports": {
+    "types": {
+      "Run": "Course",
+      "VirtualRun": "Course virtuelle",
+      "TrailRun": "Trail",
+      "Ride": "Vélo",
+      "MountainBikeRide": "VTT",
+      "GravelRide": "Gravel",
+      "VirtualRide": "Vélo virtuel",
+      "EBikeRide": "Vélo électrique",
+      "Walk": "Marche",
+      "Hike": "Randonnée",
+      "WeightTraining": "Musculation",
+      "Yoga": "Yoga",
+      "Workout": "Entraînement",
+      "CrossFit": "CrossFit",
+      "Elliptical": "Elliptique",
+      "StairStepper": "Stepper",
+      "Swim": "Natation",
+      "Rowing": "Aviron",
+      "Kayaking": "Kayak",
+      "Canoeing": "Canoë",
+      "StandUpPaddling": "Paddle",
+      "Surfing": "Surf",
+      "AlpineSki": "Ski alpin",
+      "BackcountrySki": "Ski de randonnée",
+      "NordicSki": "Ski de fond",
+      "Snowboard": "Snowboard",
+      "IceSkate": "Patinage",
+      "Skateboard": "Skateboard",
+      "InlineSkate": "Roller",
+      "RockClimbing": "Escalade",
+      "Golf": "Golf",
+      "Tennis": "Tennis",
+      "Soccer": "Football"
+    },
+    "categories": {
+      "running": "Course",
+      "cycling": "Vélo",
+      "walking": "Marche",
+      "fitness": "Fitness",
+      "water": "Sports aquatiques",
+      "winter": "Sports d'hiver",
+      "other": "Autres"
+    },
+    "groups": {
+      "running": "Course",
+      "cycling": "Vélo",
+      "walking": "Marche"
+    }
+  },
+  "metrics": {
+    "labels": {
+      "totalElapsedTime": "Temps total",
+      "averageSpeed": "Vitesse moyenne",
+      "totalDistance": "Distance totale",
+      "averageDistance": "Distance moyenne/sortie",
+      "totalElevation": "Dénivelé total",
+      "averageElevation": "Dénivelé moyen/sortie",
+      "numberOfActivities": "Nombre d'activités"
+    },
+    "short_labels": {
+      "distance": "Distance",
+      "speed": "Vitesse",
+      "elevation": "Dénivelé",
+      "time": "Temps",
+      "duration": "Durée"
+    }
+  },
+  "sidebar": {
+    "titles": {
+      "stats": "Statistiques",
+      "compare": "Comparer",
+      "activities": "Activités",
+      "configuration": "Configuration"
+    },
+    "close": "Fermer",
+    "period": {
+      "title": "Période",
+      "last7days": "7 derniers jours",
+      "last30days": "30 derniers jours",
+      "sinceJan1": "Depuis le 1er janvier",
+      "selectYear": "Sélectionner une année",
+      "year": "Année {{year}}"
+    },
+    "comparison": {
+      "title": "Configuration",
+      "quickSuggestions": "Suggestions rapides",
+      "custom": "Personnalisé",
+      "selectedPeriods": "Périodes sélectionnées",
+      "period1": "Période 1",
+      "period2": "Période 2",
+      "customPeriod1": "Période personnalisée 1",
+      "customPeriod2": "Période personnalisée 2",
+      "comparePeriods": "Comparer les périodes",
+      "selectPeriod": "Sélectionnez une période"
+    },
+    "display": {
+      "title": "Affichage",
+      "showStreaks": "Afficher les streaks",
+      "showGoals": "Afficher les objectifs",
+      "configureStreaks": "Configurer les streaks",
+      "streakModeWeeks": "Semaines",
+      "streakModeDays": "Jours"
+    },
+    "groups": {
+      "title": "Groupes",
+      "createGroup": "Créer un groupe",
+      "newGroup": "Nouveau groupe",
+      "editGroup": "Modifier \"{{name}}\"",
+      "name": "Nom",
+      "namePlaceholder": "Ex: Trail, CrossFit...",
+      "color": "Couleur",
+      "activityTypes": "Types d'activités",
+      "activityTypesIncluded": "Types d'activités inclus",
+      "metrics": "Métriques",
+      "metricsDisplayed": "Métriques affichées",
+      "cancel": "Annuler",
+      "create": "Créer",
+      "save": "Enregistrer",
+      "delete": "Supprimer",
+      "loadActivitiesFirst": "Chargez d'abord vos activités.",
+      "confirmDelete": "Supprimer le groupe \"{{name}}\" ?",
+      "confirmReset": "Réinitialiser tous les paramètres aux valeurs par défaut ?"
+    },
+    "sports": {
+      "title": "Sports détectés",
+      "sport_one": "{{count}} sport",
+      "sport_other": "{{count}} sports",
+      "activity_one": "{{count}} activité",
+      "activity_other": "{{count}} activités",
+      "enable": "Activer {{name}}",
+      "disable": "Désactiver {{name}}",
+      "configureMetrics": "Configurer les métriques",
+      "editGroup": "Modifier le groupe"
+    },
+    "footer": {
+      "reset": "Réinitialiser"
+    }
+  },
+  "comparison_presets": {
+    "current_week_vs_previous": "Semaine actuelle vs Semaine précédente",
+    "current_month_vs_previous": "Mois actuel vs Mois précédent",
+    "last_30_vs_previous_30": "30 derniers jours vs 30 jours précédents",
+    "current_year_vs_previous": "Cette année vs Année précédente",
+    "month_year_vs_previous": "{{month}} {{year}} vs {{month}} {{prevYear}}"
+  },
+  "comparison_labels": {
+    "previous_week": "Semaine précédente",
+    "current_week": "Semaine actuelle",
+    "previous_month": "Mois précédent",
+    "current_month": "Mois actuel",
+    "last_30_days": "30 derniers jours",
+    "previous_30_days": "30 jours précédents",
+    "year": "Année {{year}}"
+  },
+  "comparison_chart": {
+    "title": "Évolution",
+    "distance_cumulated": "Distance cumulée",
+    "speed_weighted": "Vitesse moyenne pondérée par distance",
+    "elevation_cumulated": "Dénivelé cumulé",
+    "reset_zoom": "Réinitialiser le zoom",
+    "hint_desktop": "Maintenez Ctrl + Molette pour zoomer, cliquez-glissez pour naviguer",
+    "hint_mobile": "Pincez pour zoomer, glissez pour naviguer",
+    "info_distance": "Distance cumulée affichée",
+    "info_speed": "Vitesse moyenne pondérée affichée",
+    "info_elevation": "Dénivelé cumulé affiché"
+  }
+}
