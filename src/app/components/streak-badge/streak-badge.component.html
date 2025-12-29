@@ -16,7 +16,7 @@
     </div>
   </div>
 
-  <div class="streak-card longest-streak" *ngIf="!loading">
+  <div class="streak-card longest-streak" *ngIf="!loading && showLongestStreak">
     <div class="streak-icon">🏆</div>
     <div class="streak-content">
       <div class="streak-label">{{ 'streaks.best_streak' | translate }}</div>

@@ -15,6 +15,7 @@ export class StreakBadgeComponent {
   @Input() streakInfo: StreakInfo | null = null;
   @Input() loading: boolean = false;
   @Input() streakMode: StreakMode = 'weeks';
+  @Input() showLongestStreak: boolean = true;
 
   constructor(private translateService: TranslateService) {}
 

@@ -80,6 +80,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   // Display preferences
   displayPreferences: DisplayPreferences = { showStreaks: true, showGoals: true, streakMode: 'weeks' };
 
+  /** Returns false for week period (only show current streak), true otherwise */
+  get showLongestStreak(): boolean {
+    return this.selectedPeriod !== 'week';
+  }
+
   constructor(
     private stravaService: StravaService,
     private statsService: StatsService,
@@ -128,12 +133,28 @@ export class DashboardComponent implements OnInit, OnDestroy {
       )
       .subscribe(period => {
         if (period !== this.selectedPeriod) {
+          const previousPeriod = this.selectedPeriod;
           this.selectedPeriod = period;
+
+          // Mettre à jour le mode de streak par défaut selon la période
+          // 'days' pour la semaine, 'weeks' pour les autres périodes
+          const newDefaultMode = period === 'week' ? 'days' : 'weeks';
+          const previousDefaultMode = previousPeriod === 'week' ? 'days' : 'weeks';
+          if (newDefaultMode !== previousDefaultMode) {
+            this.displayPreferencesService.setStreakMode(newDefaultMode);
+          }
+
           if (this.allActivities.length > 0) {
             this.loadData();
           }
         }
       });
+
+    // Initialiser le mode de streak selon la période initiale
+    const initialMode = this.selectedPeriod === 'week' ? 'days' : 'weeks';
+    if (this.displayPreferences.streakMode !== initialMode) {
+      this.displayPreferencesService.setStreakMode(initialMode);
+    }
 
     this.loadInitialData();
   }
