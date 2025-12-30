@@ -360,8 +360,12 @@ export class StreakService {
 
     if (week === 1) {
       // Go to last week of previous year
-      const lastDayPrevYear = new Date(year - 1, 11, 31);
-      return this.getWeekKey(lastDayPrevYear);
+      // We need to find a date that's definitely in the last week of the previous year
+      // Go back 7 days from the start of week 1 to be sure we're in the previous week
+      const week1Dates = this.getWeekDates(weekKey);
+      const previousWeekDate = new Date(week1Dates.start);
+      previousWeekDate.setDate(previousWeekDate.getDate() - 1); // Go to Sunday of previous week
+      return this.getWeekKey(previousWeekDate);
     }
     return `${year}-W${(week - 1).toString().padStart(2, '0')}`;
   }
