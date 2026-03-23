@@ -45,6 +45,15 @@
   font-weight: 700;
   color: var(--text-primary);
   line-height: 1.1;
+  white-space: nowrap;
+}
+
+.is-time .value-number {
+  font-size: clamp(20px, 5vw, 28px);
+}
+
+.is-time .delta-value {
+  font-size: clamp(14px, 3.5vw, 16px);
 }
 
 .value-unit {
@@ -171,6 +180,10 @@
 
   .value-number {
     font-size: 1.5rem;
+  }
+
+  .is-time .value-number {
+    font-size: 1.25rem;
   }
 
   .value-unit {
