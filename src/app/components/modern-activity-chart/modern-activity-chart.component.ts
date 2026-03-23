@@ -171,14 +171,21 @@ export class ModernActivityChartComponent implements OnChanges, OnInit {
   }
 
   private getWeekNumber(date: Date): number {
-    const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
-    const pastDaysOfYear = (date.getTime() - firstDayOfYear.getTime()) / 86400000;
-    return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+    const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    // ISO 8601: week starts on Monday, week 1 contains the first Thursday
+    const dayOfWeek = d.getDay() || 7; // Convert Sunday (0) to 7
+    d.setDate(d.getDate() + 4 - dayOfWeek); // Set to Thursday of this week
+    const yearStart = new Date(d.getFullYear(), 0, 1);
+    return Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
   }
 
   private getWeekRange(date: Date): { start: Date; end: Date } {
     const start = new Date(date);
-    start.setDate(date.getDate() - date.getDay() + 1);
+    const day = start.getDay();
+    // Monday-based: Sunday (0) → -6, Monday (1) → 0, Tuesday (2) → -1, etc.
+    const diff = day === 0 ? -6 : 1 - day;
+    start.setDate(start.getDate() + diff);
+    start.setHours(0, 0, 0, 0);
     const end = new Date(start);
     end.setDate(start.getDate() + 6);
     return {start, end};
@@ -316,9 +323,10 @@ export class ModernActivityChartComponent implements OnChanges, OnInit {
       const firstDayOfYear = new Date(targetYear, 0, 1);
       const lastDayOfYear = new Date(targetYear, 11, 31);
 
-      // Ajuster au premier lundi de l'année
+      // Ajuster au lundi de la semaine contenant le 1er janvier
       const firstMonday = new Date(firstDayOfYear);
-      firstMonday.setDate(firstMonday.getDate() + (8 - firstMonday.getDay()) % 7);
+      const dow = firstMonday.getDay();
+      firstMonday.setDate(firstMonday.getDate() + (dow === 0 ? -6 : 1 - dow));
 
       // Créer un tableau de toutes les semaines
       const allWeeks: WeeklyData[] = [];
