@@ -37,10 +37,6 @@
   opacity: 0.6;
 }
 
-.streak-section {
-  margin: 2rem 0;
-}
-
 .goals-section {
   margin: 2rem 0;
 }
@@ -190,7 +186,6 @@
     padding: 10px;
   }
 
-  .streak-section,
   .goals-section {
     margin: 1.5rem 0;
   }

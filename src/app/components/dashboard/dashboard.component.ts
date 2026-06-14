@@ -18,8 +18,6 @@ import {ActivityCacheService} from "../../services/activity-cache.service";
 import {SportConfigService} from "../../services/sport-config.service";
 import {PeriodStateService} from "../../services/period-state.service";
 import {SportGroup, StravaActivityType, getSportMetadata, getRecommendedMetrics, ALL_METRICS} from "../../types/sport-config";
-import {StreakService, StreakInfo} from "../../services/streak.service";
-import {StreakBadgeComponent} from "../streak-badge/streak-badge.component";
 import {GoalService} from "../../services/goal.service";
 import {Goal, GoalProgress} from "../../models/goal";
 import {GoalCardComponent} from "../goal-card/goal-card.component";
@@ -44,7 +42,6 @@ interface GroupedStatsData {
     PerformanceDashboardComponent,
     ModernActivityChartComponent,
     PaceScatterComponent,
-    StreakBadgeComponent,
     GoalCardComponent,
     GoalFormComponent
   ],
@@ -68,9 +65,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   allActivities: Activity[] = [];
 
-  // Données pour les streaks
-  streakInfo: StreakInfo | null = null;
-
   // Données pour les goals
   goalProgresses: GoalProgress[] = [];
   showGoalForm: boolean = false;
@@ -78,12 +72,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   availableSports: string[] = [];
 
   // Display preferences
-  displayPreferences: DisplayPreferences = { showStreaks: true, showGoals: true, streakMode: 'weeks' };
-
-  /** Returns false for week period (only show current streak), true otherwise */
-  get showLongestStreak(): boolean {
-    return this.selectedPeriod !== 'week';
-  }
+  displayPreferences: DisplayPreferences = { showGoals: true };
 
   constructor(
     private stravaService: StravaService,
@@ -92,7 +81,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private activityCache: ActivityCacheService,
     private sportConfigService: SportConfigService,
     private periodStateService: PeriodStateService,
-    private streakService: StreakService,
     private goalService: GoalService,
     private displayPreferencesService: DisplayPreferencesService,
     private translateService: TranslateService
@@ -107,12 +95,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.displayPreferencesService.getPreferences()
       .pipe(takeUntil(this.destroy$))
       .subscribe(prefs => {
-        const streakModeChanged = this.displayPreferences.streakMode !== prefs.streakMode;
         this.displayPreferences = prefs;
-        // Recalculer les streaks si le mode a changé
-        if (streakModeChanged && this.allActivities.length > 0) {
-          this.updateStreakInfo(this.allActivities);
-        }
       });
 
     // S'abonner aux changements de configuration des sports (config complète pour détecter les changements de types)
@@ -133,28 +116,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
       )
       .subscribe(period => {
         if (period !== this.selectedPeriod) {
-          const previousPeriod = this.selectedPeriod;
           this.selectedPeriod = period;
-
-          // Mettre à jour le mode de streak par défaut selon la période
-          // 'days' pour la semaine, 'weeks' pour les autres périodes
-          const newDefaultMode = period === 'week' ? 'days' : 'weeks';
-          const previousDefaultMode = previousPeriod === 'week' ? 'days' : 'weeks';
-          if (newDefaultMode !== previousDefaultMode) {
-            this.displayPreferencesService.setStreakMode(newDefaultMode);
-          }
 
           if (this.allActivities.length > 0) {
             this.loadData();
           }
         }
       });
-
-    // Initialiser le mode de streak selon la période initiale
-    const initialMode = this.selectedPeriod === 'week' ? 'days' : 'weeks';
-    if (this.displayPreferences.streakMode !== initialMode) {
-      this.displayPreferencesService.setStreakMode(initialMode);
-    }
 
     this.loadInitialData();
   }
@@ -244,9 +212,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private updateActivitiesDisplay(activities: Activity[]) {
     this.allActivities = activities;
-
-    // Calculer les streaks selon le mode
-    this.updateStreakInfo(activities);
 
     // Calculer la progression des goals
     this.updateGoalProgresses(activities);
@@ -344,15 +309,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.authError = true;
     this.error = null;
     this.isLoading = false;
-  }
-
-  /** Calculate streaks based on the current mode (days or weeks) */
-  private updateStreakInfo(activities: Activity[]): void {
-    if (this.displayPreferences.streakMode === 'weeks') {
-      this.streakInfo = this.streakService.calculateWeekStreaks(activities);
-    } else {
-      this.streakInfo = this.streakService.calculateStreaks(activities);
-    }
   }
 
   /** Update goal progresses based on ALL cached activities (not filtered by dashboard period) */

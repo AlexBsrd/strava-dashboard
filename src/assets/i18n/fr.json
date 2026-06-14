@@ -271,12 +271,6 @@
       "duration": "Durée (h)"
     }
   },
-  "streaks": {
-    "current_streak": "Streak Actuel",
-    "best_streak": "Meilleur Streak",
-    "start_today": "Commencez votre streak aujourd'hui !",
-    "no_activity": "Aucune activité pour le moment"
-  },
   "sports": {
     "types": {
       "Run": "Course",
@@ -376,11 +370,7 @@
     },
     "display": {
       "title": "Affichage",
-      "showStreaks": "Afficher les streaks",
-      "showGoals": "Afficher les objectifs",
-      "configureStreaks": "Configurer les streaks",
-      "streakModeWeeks": "Semaines",
-      "streakModeDays": "Jours"
+      "showGoals": "Afficher les objectifs"
     },
     "groups": {
       "title": "Groupes",
