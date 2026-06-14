@@ -1,7 +1,7 @@
 <div class="stats-grid-container" *ngIf="comparison">
   <div class="activity-header">
-    <div class="activity-icon" [ngClass]="activityIcon">
-      <i class="icon"></i>
+    <div class="activity-icon" [style.backgroundColor]="displayColor">
+      <app-sport-icon [icon]="groupIcon || activityIcon"></app-sport-icon>
     </div>
     <h2 class="activity-title">{{ activityType }}</h2>
     <span class="activity-count">

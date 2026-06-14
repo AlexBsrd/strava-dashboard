@@ -182,7 +182,11 @@
       "last_30_days": "Last 30 days",
       "previous_30_days": "Previous 30 days",
       "year": "Year {{year}}"
-    }
+    },
+    "picker": {
+      "subtitle": "Pick a comparison to get started"
+    },
+    "change": "Change"
   },
   "activities": {
     "title": "My Activities",

@@ -84,6 +84,7 @@
         <!-- Stats par groupe de sports (dynamique) -->
         <ng-container *ngFor="let groupData of groupedStatsData; trackBy: trackByGroupId">
           <app-stats-list
+            *ngIf="groupData.stats.numberOfActivities > 0"
             [title]="groupData.group.nameKey | translate"
             [stats]="groupData.stats"
             [selectedPeriod]="selectedPeriod"

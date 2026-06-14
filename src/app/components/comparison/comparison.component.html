@@ -28,6 +28,22 @@
 
   <!-- Comparison Results -->
   <div *ngIf="hasCompared && !isLoading && !error && !authError" class="comparison-results">
+    <!-- Barre récap : ce qu'on compare + bouton changer -->
+    <div class="comparison-summary">
+      <div class="summary-periods">
+        <span class="summary-period p1">{{ periodLabel(period1) }}</span>
+        <span class="summary-vs">vs</span>
+        <span class="summary-period p2">{{ periodLabel(period2) }}</span>
+      </div>
+      <button class="summary-change" (click)="changeComparison()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 2v6h6"/>
+          <path d="M3 13a9 9 0 1 0 3-7.7L3 8"/>
+        </svg>
+        {{ 'comparison.change' | translate }}
+      </button>
+    </div>
+
     <!-- Comparaisons par groupe de sports (dynamique) -->
     <ng-container *ngFor="let groupData of groupComparisons; trackBy: trackByGroupId">
       <div *ngIf="hasGroupActivities(groupData)">
@@ -35,6 +51,7 @@
           [comparison]="groupData.comparison"
           [activityType]="groupData.group.nameKey | translate"
           [groupColor]="groupData.group.color"
+          [groupIcon]="groupData.group.icon"
           [visibleMetrics]="groupData.group.visibleMetrics">
         </app-comparison-stats-grid>
 
@@ -64,46 +81,61 @@
     </div>
   </div>
 
-  <!-- Initial State -->
-  <div *ngIf="!hasCompared && !isLoading" class="initial-state">
-    <div class="initial-state-content">
-      <div class="empty-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="18" y1="20" x2="18" y2="10"/>
-          <line x1="12" y1="20" x2="12" y2="4"/>
-          <line x1="6" y1="20" x2="6" y2="14"/>
-          <line x1="3" y1="20" x2="21" y2="20"/>
+  <!-- Sélecteur inline (état initial) -->
+  <div *ngIf="!hasCompared && !isLoading && !authError" class="comparison-picker">
+    <div class="picker-header">
+      <h2>{{ 'comparison.instructions.title' | translate }}</h2>
+      <p>{{ 'comparison.picker.subtitle' | translate }}</p>
+    </div>
+
+    <div class="preset-grid">
+      <button
+        *ngFor="let preset of presets; let i = index"
+        class="preset-card"
+        [class.active]="selectedPresetIndex === i"
+        (click)="selectPreset(i)">
+        <span class="preset-label">{{ preset.labelKey | translate }}</span>
+        <svg class="preset-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"/>
+          <polyline points="12 5 19 12 12 19"/>
         </svg>
-      </div>
-      <h3>{{ 'comparison.instructions.title' | translate }}</h3>
-      <p class="main-instruction">{{ 'comparison.instructions.subtitle' | translate }}</p>
+      </button>
 
-      <div class="steps-container">
-        <div class="step">
-          <div class="step-number">1</div>
-          <div class="step-content">
-            <span class="step-title">{{ 'comparison.instructions.step1_title' | translate }}</span>
-            <span class="step-description mobile-text">{{ 'comparison.instructions.step1_mobile' | translate }}</span>
-            <span class="step-description desktop-text">{{ 'comparison.instructions.step1_desktop' | translate }}</span>
-          </div>
-        </div>
+      <button
+        class="preset-card custom-card"
+        [class.active]="showCustom"
+        (click)="toggleCustom()">
+        <span class="preset-label">{{ 'comparison.period_selector.custom' | translate }}</span>
+        <svg class="preset-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+      </button>
+    </div>
 
-        <div class="step">
-          <div class="step-number">2</div>
-          <div class="step-content">
-            <span class="step-title">{{ 'comparison.instructions.step2_title' | translate }}</span>
-            <span class="step-description">{{ 'comparison.instructions.step2_description' | translate }}</span>
-          </div>
-        </div>
-
-        <div class="step">
-          <div class="step-number">3</div>
-          <div class="step-content">
-            <span class="step-title">{{ 'comparison.instructions.step3_title' | translate }}</span>
-            <span class="step-description">{{ 'comparison.instructions.step3_description' | translate }}</span>
-          </div>
+    <!-- Dates personnalisées (dépliable) -->
+    <div class="custom-panel" *ngIf="showCustom">
+      <div class="custom-row">
+        <label>{{ 'comparison.period_selector.period_1' | translate }}</label>
+        <div class="custom-dates">
+          <input type="date" [(ngModel)]="customStart1" class="date-input"/>
+          <span class="date-sep">→</span>
+          <input type="date" [(ngModel)]="customEnd1" class="date-input"/>
         </div>
       </div>
+      <div class="custom-row">
+        <label>{{ 'comparison.period_selector.period_2' | translate }}</label>
+        <div class="custom-dates">
+          <input type="date" [(ngModel)]="customStart2" class="date-input"/>
+          <span class="date-sep">→</span>
+          <input type="date" [(ngModel)]="customEnd2" class="date-input"/>
+        </div>
+      </div>
+      <button class="custom-apply" [disabled]="!canRunCustom()" (click)="applyCustom()">
+        {{ 'comparison.period_selector.button' | translate }}
+      </button>
     </div>
   </div>
 </div>

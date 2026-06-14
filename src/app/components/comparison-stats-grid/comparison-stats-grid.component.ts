@@ -3,12 +3,13 @@ import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { StatsComparison } from '../../types/comparison';
 import { ComparisonStatsCardComponent } from '../comparison-stats-card/comparison-stats-card.component';
+import { SportIconComponent } from '../sport-icon/sport-icon.component';
 import { MetricKey, ALL_METRICS } from '../../types/sport-config';
 
 @Component({
   selector: 'app-comparison-stats-grid',
   standalone: true,
-  imports: [CommonModule, TranslateModule, ComparisonStatsCardComponent],
+  imports: [CommonModule, TranslateModule, ComparisonStatsCardComponent, SportIconComponent],
   templateUrl: './comparison-stats-grid.component.html',
   styleUrls: ['./comparison-stats-grid.component.css']
 })
@@ -16,6 +17,7 @@ export class ComparisonStatsGridComponent {
   @Input() comparison: StatsComparison | null = null;
   @Input() activityType: string = '';
   @Input() groupColor?: string;
+  @Input() groupIcon?: string;
   @Input() visibleMetrics?: MetricKey[];
 
   /**

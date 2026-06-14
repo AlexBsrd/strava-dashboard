@@ -38,6 +38,10 @@
   background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
 }
 
+.activity-icon app-sport-icon {
+  color: #fff;
+}
+
 .activity-icon .icon {
   width: 24px;
   height: 24px;

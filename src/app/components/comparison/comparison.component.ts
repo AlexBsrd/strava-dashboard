@@ -1,9 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subject, takeUntil, filter } from 'rxjs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { ComparisonPeriod, StatsComparison } from '../../types/comparison';
+import { ComparisonPeriod, ComparisonPreset, StatsComparison } from '../../types/comparison';
 import { ComparisonService } from '../../services/comparison.service';
 import { StravaService } from '../../services/strava.service';
 import { StatsService } from '../../services/stats.service';
@@ -28,6 +29,7 @@ interface GroupComparisonData {
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     TranslateModule,
     ComparisonStatsGridComponent,
     ComparisonChartComponent,
@@ -54,6 +56,15 @@ export class ComparisonComponent implements OnInit, OnDestroy {
   // Comparaisons groupées dynamiques
   groupComparisons: GroupComparisonData[] = [];
 
+  // Sélecteur inline (sur la page)
+  presets: ComparisonPreset[] = [];
+  selectedPresetIndex: number | null = null;
+  showCustom = false;
+  customStart1 = '';
+  customEnd1 = '';
+  customStart2 = '';
+  customEnd2 = '';
+
   constructor(
     private comparisonService: ComparisonService,
     private stravaService: StravaService,
@@ -65,6 +76,9 @@ export class ComparisonComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    // Charger les préréglages pour le sélecteur inline
+    this.presets = this.comparisonService.getComparisonPresets();
+
     // S'abonner aux changements de configuration des sports (config complète pour détecter les changements de types)
     this.sportConfigService.config$
       .pipe(takeUntil(this.destroy$))
@@ -122,6 +136,65 @@ export class ComparisonComponent implements OnInit, OnDestroy {
     }
 
     this.loadComparisonData();
+  }
+
+  /** Sélectionne un préréglage et lance directement la comparaison */
+  selectPreset(index: number) {
+    const preset = this.presets[index];
+    if (!preset) {
+      return;
+    }
+    this.selectedPresetIndex = index;
+    this.showCustom = false;
+    this.periodStateService.setComparePeriod1(preset.period1);
+    this.periodStateService.setComparePeriod2(preset.period2);
+    this.onCompare();
+  }
+
+  /** Affiche / masque le panneau de dates personnalisées */
+  toggleCustom() {
+    this.showCustom = !this.showCustom;
+    this.selectedPresetIndex = null;
+  }
+
+  /** Vrai si les 4 dates personnalisées sont renseignées */
+  canRunCustom(): boolean {
+    return !!(this.customStart1 && this.customEnd1 && this.customStart2 && this.customEnd2);
+  }
+
+  /** Construit deux périodes personnalisées et lance la comparaison */
+  applyCustom() {
+    if (!this.canRunCustom()) {
+      return;
+    }
+    const toEndOfDay = (value: string): Date => {
+      const d = new Date(value);
+      d.setHours(23, 59, 59, 999);
+      return d;
+    };
+    this.periodStateService.setComparePeriod1({
+      type: 'custom',
+      label: this.translateService.instant('comparison.period_selector.period_1'),
+      startDate: new Date(this.customStart1),
+      endDate: toEndOfDay(this.customEnd1)
+    });
+    this.periodStateService.setComparePeriod2({
+      type: 'custom',
+      label: this.translateService.instant('comparison.period_selector.period_2'),
+      startDate: new Date(this.customStart2),
+      endDate: toEndOfDay(this.customEnd2)
+    });
+    this.onCompare();
+  }
+
+  /** Revient au sélecteur depuis l'écran de résultats */
+  changeComparison() {
+    this.hasCompared = false;
+  }
+
+  /** Libellé lisible d'une période (pour la barre récap) */
+  periodLabel(period: ComparisonPeriod | null): string {
+    return this.periodStateService.formatPeriodLabel(period);
   }
 
   private loadComparisonData() {
