@@ -182,7 +182,11 @@
       "last_30_days": "30 derniers jours",
       "previous_30_days": "30 jours précédents",
       "year": "Année {{year}}"
-    }
+    },
+    "picker": {
+      "subtitle": "Choisissez une comparaison pour commencer"
+    },
+    "change": "Changer"
   },
   "activities": {
     "title": "Mes Activités",
@@ -269,7 +273,8 @@
       "distance": "Distance (km)",
       "elevation": "Dénivelé (m)",
       "duration": "Durée (h)"
-    }
+    },
+    "reset_zoom": "Réinitialiser le zoom"
   },
   "sports": {
     "types": {
