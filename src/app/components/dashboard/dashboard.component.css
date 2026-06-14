@@ -6,6 +6,66 @@
   position: relative;
 }
 
+/* ===== Sélecteur de période visible (mobile) ===== */
+.period-bar {
+  display: none;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.period-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.period-chip {
+  flex: 0 0 auto;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--gray-200);
+  border-radius: 999px;
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.period-chip.active {
+  background: var(--primary-500);
+  border-color: var(--primary-500);
+  color: #fff;
+}
+
+.period-year {
+  flex: 0 0 auto;
+  max-width: 7.5rem;
+  padding: 0.5rem 0.55rem;
+  border: 1px solid var(--gray-200);
+  border-radius: 999px;
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.period-year.active {
+  background: var(--primary-500);
+  border-color: var(--primary-500);
+  color: #fff;
+}
+
+@media (max-width: 768px) {
+  .period-bar {
+    display: flex;
+  }
+}
+
 .dev-banner {
   background: var(--bg-secondary);
   color: var(--text-secondary);

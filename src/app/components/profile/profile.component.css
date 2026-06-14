@@ -60,6 +60,13 @@
   font-size: 1.2rem;
 }
 
+.detail-svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  opacity: 0.8;
+}
+
 /* Container des statistiques */
 .stats-container {
   display: grid;
@@ -107,20 +114,29 @@
   flex-shrink: 0;
 }
 
+.stats-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
 .stats-icon.running {
   background-color: #FFE0B2;
+  color: #EF6C00;
 }
 
 .stats-icon.cycling {
   background-color: #B3E5FC;
+  color: #0277BD;
 }
 
 .stats-icon.trophy {
   background-color: #FFE0B2;
+  color: #EF6C00;
 }
 
 .stats-icon.trophy-ride {
   background-color: #B3E5FC;
+  color: #0277BD;
 }
 
 .stats-header h3 {

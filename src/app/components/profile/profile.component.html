@@ -24,11 +24,19 @@
         <h1>{{ profile.firstname }} {{ profile.lastname }}</h1>
         <div class="profile-details">
           <span *ngIf="profile.city || profile.country" class="detail-item">
-            <i class="icon">📍</i>
-            {{ profile.city }}, {{ profile.country }}
+            <svg class="detail-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+            {{ profile.city }}{{ profile.city && profile.country ? ', ' : '' }}{{ profile.country }}
           </span>
           <span class="detail-item">
-            <i class="icon">🎯</i>
+            <svg class="detail-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
             {{ 'profile.member_since' | translate:{ date: formatMemberSince(profile.created_at) } }}
           </span>
         </div>
@@ -122,7 +130,7 @@
     <div class="stats-container" *ngIf="!isLoadingSummary && summary" @fadeIn>
       <div class="stats-card total-running">
         <div class="stats-header">
-          <div class="stats-icon running">🏃</div>
+          <div class="stats-icon running"><app-sport-icon icon="run"></app-sport-icon></div>
           <h3>{{ 'profile.stats.running_total' | translate }}</h3>
         </div>
         <div class="stats-body">
@@ -147,7 +155,7 @@
 
       <div class="stats-card total-cycling">
         <div class="stats-header">
-          <div class="stats-icon cycling">🚴</div>
+          <div class="stats-icon cycling"><app-sport-icon icon="bike"></app-sport-icon></div>
           <h3>{{ 'profile.stats.cycling_total' | translate }}</h3>
         </div>
         <div class="stats-body">
@@ -173,7 +181,14 @@
       <!-- Records -->
       <div class="stats-card">
         <div class="stats-header">
-          <div class="stats-icon trophy">🏆</div>
+          <div class="stats-icon trophy">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M8 21h8"/><path d="M12 17v4"/>
+              <path d="M7 4h10v5a5 5 0 0 1-10 0V4z"/>
+              <path d="M7 6H4v2a3 3 0 0 0 3 3"/>
+              <path d="M17 6h3v2a3 3 0 0 1-3 3"/>
+            </svg>
+          </div>
           <h3>{{ 'profile.stats.records_running' | translate }}</h3>
         </div>
         <div class="stats-body">
@@ -205,7 +220,7 @@
       <!-- Yearly Stats Course -->
       <div class="stats-card ytd-running">
         <div class="stats-header">
-          <div class="stats-icon running">🏃</div>
+          <div class="stats-icon running"><app-sport-icon icon="run"></app-sport-icon></div>
           <h3>{{ 'profile.stats.running_year' | translate }}</h3>
         </div>
         <div class="stats-body">
@@ -230,7 +245,7 @@
 
       <div class="stats-card ytd-cycling">
         <div class="stats-header">
-          <div class="stats-icon cycling">🚴</div>
+          <div class="stats-icon cycling"><app-sport-icon icon="bike"></app-sport-icon></div>
           <h3>{{ 'profile.stats.cycling_year' | translate }}</h3>
         </div>
         <div class="stats-body">
@@ -255,7 +270,14 @@
       <!-- Records Vélo -->
       <div class="stats-card">
         <div class="stats-header">
-          <div class="stats-icon trophy-ride">🏆</div>
+          <div class="stats-icon trophy-ride">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M8 21h8"/><path d="M12 17v4"/>
+              <path d="M7 4h10v5a5 5 0 0 1-10 0V4z"/>
+              <path d="M7 6H4v2a3 3 0 0 0 3 3"/>
+              <path d="M17 6h3v2a3 3 0 0 1-3 3"/>
+            </svg>
+          </div>
           <h3>{{ 'profile.stats.records_cycling' | translate }}</h3>
         </div>
         <div class="stats-body">

@@ -196,6 +196,12 @@
   opacity: 0.15;
 }
 
+.activity-icon app-sport-icon {
+  position: relative;
+  z-index: 1;
+  color: #fff;
+}
+
 .activity-info {
   display: flex;
   flex-direction: column;

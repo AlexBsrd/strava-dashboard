@@ -140,6 +140,13 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 
+  /** Détermine si l'habillage (header, nav, footer…) doit être affiché.
+   * On le masque sur les pages d'authentification pour un écran propre. */
+  get showChrome(): boolean {
+    const route = this.currentRoute || '';
+    return !(route.startsWith('/login') || route.startsWith('/callback'));
+  }
+
   toggleSportConfig() {
     this.sportConfigOpen = !this.sportConfigOpen;
   }

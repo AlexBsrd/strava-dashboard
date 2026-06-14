@@ -97,14 +97,15 @@
 
 .activity-type {
   font-size: 0.85rem;
-  font-weight: 500;
+  font-weight: 600;
   text-transform: uppercase;
-  color: #666;
+  letter-spacing: 0.3px;
+  color: var(--text-secondary);
 }
 
 .activity-time {
   font-size: 0.85rem;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .activity-name {
@@ -132,14 +133,15 @@
 
 .stat-label {
   font-size: 0.75rem;
-  color: #666;
+  color: var(--text-secondary);
   text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 
 .stat-value {
   font-size: 1rem;
-  font-weight: 500;
-  color: #2d3748;
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
 .error-message {
@@ -157,6 +159,7 @@
   }
 
   .activity-stats {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem 1rem;
   }
 }

@@ -4,6 +4,7 @@ import {TranslateModule, TranslateService} from '@ngx-translate/core';
 import {Stats} from '../../models/stats';
 import {StatsCardComponent} from '../stats-card/stats-card.component';
 import {ShareModalComponent} from '../share-modal/share-modal.component';
+import {SportIconComponent} from '../sport-icon/sport-icon.component';
 import {PeriodType} from "../../types/period";
 import {MetricKey, ALL_METRICS} from "../../types/sport-config";
 
@@ -14,7 +15,8 @@ import {MetricKey, ALL_METRICS} from "../../types/sport-config";
     CommonModule,
     TranslateModule,
     StatsCardComponent,
-    ShareModalComponent
+    ShareModalComponent,
+    SportIconComponent
   ],
   templateUrl: './stats-list.component.html',
   styleUrls: ['./stats-list.component.css', './stats-list.animations.css']
@@ -89,6 +91,25 @@ export class StatsListComponent {
         }
         return '';
     }
+  }
+
+  /**
+   * Identifiant d'icône de sport (pour app-sport-icon).
+   * Utilise groupIcon si disponible, sinon déduit depuis le titre.
+   */
+  get sportIconId(): string {
+    if (this.groupIcon) {
+      return this.groupIcon;
+    }
+    const titleLower = this.title.toLowerCase();
+    if (titleLower.includes('course') || titleLower.includes('run')) {
+      return 'run';
+    } else if (titleLower.includes('vélo') || titleLower.includes('bike') || titleLower.includes('cycl')) {
+      return 'bike';
+    } else if (titleLower.includes('marche') || titleLower.includes('walk')) {
+      return 'walk';
+    }
+    return 'activity';
   }
 
   /**

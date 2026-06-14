@@ -138,6 +138,12 @@
   font-size: 64px;
   margin-bottom: 24px;
   animation: float 3s ease-in-out infinite;
+  color: var(--primary-500);
+}
+
+.empty-icon svg {
+  width: 64px;
+  height: 64px;
 }
 
 @keyframes float {

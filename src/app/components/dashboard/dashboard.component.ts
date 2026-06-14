@@ -52,6 +52,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   selectedPeriod: PeriodType = 'week';
+
+  // Sélecteur de période visible (mobile)
+  periodOptions: { value: PeriodType; labelKey: string }[] = [
+    { value: 'week', labelKey: 'sidebar.period.last7days' },
+    { value: 'month', labelKey: 'sidebar.period.last30days' },
+    { value: 'current_year', labelKey: 'sidebar.period.sinceJan1' }
+  ];
+  availableYears: number[] = [];
+
   isLoading = false;
   isInitialLoad = true;
   error: string | null = null;
@@ -89,6 +98,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ngOnInit() {
     if (!this.checkAuth()) {
       return;
+    }
+
+    // Générer la liste des années disponibles (année courante → 2020)
+    const currentYear = new Date().getFullYear();
+    for (let year = currentYear; year >= 2020; year--) {
+      this.availableYears.push(year);
     }
 
     // S'abonner aux préférences d'affichage
@@ -138,6 +153,29 @@ export class DashboardComponent implements OnInit, OnDestroy {
       return;
     }
     this.loadData();
+  }
+
+  /** Sélectionne une période standard depuis le sélecteur visible */
+  selectPeriod(period: PeriodType): void {
+    this.periodStateService.setDashboardPeriod(period);
+  }
+
+  /** Sélectionne une année depuis le menu déroulant */
+  selectYear(year: number): void {
+    if (!isNaN(year)) {
+      this.periodStateService.setDashboardPeriod(year.toString());
+    }
+  }
+
+  /** Vrai si la période sélectionnée est une année (format YYYY) */
+  get isYearSelected(): boolean {
+    return !isNaN(parseInt(this.selectedPeriod, 10));
+  }
+
+  /** Année sélectionnée ou null */
+  get selectedYear(): number | null {
+    const year = parseInt(this.selectedPeriod, 10);
+    return !isNaN(year) ? year : null;
   }
 
   reconnectToStrava() {

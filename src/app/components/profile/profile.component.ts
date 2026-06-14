@@ -8,6 +8,7 @@ import {Subject, takeUntil} from 'rxjs';
 import {StravaService} from "../../services/strava.service";
 import {animate, style, transition, trigger} from '@angular/animations';
 import {ProfileSkeletonComponent} from "./skeleton/profile-skeleton.component";
+import {SportIconComponent} from "../sport-icon/sport-icon.component";
 
 export const fadeIn = trigger('fadeIn', [
   transition(':enter', [
@@ -19,7 +20,7 @@ export const fadeIn = trigger('fadeIn', [
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, TranslateModule, ProfileSkeletonComponent],
+  imports: [CommonModule, TranslateModule, ProfileSkeletonComponent, SportIconComponent],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css']
 })

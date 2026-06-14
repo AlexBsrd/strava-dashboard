@@ -32,6 +32,29 @@
     </div>
 
     <div *ngIf="!error && !authError">
+      <!-- Sélecteur de période visible (mobile) -->
+      <div class="period-bar">
+        <div class="period-chips">
+          <button
+            *ngFor="let opt of periodOptions"
+            class="period-chip"
+            [class.active]="selectedPeriod === opt.value"
+            (click)="selectPeriod(opt.value)">
+            {{ opt.labelKey | translate }}
+          </button>
+        </div>
+        <select
+          class="period-year"
+          [class.active]="isYearSelected"
+          [value]="selectedYear || ''"
+          (change)="selectYear(+$any($event.target).value)">
+          <option value="" disabled>{{ 'sidebar.period.selectYear' | translate }}</option>
+          <option *ngFor="let year of availableYears" [value]="year">
+            {{ 'sidebar.period.year' | translate:{ year: year } }}
+          </option>
+        </select>
+      </div>
+
       <app-performance-dashboard
         [activities]="runningActivityData">
       </app-performance-dashboard>

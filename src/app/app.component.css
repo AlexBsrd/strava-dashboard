@@ -9,7 +9,7 @@
 
 .app-header {
   background: linear-gradient(to right, #2196F3, #1976D2);
-  padding: 1rem 0;
+  padding: 0.75rem 0;
   position: sticky;
   top: 0;
   z-index: 100;
@@ -28,46 +28,77 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
 }
 
 .logo-section {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .strava-logo {
-  height: 96px;
+  height: 40px;
   width: auto;
 }
 
 h1 {
   color: white;
-  font-size: 1.5rem;
+  font-size: 1.35rem;
   font-weight: 600;
   margin: 0;
 }
 
-.nav-menu {
+/* Navigation pages (desktop) */
+.nav-pages {
   display: flex;
-  gap: 1.5rem;
+  gap: 0.5rem;
 }
 
 .nav-link {
   color: white;
   text-decoration: none;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 0.9rem;
   border-radius: var(--radius-sm);
-  transition: background-color 0.3s;
+  transition: background-color 0.2s;
   font-weight: 500;
 }
 
 .nav-link:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.12);
 }
 
 .nav-link.active {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.22);
+}
+
+/* Contrôles globaux (langue, thème, réglages) */
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.icon-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.icon-button:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.icon-button:active {
+  transform: scale(0.94);
 }
 
 /* Content wrapper avec sidebar */
@@ -77,7 +108,6 @@ h1 {
   overflow: hidden;
 }
 
-/* Sidebar desktop */
 .sidebar-desktop {
   flex-shrink: 0;
 }
@@ -104,73 +134,124 @@ h1 {
   color: var(--gray-600);
 }
 
+/* ===== Barre d'onglets mobile ===== */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: var(--bg-primary);
+  border-top: 1px solid var(--gray-200);
+  justify-content: space-around;
+  align-items: stretch;
+  z-index: 200;
+  padding-bottom: env(safe-area-inset-bottom);
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.bottom-nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  text-decoration: none;
+  color: var(--text-tertiary);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  transition: color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bottom-nav-item svg {
+  width: 23px;
+  height: 23px;
+  transition: transform 0.2s ease;
+}
+
+.bottom-nav-item.active {
+  color: var(--primary-500);
+}
+
+.bottom-nav-item.active svg {
+  transform: translateY(-1px);
+}
+
+.bottom-nav-item:active svg {
+  transform: scale(0.9);
+}
+
+/* ===== Desktop / Mobile visibility ===== */
+.desktop-only {
+  display: flex;
+}
+
+.mobile-only {
+  display: none;
+}
+
+/* ===== Responsive ===== */
 @media (max-width: 768px) {
   .app-header {
-    padding: 0.5rem 0; /* Réduit de 1rem à 0.5rem */
+    padding: 0.5rem 0;
   }
 
   .header-content {
-    flex-direction: column;
-    gap: 0.5rem; /* Réduit de 1rem à 0.5rem */
+    gap: 0.5rem;
+  }
+
+  .nav-pages {
+    display: none;
   }
 
   .strava-logo {
-    height: 48px; /* Réduit de 96px à 48px sur mobile */
+    height: 34px;
   }
 
   h1 {
-    font-size: 1.1rem; /* Réduit de 1.5rem à 1.1rem */
-  }
-
-  .logo-section {
-    gap: 0.5rem; /* Réduit de 1rem à 0.5rem */
-  }
-
-  .nav-menu {
-    width: 100%;
-    justify-content: center;
-    gap: 0.4rem; /* Réduit de 1.5rem à 0.4rem pour mobile */
-  }
-
-  .nav-link {
-    padding: 0.4rem 0.5rem; /* Optimisé pour mobile : moins d'espace horizontal */
-    font-size: 0.8rem; /* Réduit de 0.9rem à 0.8rem */
+    font-size: 1.1rem;
   }
 
   .content-wrapper {
     flex-direction: column;
   }
+
+  .main-content {
+    padding: 1rem 0.75rem;
+  }
+
+  .desktop-only {
+    display: none;
+  }
+
+  .mobile-only {
+    display: flex;
+  }
+
+  /* Laisser de la place pour la barre d'onglets fixe */
+  .app-wrapper.with-bottom-nav {
+    padding-bottom: calc(60px + env(safe-area-inset-bottom));
+  }
 }
 
-/* Breakpoint pour très petits écrans (moins de 380px) */
 @media (max-width: 380px) {
-  .app-header {
-    padding: 0.4rem 0; /* Encore moins de padding */
+  .header-controls {
+    gap: 0.4rem;
   }
 
-  .nav-menu {
-    gap: 0.25rem; /* Espacement minimal pour petits écrans */
-  }
-
-  .nav-link {
-    padding: 0.4rem 0.4rem; /* Padding minimal horizontal */
-    font-size: 0.75rem; /* Taille de police encore plus petite */
-  }
-
-  .strava-logo {
-    height: 40px; /* Logo encore plus petit sur très petits écrans */
-  }
-
-  h1 {
-    font-size: 1rem; /* Titre plus petit */
+  .bottom-nav-item {
+    font-size: 0.62rem;
   }
 }
 
 /* Language toggle button */
 .language-toggle {
-  padding: 0.4rem 0.8rem;
+  padding: 0.4rem 0.7rem;
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   background: rgba(255, 255, 255, 0.15);
   color: white;
   cursor: pointer;
@@ -178,6 +259,7 @@ h1 {
   font-size: 0.8rem;
   font-weight: 600;
   letter-spacing: 0.5px;
+  height: 40px;
 }
 
 .language-toggle:hover {
@@ -188,17 +270,10 @@ h1 {
   transform: scale(0.95);
 }
 
-@media (max-width: 768px) {
-  .language-toggle {
-    padding: 0.35rem 0.6rem;
-    font-size: 0.75rem;
-  }
-}
-
 @media (max-width: 380px) {
   .language-toggle {
-    padding: 0.3rem 0.5rem;
-    font-size: 0.7rem;
+    padding: 0.3rem 0.55rem;
+    font-size: 0.75rem;
   }
 }
 
@@ -296,7 +371,7 @@ h1 {
   transform: rotate(0deg) scale(1);
 }
 
-/* Responsive adjustments */
+/* Theme toggle responsive */
 @media (max-width: 768px) {
   .toggle-track {
     width: 56px;
@@ -317,12 +392,20 @@ h1 {
     width: 16px;
     height: 16px;
   }
+
+  .icon-button,
+  .language-toggle {
+    height: 36px;
+  }
+
+  .icon-button {
+    width: 36px;
+  }
 }
 
-/* Theme toggle pour très petits écrans */
 @media (max-width: 380px) {
   .toggle-track {
-    width: 48px; /* Encore plus compact */
+    width: 48px;
     height: 24px;
     border-radius: 12px;
   }
@@ -339,99 +422,5 @@ h1 {
   .icon {
     width: 14px;
     height: 14px;
-  }
-}
-
-/* Config button (desktop) */
-.config-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.1);
-  border: none;
-  border-radius: var(--radius-md);
-  padding: 0.5rem;
-  cursor: pointer;
-  color: white;
-  transition: all 0.2s ease;
-}
-
-.config-button:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: scale(1.05);
-}
-
-.config-button:active {
-  transform: scale(0.95);
-}
-
-/* FAB button (mobile only) */
-.config-fab {
-  display: none;
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #2196F3, #1976D2);
-  border: none;
-  box-shadow:
-    0 4px 12px rgba(33, 150, 243, 0.4),
-    0 2px 4px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-  color: white;
-  z-index: 99;
-  transition: all 0.3s ease;
-  align-items: center;
-  justify-content: center;
-}
-
-.config-fab:hover {
-  transform: scale(1.1);
-  box-shadow:
-    0 6px 16px rgba(33, 150, 243, 0.5),
-    0 3px 6px rgba(0, 0, 0, 0.15);
-}
-
-.config-fab:active {
-  transform: scale(0.95);
-}
-
-/* Desktop/Mobile visibility */
-.desktop-only {
-  display: flex;
-}
-
-.mobile-only {
-  display: none;
-}
-
-@media (max-width: 768px) {
-  .desktop-only {
-    display: none;
-  }
-
-  .mobile-only {
-    display: flex;
-  }
-
-  .config-fab {
-    bottom: 20px;
-    right: 20px;
-  }
-}
-
-@media (max-width: 380px) {
-  .config-fab {
-    width: 48px;
-    height: 48px;
-    bottom: 16px;
-    right: 16px;
-  }
-
-  .config-fab svg {
-    width: 20px;
-    height: 20px;
   }
 }
