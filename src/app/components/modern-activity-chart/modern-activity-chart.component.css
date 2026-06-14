@@ -188,6 +188,11 @@
   line-height: 1;
 }
 
+.zoom-button svg {
+  width: 18px;
+  height: 18px;
+}
+
 @media (max-width: 768px) {
   .card-header {
     flex-direction: column;
@@ -196,6 +201,11 @@
 
   .zoom-controls {
     justify-content: flex-end;
+  }
+
+  /* Zoom +/- masqués sur mobile : le pinch-to-zoom suffit, on garde le reset */
+  .zoom-step {
+    display: none;
   }
 }
 

@@ -273,7 +273,8 @@
       "distance": "Distance (km)",
       "elevation": "Elevation (m)",
       "duration": "Duration (h)"
-    }
+    },
+    "reset_zoom": "Reset zoom"
   },
   "sports": {
     "types": {

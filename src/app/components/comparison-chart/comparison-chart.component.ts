@@ -59,6 +59,11 @@ export class ComparisonChartComponent implements OnChanges {
     // Prepare data aligned by day-of-year
     const alignedData = this.prepareAlignedChartData(this.activities1, this.activities2, this.period1, this.period2);
 
+    // Adapter points et épaisseur à la densité pour rester lisible sur mobile
+    const pointCount = alignedData.labels.length;
+    const dotRadius = pointCount > 40 ? 0 : (pointCount > 20 ? 2 : 3);
+    const lineWidth = pointCount > 40 ? 1.5 : 2;
+
     const config: ChartConfiguration = {
       type: 'line',
       data: {
@@ -69,10 +74,10 @@ export class ComparisonChartComponent implements OnChanges {
             data: alignedData.data1,
             borderColor: 'rgba(156, 163, 175, 0.8)',
             backgroundColor: 'rgba(156, 163, 175, 0.1)',
-            borderWidth: 2,
+            borderWidth: lineWidth,
             tension: 0.4,
-            pointRadius: 3,
-            pointHoverRadius: 5,
+            pointRadius: dotRadius,
+            pointHoverRadius: dotRadius + 3,
             fill: true,
             spanGaps: true
           },
@@ -81,10 +86,10 @@ export class ComparisonChartComponent implements OnChanges {
             data: alignedData.data2,
             borderColor: 'rgba(252, 76, 2, 0.8)',
             backgroundColor: 'rgba(252, 76, 2, 0.1)',
-            borderWidth: 2,
+            borderWidth: lineWidth,
             tension: 0.4,
-            pointRadius: 3,
-            pointHoverRadius: 5,
+            pointRadius: dotRadius,
+            pointHoverRadius: dotRadius + 3,
             fill: true,
             spanGaps: true
           }
@@ -183,11 +188,11 @@ export class ComparisonChartComponent implements OnChanges {
               font: {
                 size: 11
               },
-              maxRotation: 45,
-              minRotation: 45,
+              maxRotation: 0,
+              minRotation: 0,
               autoSkip: true,
               autoSkipPadding: 15,
-              maxTicksLimit: 20
+              maxTicksLimit: 6
             }
           },
           y: {

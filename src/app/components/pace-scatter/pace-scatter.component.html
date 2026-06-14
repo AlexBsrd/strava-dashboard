@@ -13,14 +13,22 @@
         </select>
 
         <div class="zoom-controls">
-          <button class="zoom-button" (click)="resetZoom()">
-            <span class="zoom-icon">🔄</span>
+          <button class="zoom-button" (click)="resetZoom()" aria-label="Reset zoom">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 2v6h6"/>
+              <path d="M3 13a9 9 0 1 0 3-7.7L3 8"/>
+            </svg>
           </button>
-          <button class="zoom-button" (click)="zoomIn()">
-            <span class="zoom-icon">+</span>
+          <button class="zoom-button zoom-step" (click)="zoomIn()" aria-label="Zoom +">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
           </button>
-          <button class="zoom-button" (click)="zoomOut()">
-            <span class="zoom-icon">-</span>
+          <button class="zoom-button zoom-step" (click)="zoomOut()" aria-label="Zoom -">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
           </button>
         </div>
       </div>

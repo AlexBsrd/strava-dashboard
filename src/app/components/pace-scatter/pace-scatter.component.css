@@ -90,6 +90,17 @@
   line-height: 1;
 }
 
+.zoom-button svg {
+  width: 18px;
+  height: 18px;
+}
+
+@media (max-width: 768px) {
+  .zoom-step {
+    display: none;
+  }
+}
+
 .chart-container {
   position: relative;
   height: 400px;

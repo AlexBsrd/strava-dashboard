@@ -126,14 +126,25 @@ export class ModernActivityChartComponent implements OnChanges, OnInit {
     return this.period === 'current_year' || isYearPeriod(this.period);
   }
 
+  /**
+   * Agrégation par défaut adaptée à la période, pour garder un graphique
+   * lisible sur mobile (sinon une année = ~140 points illisibles).
+   * Semaine → par jour, Mois → par semaine, Année → par mois.
+   */
+  private getDefaultGrouping(period: PeriodType): GroupingType {
+    if (period === 'current_year' || isYearPeriod(period)) {
+      return 'month';
+    }
+    if (period === 'month') {
+      return 'week';
+    }
+    return 'none';
+  }
+
   ngOnChanges(changes: SimpleChanges) {
     if (changes['period']) {
-      if (this.groupingType === 'month' && !this.canGroupByMonth()) {
-        this.groupingType = 'none';
-      }
-      if (this.groupingType === 'week' && !this.canGroupByWeek()) {
-        this.groupingType = 'none';
-      }
+      // Réinitialiser sur l'agrégation recommandée à chaque changement de période
+      this.groupingType = this.getDefaultGrouping(this.period);
     }
     if ((changes['activities'] || changes['period']) && this.activities) {
       this.updateChart();
@@ -608,17 +619,24 @@ export class ModernActivityChartComponent implements OnChanges, OnInit {
         }
       });
 
+      // Adapter l'épaisseur de ligne et les points à la densité de données :
+      // beaucoup de points (vue détaillée longue) → ligne fine, points masqués.
+      const pointCount = data.filter(value => value !== null).length;
+      const dotRadius = pointCount > 40 ? 0 : (pointCount > 20 ? 2 : 3);
+      const lineWidth = pointCount > 40 ? 1.5 : 2;
+
       return {
         label: this.getMetricLabel(metric),
         data: data,
         borderColor: metric.color,
         backgroundColor: `${metric.color}33`,
-        borderWidth: 2,
-        tension: 0.1,
+        borderWidth: lineWidth,
+        tension: 0.3,
         fill: false,
         yAxisID: metricType,
         spanGaps: true,
-        pointRadius: data.map(value => value === null ? 0 : 3),
+        pointRadius: data.map(value => value === null ? 0 : dotRadius),
+        pointHoverRadius: data.map(value => value === null ? 0 : dotRadius + 3),
       };
     });
 
@@ -645,6 +663,12 @@ export class ModernActivityChartComponent implements OnChanges, OnInit {
         grid: {
           color: 'rgba(0, 0, 0, 0.05)'
         },
+        ticks: {
+          autoSkip: true,
+          maxRotation: 0,
+          minRotation: 0,
+          maxTicksLimit: 7,
+        }
       }
     };
 
