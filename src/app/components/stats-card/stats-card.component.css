@@ -8,32 +8,54 @@
   flex-direction: column;
   height: 100%;
   justify-content: center;
-  padding: 1.5rem;
-  text-align: center;
-  transition: transform 0.3s, box-shadow 0.3s;
+  padding: 1.5rem 1.5rem 1.5rem 1.75rem;
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+
+/* Rail d'accent "vélocité" au bord gauche */
+.stats-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--primary-500);
+  opacity: 0;
+  transition: opacity 0.2s;
 }
 
 .stats-card:hover {
   box-shadow: var(--shadow-md);
   transform: translateY(-2px);
+  border-color: var(--primary-200);
+}
+
+.stats-card:hover::before {
+  opacity: 1;
 }
 
 /* Card Title */
 .stats-title {
   color: var(--text-secondary);
-  font-size: 0.875rem;
-  font-weight: 500;
-  letter-spacing: 0.5px;
-  margin-bottom: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.5rem;
   text-transform: uppercase;
 }
 
 /* Regular Value Display */
 .stats-value {
   color: var(--primary-500);
-  font-size: 2rem;
-  font-weight: 600;
-  line-height: 1.2;
+  font-family: var(--font-display);
+  font-size: 2.6rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1;
   margin-bottom: 0.25rem;
 }
 
@@ -48,16 +70,20 @@
 
 .stats-unit {
   color: var(--text-secondary);
+  font-family: 'Inter', sans-serif;
   font-size: 0.875rem;
-  margin-left: 0.25rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  margin-left: 0.35rem;
 }
 
 /* Time Display */
 .time-display {
   display: flex;
   align-items: baseline;
-  justify-content: center;
-  gap: 0.75rem;
+  justify-content: flex-start;
+  gap: 0.6rem;
+  font-family: var(--font-display);
 }
 
 .time-group {
@@ -68,15 +94,16 @@
 
 .time-number {
   color: var(--primary-color);
-  font-size: 2.25rem;
-  font-weight: 600;
+  font-size: 2.8rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   line-height: 1;
 }
 
 .time-unit {
-  color: var(--gray-600);
-  font-size: 1.25rem;
-  font-weight: 400;
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  font-weight: 500;
 }
 
 /* Special Cases */
@@ -90,8 +117,12 @@
     gap: 0.5rem;
   }
 
+  .stats-value {
+    font-size: 2.1rem;
+  }
+
   .time-number {
-    font-size: 1.75rem;
+    font-size: 2.1rem;
   }
 
   .time-unit {
@@ -99,6 +130,6 @@
   }
 
   .stats-card {
-    padding: 1rem;
+    padding: 1rem 1rem 1rem 1.25rem;
   }
 }

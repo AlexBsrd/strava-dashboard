@@ -75,7 +75,8 @@ export class ModernActivityChartComponent implements OnChanges, OnInit {
 
   selectedActivityType = 'Run';
   selectedMetrics: string[] = ['distance'];
-  chart: Chart | null = null;
+  // ponytail: Chart<any> — les configs mixtes line/scatter ne passent pas le générique strict de chart.js
+  chart: Chart<any> | null = null;
   groupingType: GroupingType = 'none';
 
   activityTypes: string[] = ['Run', 'Ride', 'Walk/Hike'];

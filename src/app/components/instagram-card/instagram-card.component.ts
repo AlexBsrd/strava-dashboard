@@ -62,8 +62,8 @@ export class InstagramCardComponent implements AfterViewInit {
         cardBorder: 'rgba(0, 0, 0, 0.1)',
         text: '#2C2C2C',
         textSecondary: '#757575',
-        accent: '#2196F3',
-        accentGradient: ['#2196F3', '#64B5F6']
+        accent: '#FC5200',
+        accentGradient: ['#FC5200', '#FF9E6B']
       }
     },
     dark: {

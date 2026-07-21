@@ -20,15 +20,15 @@ export class GoalCardComponent {
 
   get progressBarColor(): string {
     if (!this.progress) return 'var(--gray-300)';
-    if (this.progress.isCompleted) return 'var(--green-500)';
+    if (this.progress.isCompleted) return 'var(--accent-500)';
     if (this.progress.isOnTrack) return 'var(--primary-500)';
-    return 'var(--orange-500)';
+    return 'var(--yellow-500)';
   }
 
   get projectionColor(): string {
     if (!this.progress) return 'var(--text-secondary)';
-    if (this.progress.isOnTrack) return 'var(--green-600)';
-    return 'var(--orange-600)';
+    if (this.progress.isOnTrack) return 'var(--accent-600)';
+    return 'var(--yellow-600)';
   }
 
   get statusIcon(): string {

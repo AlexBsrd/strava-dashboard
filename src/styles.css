@@ -1,15 +1,11 @@
 /* src/styles.css */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap');
 @import './assets/styles/variables.css';
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  transition: background-color 0.3s ease,
-  color 0.3s ease,
-  border-color 0.3s ease,
-  box-shadow 0.3s ease;
 }
 
 body {
@@ -19,6 +15,25 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ===== Signature "Race Instrument" ===== */
+/* Barlow condensé réservé aux chiffres (valeurs métriques). Tout le texte reste en Inter. */
+
+/* Accent "vélocité" : barre courte inclinée sous un titre */
+.velocity-accent {
+  position: relative;
+}
+
+.velocity-accent::after {
+  content: '';
+  display: block;
+  width: 2.25rem;
+  height: 3px;
+  margin-top: 0.5rem;
+  border-radius: 3px;
+  background: var(--primary-500);
+  transform: skewX(-24deg);
 }
 
 /* Utility classes */
@@ -31,6 +46,7 @@ body {
 
 .card {
   background: var(--bg-primary);
+  border: 1px solid var(--gray-200);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
   transition: box-shadow 0.3s ease;
@@ -38,6 +54,20 @@ body {
 
 .card:hover {
   box-shadow: var(--shadow-md);
+}
+
+:focus-visible {
+  outline: 2px solid var(--primary-500);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 .section {

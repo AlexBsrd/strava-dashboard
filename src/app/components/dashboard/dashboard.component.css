@@ -18,15 +18,19 @@
 .period-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  background: var(--bg-primary);
+  border: 1px solid var(--gray-200);
+  border-radius: 999px;
 }
 
 .period-chip {
   flex: 0 0 auto;
-  padding: 0.5rem 0.9rem;
-  border: 1px solid var(--gray-200);
+  padding: 0.45rem 0.9rem;
+  border: none;
   border-radius: 999px;
-  background: var(--bg-primary);
+  background: transparent;
   color: var(--text-secondary);
   font-size: 0.8rem;
   font-weight: 600;
@@ -35,10 +39,14 @@
   transition: all 0.2s ease;
 }
 
+.period-chip:hover {
+  color: var(--text-primary);
+}
+
 .period-chip.active {
   background: var(--primary-500);
-  border-color: var(--primary-500);
   color: #fff;
+  box-shadow: var(--shadow-sm);
 }
 
 .period-year {
@@ -118,14 +126,14 @@
 }
 
 .add-goal-card:hover {
-  border-color: var(--primary-500);
-  background: var(--primary-50);
+  border-color: var(--accent-500);
+  background: var(--success-background);
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
 
 .add-goal-card .add-icon {
-  color: var(--primary-500);
+  color: var(--accent-500);
   opacity: 0.8;
   transition: transform 0.2s;
 }
@@ -142,7 +150,7 @@
 }
 
 .add-goal-card:hover .add-label {
-  color: var(--primary-600);
+  color: var(--accent-600);
 }
 
 .goals-grid {
@@ -324,9 +332,13 @@
   z-index: 1000;
 }
 
+:host-context([data-theme="dark"]) .spinner-overlay {
+  background-color: rgba(24, 25, 26, 0.85);
+}
+
 .spinner-text {
   margin-top: 1rem;
-  color: #2196F3;
+  color: var(--primary-500);
   font-weight: 500;
 }
 

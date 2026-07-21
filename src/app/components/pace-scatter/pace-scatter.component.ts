@@ -46,7 +46,8 @@ export class PaceScatterComponent implements OnChanges {
   @Input() activities: Activity[] = [];
 
   selectedActivityType = 'Run';
-  chart: Chart | null = null;
+  // ponytail: Chart<any> — les configs mixtes line/scatter ne passent pas le générique strict de chart.js
+  chart: Chart<any> | null = null;
 
   activityTypes: string[] = ['Run', 'Ride', 'Walk/Hike'];
   @ViewChild('chartContainer') chartContainer!: ElementRef;
