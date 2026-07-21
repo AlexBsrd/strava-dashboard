@@ -111,6 +111,17 @@
   --transition-all: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-transform: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-opacity: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ===== Liquid Glass (thème clair) ===== */
+  /* --glass-bg : tint semi-opaque (garde le texte lisible) */
+  /* --glass-strong : pour le chrome qui recouvre du contenu défilant */
+  --glass-bg: rgba(255, 255, 255, 0.55);
+  --glass-strong: rgba(255, 255, 255, 0.72);
+  --glass-border: rgba(255, 255, 255, 0.65);
+  --glass-blur: 20px;
+  --glass-saturate: 180%;
+  --glass-shadow: 0 8px 32px -10px rgba(31, 38, 60, 0.22);
+  --glass-inset: inset 0 1px 0 0 rgba(255, 255, 255, 0.65);
 }
 
 /* Thème sombre */
@@ -155,6 +166,13 @@
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
+
+  /* ===== Liquid Glass (thème sombre) ===== */
+  --glass-bg: rgba(42, 44, 49, 0.52);
+  --glass-strong: rgba(28, 29, 33, 0.72);
+  --glass-border: rgba(255, 255, 255, 0.10);
+  --glass-shadow: 0 8px 32px -10px rgba(0, 0, 0, 0.6);
+  --glass-inset: inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
 }
 
 

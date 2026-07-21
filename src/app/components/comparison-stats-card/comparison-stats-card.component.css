@@ -1,9 +1,11 @@
 .comparison-card {
-  background: var(--card-background);
-  border: 1px solid var(--border-color);
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border: 1px solid var(--glass-border);
   border-radius: 12px;
   padding: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--glass-shadow), var(--glass-inset);
   transition: all 0.3s ease;
   min-height: 180px;
   display: flex;

@@ -16,10 +16,13 @@
   display: flex;
   align-items: center;
   gap: 2rem;
-  background: var(--bg-primary);
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border: 1px solid var(--glass-border);
   padding: 2rem;
   border-radius: 16px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--glass-shadow), var(--glass-inset);
 }
 
 .profile-avatar {
@@ -82,10 +85,13 @@
 
 /* Carte de statistiques */
 .stats-card {
-  background: var(--bg-primary);
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-md);
   padding: 1.5rem;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--glass-shadow), var(--glass-inset);
   display: flex;
   flex-direction: column;
   gap: 1.5rem;

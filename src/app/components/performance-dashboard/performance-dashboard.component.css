@@ -4,10 +4,13 @@
 
 .section {
   margin-bottom: 1rem;
-  background: var(--bg-primary);
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-md);
   padding: 1rem;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--glass-shadow), var(--glass-inset);
 }
 
 .empty-state {
@@ -16,9 +19,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-primary);
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--glass-shadow), var(--glass-inset);
 }
 
 .empty-state-content {
@@ -110,8 +116,10 @@ h2 {
 }
 
 .record-card {
-  background: var(--bg-primary);
-  border: 1px solid var(--gray-200);
+  /* tuile posée sur la .section déjà frostée : tint fort sans re-flouter (pas de double material) */
+  background: var(--glass-strong);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-inset);
   padding: 1.5rem 1.25rem 1.25rem;
   border-radius: var(--radius-md);
   transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
@@ -132,7 +140,7 @@ h2 {
 
 .record-card:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--glass-inset), var(--shadow-md);
   border-color: var(--primary-200);
 }
 

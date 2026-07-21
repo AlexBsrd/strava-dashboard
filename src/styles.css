@@ -17,6 +17,35 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* Ambiance colorée fixe : donne matière au flou du Liquid Glass sur le fond gris */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(60% 50% at 8% -8%, rgba(252, 82, 0, 0.26), transparent 68%),
+    radial-gradient(55% 45% at 108% 12%, rgba(15, 157, 110, 0.20), transparent 68%),
+    radial-gradient(70% 55% at 50% 112%, rgba(252, 82, 0, 0.16), transparent 70%);
+}
+
+[data-theme="dark"] body::before {
+  background:
+    radial-gradient(55% 45% at 12% -5%, rgba(255, 106, 31, 0.18), transparent 70%),
+    radial-gradient(50% 40% at 105% 15%, rgba(38, 196, 138, 0.12), transparent 70%),
+    radial-gradient(60% 50% at 50% 110%, rgba(255, 106, 31, 0.10), transparent 70%);
+}
+
+/* Matériau verre réutilisable */
+.glass {
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow), var(--glass-inset);
+}
+
 /* ===== Signature "Race Instrument" ===== */
 /* Barlow condensé réservé aux chiffres (valeurs métriques). Tout le texte reste en Inter. */
 
@@ -45,15 +74,17 @@ body {
 }
 
 .card {
-  background: var(--bg-primary);
-  border: 1px solid var(--gray-200);
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--glass-shadow), var(--glass-inset);
   transition: box-shadow 0.3s ease;
 }
 
 .card:hover {
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--glass-shadow), var(--glass-inset), var(--shadow-md);
 }
 
 :focus-visible {

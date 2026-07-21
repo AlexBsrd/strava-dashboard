@@ -3,13 +3,17 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: var(--bg-primary);
+  /* transparent : laisse remonter l'ambiance colorée (body::before) que le verre va réfracter */
+  background-color: transparent;
   color: var(--text-primary);
 }
 
 .app-header {
-  background: var(--bg-primary);
-  border-bottom: 1px solid var(--gray-200);
+  background: var(--glass-strong);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border-bottom: 1px solid var(--glass-border);
+  box-shadow: var(--glass-inset);
   padding: 0.75rem 0;
   position: sticky;
   top: 0;
@@ -121,7 +125,7 @@ h1 {
   flex: 1;
   min-width: 0;
   padding: 2rem 1rem;
-  background-color: var(--bg-secondary);
+  background-color: transparent;
   overflow-y: auto;
 }
 
@@ -146,13 +150,15 @@ h1 {
   left: 0;
   right: 0;
   height: 60px;
-  background: var(--bg-primary);
-  border-top: 1px solid var(--gray-200);
+  background: var(--glass-strong);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border-top: 1px solid var(--glass-border);
   justify-content: space-around;
   align-items: stretch;
   z-index: 200;
   padding-bottom: env(safe-area-inset-bottom);
-  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 -8px 32px -10px rgba(0, 0, 0, 0.18), var(--glass-inset);
 }
 
 .bottom-nav-item {

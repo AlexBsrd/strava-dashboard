@@ -328,18 +328,20 @@
   gap: 10px;
   text-align: left;
   padding: 1rem 1.1rem;
-  background: var(--bg-primary);
-  border: 1px solid var(--gray-200);
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
   cursor: pointer;
   transition: all 0.18s ease;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--glass-shadow), var(--glass-inset);
 }
 
 .preset-card:hover {
   border-color: var(--primary-400);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--glass-shadow), var(--glass-inset), var(--shadow-md);
 }
 
 .preset-card.active {
@@ -376,8 +378,10 @@
 .custom-panel {
   margin-top: 14px;
   padding: 1.1rem;
-  background: var(--bg-primary);
-  border: 1px solid var(--gray-200);
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
   display: flex;
   flex-direction: column;

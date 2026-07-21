@@ -1,14 +1,16 @@
 .goal-card {
-  background: var(--bg-primary);
-  border: 1px solid var(--gray-200);
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--glass-shadow), var(--glass-inset);
   padding: 1.5rem;
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .goal-card:hover {
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--glass-shadow), var(--glass-inset), var(--shadow-md);
   transform: translateY(-2px);
 }
 

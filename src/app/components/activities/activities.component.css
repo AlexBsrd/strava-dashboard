@@ -33,13 +33,16 @@
 }
 
 .date-badge {
-  background: var(--bg-primary);
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border: 1px solid var(--glass-border);
   padding: 0.5rem 1rem;
   border-radius: 20px;
   font-weight: 500;
   color: var(--text-primary);
   font-size: 0.9rem;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--glass-shadow), var(--glass-inset);
 }
 
 .activities-group {
@@ -50,17 +53,20 @@
 }
 
 .activity-card {
-  background: var(--bg-primary);
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border: 1px solid var(--glass-border);
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--glass-shadow), var(--glass-inset);
   border-left: 4px solid var(--gray-300);
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .activity-card:hover {
   transform: translateX(4px);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--glass-shadow), var(--glass-inset), var(--shadow-md);
 }
 
 .activity-card.run {

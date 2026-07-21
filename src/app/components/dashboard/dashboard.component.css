@@ -19,10 +19,15 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.25rem;
-  padding: 0.25rem;
-  background: var(--bg-primary);
-  border: 1px solid var(--gray-200);
-  border-radius: 999px;
+  padding: 0.3rem;
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border: 1px solid var(--glass-border);
+  /* radius-lg (pas 999px) : en stadium, une box multi-lignes crée des coins géants
+     que les chips traversent. 16px < rayon des chips → plus de débordement. */
+  border-radius: var(--radius-lg);
+  box-shadow: var(--glass-shadow), var(--glass-inset);
 }
 
 .period-chip {
@@ -53,9 +58,12 @@
   flex: 0 0 auto;
   max-width: 7.5rem;
   padding: 0.5rem 0.55rem;
-  border: 1px solid var(--gray-200);
-  border-radius: 999px;
-  background: var(--bg-primary);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  box-shadow: var(--glass-shadow), var(--glass-inset);
   color: var(--text-secondary);
   font-size: 0.8rem;
   font-weight: 600;
