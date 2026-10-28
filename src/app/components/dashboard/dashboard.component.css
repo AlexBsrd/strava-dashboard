@@ -82,6 +82,49 @@
   }
 }
 
+.sync-bar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.sync-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
+  background: var(--glass-bg);
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.sync-button:hover:not(:disabled) {
+  color: var(--primary-500);
+}
+
+.sync-button:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+.sync-icon.spinning {
+  display: inline-block;
+  animation: sync-spin 1s linear infinite;
+}
+
+@keyframes sync-spin {
+  to { transform: rotate(360deg); }
+}
+
 .dev-banner {
   background: var(--bg-secondary);
   color: var(--text-secondary);

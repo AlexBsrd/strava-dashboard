@@ -8,6 +8,7 @@ interface CachedData {
   timestamp: number;
   athleteId: string;
   oldestActivityDate: string | null;
+  fullLoadAt?: number;
 }
 
 @Injectable({
@@ -21,20 +22,32 @@ export class ActivityCacheService {
   private currentPeriod: PeriodType | null = null;
   private readonly CACHE_KEY = 'strava_activities_cache';
   private readonly IN_MEMORY_CACHE_DURATION = 15 * 60 * 1000; // 15 minutes
-  private readonly LOCAL_STORAGE_CACHE_DURATION = 60 * 60 * 1000; // 1 hour
+  // Au-delà, on refait un chargement complet pour capter suppressions et modifications anciennes
+  private readonly FULL_LOAD_DURATION = 24 * 60 * 60 * 1000; // 24 hours
   private isPreloading = false;
   private oldestActivityDate: Date | null = null;
+  private fullLoadAt: number | null = null;
 
   constructor() {
     this.loadFromLocalStorage();
   }
 
-  setActivities(activities: Activity[], period: PeriodType) {
+  /**
+   * @param replaceSince si fourni, les activités en cache depuis cette date sont remplacées
+   * (chargement complet : les activités supprimées sur Strava disparaissent)
+   */
+  setActivities(activities: Activity[], period: PeriodType, replaceSince?: Date) {
     // Créer une Map pour dédupliquer les activités par ID
     const activityMap = new Map<number, Activity>();
 
     // Ajouter d'abord les activités existantes
-    this.activities.forEach(a => activityMap.set(a.id, a));
+    this.activities
+      .filter(a => !replaceSince || new Date(a.start_date) < replaceSince)
+      .forEach(a => activityMap.set(a.id, a));
+    if (replaceSince) {
+      this.oldestActivityDate = null;
+      this.fullLoadAt = Date.now();
+    }
 
     // Puis ajouter/écraser avec les nouvelles activités
     activities.forEach(a => activityMap.set(a.id, a));
@@ -120,14 +133,17 @@ export class ActivityCacheService {
       return true;
     }
 
-    // Si la dernière mise à jour date de plus de 15 minutes (in-memory cache)
-    const cacheAge = Date.now() - this.lastUpdate.getTime();
-    if (cacheAge > this.IN_MEMORY_CACHE_DURATION) {
+    if (this.isStale()) {
       return true;
     }
 
     // Vérifier si la période demandée est couverte par le cache
     return !this.isPeriodCovered(period);
+  }
+
+  /** Vrai si la dernière synchro date de plus de 15 minutes */
+  isStale(): boolean {
+    return !this.lastUpdate || Date.now() - this.lastUpdate.getTime() > this.IN_MEMORY_CACHE_DURATION;
   }
 
   /**
@@ -156,7 +172,8 @@ export class ActivityCacheService {
         activities: this.activities,
         timestamp: Date.now(),
         athleteId: athleteId,
-        oldestActivityDate: this.oldestActivityDate?.toISOString() ?? null
+        oldestActivityDate: this.oldestActivityDate?.toISOString() ?? null,
+        fullLoadAt: this.fullLoadAt ?? undefined
       };
 
       localStorage.setItem(this.CACHE_KEY, JSON.stringify(cachedData));
@@ -182,19 +199,14 @@ export class ActivityCacheService {
         return;
       }
 
-      // Vérifier l'âge du cache (1 heure pour localStorage)
-      const cacheAge = Date.now() - cachedData.timestamp;
-      if (cacheAge > this.LOCAL_STORAGE_CACHE_DURATION) {
-        this.clearLocalStorageCache();
-        return;
-      }
-
+      // Pas d'expiration : le cache est affiché tout de suite puis synchronisé (needsRefresh)
       // Charger les activités depuis le cache
       this.activities = cachedData.activities;
       this.lastUpdate = new Date(cachedData.timestamp);
       this.oldestActivityDate = cachedData.oldestActivityDate
         ? new Date(cachedData.oldestActivityDate)
         : null;
+      this.fullLoadAt = cachedData.fullLoadAt ?? null;
       this.activitiesSubject.next(this.activities);
     } catch (error) {
       // Si erreur de parsing, on nettoie le cache
@@ -210,6 +222,7 @@ export class ActivityCacheService {
       this.lastUpdate = null;
       this.currentPeriod = null;
       this.oldestActivityDate = null;
+      this.fullLoadAt = null;
     } catch (error) {
       console.warn('Failed to clear localStorage cache:', error);
     }
@@ -221,6 +234,22 @@ export class ActivityCacheService {
 
   getOldestActivityDate(): Date | null {
     return this.oldestActivityDate;
+  }
+
+  getNewestActivityDate(): Date | null {
+    if (this.activities.length === 0) {
+      return null;
+    }
+    return new Date(Math.max(...this.activities.map(a => new Date(a.start_date).getTime())));
+  }
+
+  getLastUpdate(): Date | null {
+    return this.lastUpdate;
+  }
+
+  /** Vrai si le dernier chargement complet date de moins de 24h (une synchro incrémentale suffit) */
+  hasRecentFullLoad(): boolean {
+    return this.fullLoadAt !== null && Date.now() - this.fullLoadAt < this.FULL_LOAD_DURATION;
   }
 
   /**

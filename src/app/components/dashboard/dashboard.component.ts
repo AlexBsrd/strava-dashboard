@@ -63,6 +63,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   isLoading = false;
   isInitialLoad = true;
+  /** Synchronisation Strava en cours (arrière-plan ou manuelle), le contenu reste affiché */
+  isSyncing = false;
   error: string | null = null;
   authError = false;
 
@@ -183,44 +185,58 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.stravaService.authenticate();
   }
 
-  protected loadInitialData() {
-    this.isLoading = true;
-    this.isInitialLoad = true;
+  protected loadInitialData(forceFullReload = false) {
     this.error = null;
     this.authError = false;
 
-    // Vérifier si le cache contient déjà des données valides
-    if (!this.activityCache.needsRefresh(this.selectedPeriod)) {
-      // Utiliser les données en cache
-      const filteredActivities = this.activityCache.getFilteredActivities(this.selectedPeriod);
-      this.updateActivitiesDisplay(filteredActivities);
+    // Cache local disponible : affichage immédiat, synchronisation en arrière-plan
+    const hasCache = this.activityCache.getAllActivities().length > 0;
+    if (hasCache) {
+      this.updateActivitiesDisplay(this.activityCache.getFilteredActivities(this.selectedPeriod));
       this.isLoading = false;
       this.isInitialLoad = false;
-      return;
+      if (!forceFullReload && !this.activityCache.needsRefresh(this.selectedPeriod)) {
+        return;
+      }
+    } else {
+      this.isLoading = true;
+      this.isInitialLoad = true;
     }
 
-    // Charger toutes les activités des 2 dernières années
-    this.stravaService.loadAllRecentActivities().subscribe({
-      next: (activities) => {
-        // Mettre à jour avec la période sélectionnée
+    // Charge les 2 dernières années, ou seulement les activités récentes si le cache est complet
+    this.isSyncing = true;
+    this.stravaService.loadAllRecentActivities(forceFullReload).subscribe({
+      next: () => {
         const filteredActivities = this.activityCache.getFilteredActivities(this.selectedPeriod);
         this.updateActivitiesDisplay(filteredActivities);
         this.isLoading = false;
         this.isInitialLoad = false;
+        this.isSyncing = false;
       },
       error: (error) => {
         console.error('Error loading activities:', error);
         this.isLoading = false;
         this.isInitialLoad = false;
+        this.isSyncing = false;
 
         if (error.status === 401) {
           this.handleAuthError();
-        } else {
+        } else if (!hasCache) {
+          // Avec un cache, on garde les données affichées plutôt qu'une erreur
           this.error = this.translateService.instant('errors.loading_error.title');
           this.authError = false;
         }
       }
     });
+  }
+
+  /** Rafraîchissement manuel : recharge complètement les 2 dernières années depuis Strava */
+  refreshActivities() {
+    this.loadInitialData(true);
+  }
+
+  get lastSync(): Date | null {
+    return this.activityCache.getLastUpdate();
   }
 
   protected loadData() {

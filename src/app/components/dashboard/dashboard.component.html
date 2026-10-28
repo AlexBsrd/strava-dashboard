@@ -55,6 +55,16 @@
         </select>
       </div>
 
+      <div class="sync-bar">
+        <span *ngIf="lastSync" class="sync-time">
+          {{ 'dashboard.sync.last' | translate:{ time: (lastSync | date:'HH:mm') } }}
+        </span>
+        <button class="sync-button" (click)="refreshActivities()" [disabled]="isSyncing">
+          <span class="sync-icon" [class.spinning]="isSyncing" aria-hidden="true">⟳</span>
+          {{ (isSyncing ? 'dashboard.sync.syncing' : 'dashboard.sync.refresh') | translate }}
+        </button>
+      </div>
+
       <app-performance-dashboard
         [activities]="runningActivityData">
       </app-performance-dashboard>

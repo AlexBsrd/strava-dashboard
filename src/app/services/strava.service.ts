@@ -72,6 +72,19 @@ export class StravaService {
       return of(this.activityCache.getFilteredActivities(period));
     }
 
+    const headers = new HttpHeaders().set(
+      'Authorization',
+      `Bearer ${athlete.accessToken}`
+    );
+
+    // Période déjà en cache mais synchro ancienne : ne récupérer que les activités récentes
+    if (this.activityCache.isPeriodCovered(period)) {
+      return this.syncRecentActivities(headers).pipe(
+        map(() => this.activityCache.getFilteredActivities(period)),
+        catchError(error => this.handleFetchError(error))
+      );
+    }
+
     // Période non couverte par le cache - charger les données manquantes
     let after = new Date();
     let before: Date | undefined;
@@ -110,11 +123,6 @@ export class StravaService {
       }
     }
 
-    const headers = new HttpHeaders().set(
-      'Authorization',
-      `Bearer ${athlete.accessToken}`
-    );
-
     return this.getAllActivities(after, headers, before).pipe(
       tap(activities => {
         this.activityCache.setActivities(activities, period);
@@ -122,16 +130,30 @@ export class StravaService {
       map(activities => {
         return this.activityCache.getFilteredActivities(period);
       }),
-      catchError(error => {
-        // Si l'erreur est liée à l'authentification
-        if (error.status === 401 ||
-          (error.error && error.error.message && error.error.message.includes('Authorization Error'))) {
-          localStorage.clear();
-          this.router.navigate(['/login']);
-        }
-        return throwError(() => error);
-      })
+      catchError(error => this.handleFetchError(error))
     );
+  }
+
+  /**
+   * Récupère uniquement les activités depuis la plus récente du cache.
+   * Marge de 2 jours pour capter les activités modifiées ou synchronisées en retard.
+   */
+  private syncRecentActivities(headers: HttpHeaders): Observable<Activity[]> {
+    const after = this.activityCache.getNewestActivityDate() ?? new Date();
+    after.setDate(after.getDate() - 2);
+    return this.getAllActivities(after, headers).pipe(
+      tap(activities => this.activityCache.setActivities(activities, 'week'))
+    );
+  }
+
+  private handleFetchError(error: any): Observable<never> {
+    // Si l'erreur est liée à l'authentification
+    if (error.status === 401 ||
+      (error.error && error.error.message && error.error.message.includes('Authorization Error'))) {
+      localStorage.clear();
+      this.router.navigate(['/login']);
+    }
+    return throwError(() => error);
   }
 
   authenticate(): void {
@@ -224,8 +246,10 @@ export class StravaService {
    * Charge toutes les activités des 2 dernières années avec affichage d'un spinner.
    * Cette méthode est appelée au chargement initial du dashboard pour éviter les bugs
    * quand l'utilisateur clique sur une période qui n'a pas encore été chargée.
+   * Si un chargement complet date de moins de 24h, seules les activités récentes sont récupérées.
+   * @param force ignore le cache et recharge tout (rafraîchissement manuel)
    */
-  loadAllRecentActivities(): Observable<Activity[]> {
+  loadAllRecentActivities(force = false): Observable<Activity[]> {
     if (this.checkTokenExpiration()) {
       return throwError(() => new Error('Token expired'));
     }
@@ -258,20 +282,20 @@ export class StravaService {
       `Bearer ${athlete.accessToken}`
     );
 
+    if (!force && this.activityCache.hasRecentFullLoad()) {
+      const sync$ = this.activityCache.isStale() ? this.syncRecentActivities(headers) : of([]);
+      return sync$.pipe(
+        map(() => this.activityCache.getAllActivities()),
+        catchError(error => this.handleFetchError(error))
+      );
+    }
+
     return this.getAllActivities(twoYearsAgo, headers).pipe(
       tap(activities => {
-        // Sauvegarder dans le cache pour toutes les périodes
-        this.activityCache.setActivities(activities, 'current_year');
+        // Sauvegarder dans le cache pour toutes les périodes, en remplaçant les 2 dernières années
+        this.activityCache.setActivities(activities, 'current_year', twoYearsAgo);
       }),
-      catchError(error => {
-        // Si l'erreur est liée à l'authentification
-        if (error.status === 401 ||
-          (error.error && error.error.message && error.error.message.includes('Authorization Error'))) {
-          localStorage.clear();
-          this.router.navigate(['/login']);
-        }
-        return throwError(() => error);
-      })
+      catchError(error => this.handleFetchError(error))
     );
   }
 }
