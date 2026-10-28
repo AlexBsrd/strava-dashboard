@@ -29,6 +29,11 @@
       "may_take_time": "This may take a few seconds",
       "activities": "Loading activities..."
     },
+    "sync": {
+      "last": "Updated at {{time}}",
+      "refresh": "Refresh",
+      "syncing": "Syncing..."
+    },
     "goals": {
       "title": "My Goals",
       "add": "Add a goal",

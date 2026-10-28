@@ -29,6 +29,11 @@
       "may_take_time": "Cela peut prendre quelques secondes",
       "activities": "Chargement des activités..."
     },
+    "sync": {
+      "last": "Mis à jour à {{time}}",
+      "refresh": "Rafraîchir",
+      "syncing": "Synchronisation..."
+    },
     "goals": {
       "title": "Mes Objectifs",
       "add": "Ajouter un objectif",
