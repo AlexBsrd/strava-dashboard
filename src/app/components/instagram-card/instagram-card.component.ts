@@ -184,7 +184,7 @@ export class InstagramCardComponent implements AfterViewInit {
   private drawStats(ctx: CanvasRenderingContext2D, theme: Theme) {
     const stats = [
       {label: 'Distance', value: this.formatDistance(this.stats.totalDistance), icon: '🏃'},
-      {label: 'Temps', value: this.formatDuration(this.stats.totalElapsedTime), icon: '⏱️'},
+      {label: 'Temps', value: this.formatDuration(this.stats.totalMovingTime), icon: '⏱️'},
       {label: 'Vitesse', value: this.formatSpeed(this.stats.averageSpeed), icon: '⚡'},
       {label: 'Dénivelé', value: this.formatElevation(this.stats.totalElevation), icon: '⛰️'}
     ];

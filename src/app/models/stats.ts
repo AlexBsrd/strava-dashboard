@@ -5,5 +5,6 @@ export interface Stats {
   totalElevation: number;
   averageElevation: number;
   totalElapsedTime: number;
+  totalMovingTime: number;
   numberOfActivities: number;
 }

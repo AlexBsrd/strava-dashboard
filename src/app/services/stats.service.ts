@@ -15,6 +15,7 @@ export class StatsService {
         totalElevation: 0,
         averageElevation: 0,
         totalElapsedTime: 0,
+        totalMovingTime: 0,
         numberOfActivities: 0
       };
     }
@@ -27,6 +28,9 @@ export class StatsService {
 
     const totalElapsedTime = activities.reduce((sum, activity) =>
       sum + activity.elapsed_time, 0);
+
+    const totalMovingTime = activities.reduce((sum, activity) =>
+      sum + activity.moving_time, 0);
 
     const averageDistance = totalDistance / activities.length;
 
@@ -41,6 +45,7 @@ export class StatsService {
       averageDistance: Number(averageDistance.toFixed(1)),
       totalElevation: Number(totalElevation.toFixed(0)),
       totalElapsedTime: Number(totalElapsedTime),
+      totalMovingTime,
       averageElevation: Number(averageElevation.toFixed(0)),
       numberOfActivities: activities.length
     };

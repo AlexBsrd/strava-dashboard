@@ -35,6 +35,7 @@ export interface StatsComparison {
     totalElevation: StatDelta;
     averageElevation: StatDelta;
     totalElapsedTime: StatDelta;
+    totalMovingTime: StatDelta;
     numberOfActivities: StatDelta;
   };
 }

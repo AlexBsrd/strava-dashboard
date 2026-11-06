@@ -63,10 +63,10 @@
     <!-- Total Time -->
     <app-comparison-stats-card
       *ngIf="isMetricVisible('totalElapsedTime')"
-      [title]="'metrics.labels.totalElapsedTime' | translate"
-      [value1]="comparison.period1Stats.totalElapsedTime"
-      [value2]="comparison.period2Stats.totalElapsedTime"
-      [delta]="comparison.deltas.totalElapsedTime"
+      [title]="'metrics.labels.movingTime' | translate"
+      [value1]="comparison.period1Stats.totalMovingTime"
+      [value2]="comparison.period2Stats.totalMovingTime"
+      [delta]="comparison.deltas.totalMovingTime"
       [isTime]="true">
     </app-comparison-stats-card>
   </div>

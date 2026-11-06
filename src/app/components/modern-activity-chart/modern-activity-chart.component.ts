@@ -519,7 +519,8 @@ export class ModernActivityChartComponent implements OnChanges, OnInit {
     } else {
       (rawData as Activity[]).forEach(activity => {
         const activityDate = new Date(activity.start_date);
-        const dateKey = activityDate.toISOString().split('T')[0];
+        // Clé AAAA-MM-JJ en heure locale (toISOString passerait en UTC et décalerait le jour)
+        const dateKey = activityDate.toLocaleDateString('sv-SE');
         dataMap.set(dateKey, activity);
       });
     }
@@ -614,7 +615,7 @@ export class ModernActivityChartComponent implements OnChanges, OnInit {
           const item = dataMap.get(monthNum.toString());
           return this.getMetricValue(item, metricType);
         } else {
-          const key = date.toISOString().split('T')[0];
+          const key = date.toLocaleDateString('sv-SE');
           const item = dataMap.get(key);
           return this.getMetricValue(item, metricType);
         }
@@ -723,7 +724,7 @@ export class ModernActivityChartComponent implements OnChanges, OnInit {
         });
         return title;
       } else {
-        const key = date.toISOString().split('T')[0];
+        const key = date.toLocaleDateString('sv-SE');
         const activity = dataMap.get(key) as Activity;
         if (!activity) return '';
 

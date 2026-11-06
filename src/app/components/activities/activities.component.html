@@ -22,7 +22,7 @@
           <div *ngFor="let activity of day.value" class="activity-card" [ngClass]="activity.type.toLowerCase()">
             <div class="activity-header">
               <div class="activity-type">
-                {{ activity.type }}
+                {{ sportLabelKey(activity) | translate }}
               </div>
               <div class="activity-time">
                 {{ formatTime(activity.start_date) }}
@@ -39,7 +39,10 @@
                 </div>
                 <div class="stat">
                   <span class="stat-label">{{ 'activities.table.duration' | translate }}</span>
-                  <span class="stat-value">{{ formatDuration(activity.elapsed_time) }}</span>
+                  <span class="stat-value">{{ formatDuration(activity.moving_time) }}</span>
+                  <span class="stat-sub" *ngIf="activity.elapsed_time - activity.moving_time >= 60">
+                    {{ 'metrics.labels.elapsedTotal' | translate:{ time: formatDuration(activity.elapsed_time) } }}
+                  </span>
                 </div>
                 <div class="stat">
                   <span class="stat-label">{{ 'activities.table.avg_speed' | translate }}</span>

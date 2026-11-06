@@ -47,6 +47,7 @@ export class ComparisonService {
         totalElevation: this.calculateDelta(stats1.totalElevation, stats2.totalElevation),
         averageElevation: this.calculateDelta(stats1.averageElevation, stats2.averageElevation),
         totalElapsedTime: this.calculateDelta(stats1.totalElapsedTime, stats2.totalElapsedTime),
+        totalMovingTime: this.calculateDelta(stats1.totalMovingTime, stats2.totalMovingTime),
         numberOfActivities: this.calculateDelta(stats1.numberOfActivities, stats2.numberOfActivities)
       }
     };

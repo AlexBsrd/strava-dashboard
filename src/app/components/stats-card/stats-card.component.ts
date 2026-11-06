@@ -18,6 +18,8 @@ export class StatsCardComponent implements OnInit, OnChanges, AfterViewInit, OnD
   @Input() value: number = 0;
   @Input() unit: string = '';
   @Input() isTime: boolean = false;
+  /** Ligne secondaire sous la valeur (ex. temps total sous le temps en mouvement) */
+  @Input() subtitle: string = '';
 
   currentValue: number = 0;
   animationFrameId: number | null = null;

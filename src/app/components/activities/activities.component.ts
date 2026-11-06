@@ -8,6 +8,7 @@ import {PeriodStateService} from '../../services/period-state.service';
 import {Activity} from '../../models/activity';
 import {SpinnerComponent} from '../spinner/spinner.component';
 import {PeriodType} from "../../types/period";
+import {getSportMetadata} from "../../types/sport-config";
 
 @Component({
   selector: 'app-activities',
@@ -52,6 +53,11 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  /** Clé de traduction du sport précis (Trail, VTT…) ; un type inconnu s'affiche tel quel */
+  sportLabelKey(activity: Activity): string {
+    return getSportMetadata(activity.sport_type || activity.type).labelKey;
+  }
+
   isCardioActivity(type: string): boolean {
     return this.cardioActivities.includes(type.toUpperCase());
   }
@@ -67,7 +73,7 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
 
   formatDayHeader(date: string): string {
     const locale = this.translateService.currentLang === 'en' ? 'en-US' : 'fr-FR';
-    return new Date(date).toLocaleDateString(locale, {
+    return new Date(`${date}T00:00`).toLocaleDateString(locale, {
       weekday: 'long',
       day: 'numeric',
       month: 'long'
@@ -106,8 +112,8 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
 
   private groupActivitiesByDay() {
     this.groupedActivities = this.activities.reduce((groups: { [key: string]: Activity[] }, activity) => {
-      const date = new Date(activity.start_date);
-      const day = date.toISOString().split('T')[0];
+      // Jour en heure locale, AAAA-MM-JJ (toISOString passerait en UTC et décalerait les sorties nocturnes)
+      const day = new Date(activity.start_date).toLocaleDateString('sv-SE');
 
       if (!groups[day]) {
         groups[day] = [];

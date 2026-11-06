@@ -50,6 +50,13 @@
   text-transform: uppercase;
 }
 
+.stats-subtitle {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-top: 0.35rem;
+}
+
 /* Regular Value Display */
 .stats-value {
   color: var(--primary-500);

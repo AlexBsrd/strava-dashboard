@@ -24,8 +24,9 @@
   <app-stats-card
     *ngIf="isMetricVisible('totalElapsedTime')"
     class="double-row"
-    [title]="'metrics.labels.totalElapsedTime' | translate"
-    [value]="stats.totalElapsedTime"
+    [title]="'metrics.labels.movingTime' | translate"
+    [value]="stats.totalMovingTime"
+    [subtitle]="'metrics.labels.elapsedTotal' | translate:{ time: formatDuration(stats.totalElapsedTime) }"
     unit=""
     [isTime]="true">
   </app-stats-card>
