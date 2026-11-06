@@ -1,5 +1,5 @@
-import {TranslateModule} from '@ngx-translate/core';
-import {Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild} from '@angular/core';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
+import {Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {Activity} from '../../models/activity';
@@ -53,6 +53,8 @@ export class PaceScatterComponent implements OnChanges {
   activityTypes: string[] = ['Run', 'Ride', 'Walk/Hike'];
   @ViewChild('chartContainer') chartContainer!: ElementRef;
   isFullscreen$;
+
+  private translateService = inject(TranslateService);
 
   constructor(
     private fullscreenService: FullscreenService
@@ -183,7 +185,9 @@ export class PaceScatterComponent implements OnChanges {
     }));
 
     const trendLineData = this.generateTrendLineData(scatterData);
-    const yAxisLabel = this.selectedActivityType === 'Ride' ? 'Vitesse (km/h)' : 'Allure (min/km)';
+    const t = (key: string) => this.translateService.instant(key);
+    const locale = this.translateService.currentLang === 'en' ? 'en-US' : 'fr-FR';
+    const yAxisLabel = t(this.selectedActivityType === 'Ride' ? 'chart.metrics.speed' : 'chart.axis_pace');
 
     const minX = 0; // Minimum pour éviter les négatifs
     const maxX = Math.max(...scatterData.map(point => point.x)) + 1; // Ajoutez une marge
@@ -202,7 +206,7 @@ export class PaceScatterComponent implements OnChanges {
             pointHoverRadius: 6,
           },
           {
-            label: 'Tendance',
+            label: t('chart.trend'),
             data: trendLineData,
             type: 'line',
             borderColor: 'rgba(255, 99, 132, 0.8)',
@@ -219,7 +223,7 @@ export class PaceScatterComponent implements OnChanges {
           x: {
             title: {
               display: true,
-              text: 'Distance (km)',
+              text: t('chart.axis_distance'),
             },
             min: minX,
             max: maxX,
@@ -250,14 +254,14 @@ export class PaceScatterComponent implements OnChanges {
 
                 const point = scatterData[context.dataIndex];
                 let label = `${point.name}\n`;
-                label += `Distance: ${point.x.toFixed(1)} km\n`;
+                label += `${t('metrics.short_labels.distance')}: ${point.x.toFixed(1)} km\n`;
 
                 if (this.selectedActivityType === 'Ride') {
-                  label += `Vitesse: ${point.y.toFixed(1)} km/h`;
+                  label += `${t('metrics.short_labels.speed')}: ${point.y.toFixed(1)} km/h`;
                 } else {
-                  label += `Allure: ${this.formatPace(point.y)}/km`;
+                  label += `${t('metrics.short_labels.pace')}: ${this.formatPace(point.y)}/km`;
                 }
-                label += `\nDate: ${point.date.toLocaleDateString()}`;
+                label += `\n${t('chart.date')}: ${point.date.toLocaleDateString(locale)}`;
                 return label;
               }
             }
@@ -275,6 +279,11 @@ export class PaceScatterComponent implements OnChanges {
                 enabled: true
               },
               mode: 'xy',
+            },
+            // Ni zoom arrière ni déplacement au-delà des données (pas de distances ou d'allures négatives)
+            limits: {
+              x: {min: 'original', max: 'original'},
+              y: {min: 'original', max: 'original'}
             }
           }
         }

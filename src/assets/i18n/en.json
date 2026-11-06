@@ -298,7 +298,11 @@
       "duration": "Duration (h)"
     },
     "reset_zoom": "Reset zoom",
-    "pace_vs_distance": "Distance vs Pace"
+    "pace_vs_distance": "Distance vs Pace",
+    "trend": "Trend",
+    "axis_distance": "Distance (km)",
+    "axis_pace": "Pace (min/km)",
+    "date": "Date"
   },
   "sports": {
     "types": {
@@ -369,7 +373,8 @@
       "speed": "Speed",
       "elevation": "Elevation",
       "time": "Time",
-      "duration": "Duration"
+      "duration": "Duration",
+      "pace": "Pace"
     }
   },
   "sidebar": {

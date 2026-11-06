@@ -29,6 +29,10 @@ export class ComparisonChartComponent implements OnChanges {
 
   private translateService = inject(TranslateService);
 
+  private get locale(): string {
+    return this.translateService.currentLang === 'en' ? 'en-US' : 'fr-FR';
+  }
+
   selectedMetric: MetricType = 'distance';
   chart: Chart | null = null;
 
@@ -157,7 +161,7 @@ export class ComparisonChartComponent implements OnChanges {
                 const activities = datasetIndex === 0 ? this.activities1 : this.activities2;
                 if (activities[dataIndex]) {
                   const date = new Date(activities[dataIndex].start_date);
-                  return `Date: ${date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })}`;
+                  return `${this.translateService.instant('chart.date')}: ${date.toLocaleDateString(this.locale, { day: '2-digit', month: '2-digit', year: 'numeric' })}`;
                 }
                 return '';
               }
@@ -177,6 +181,10 @@ export class ComparisonChartComponent implements OnChanges {
             pan: {
               enabled: true,
               mode: 'x'
+            },
+            // Pas de déplacement au-delà des dates comparées
+            limits: {
+              x: {min: 'original', max: 'original'}
             }
           }
         },
@@ -273,7 +281,7 @@ export class ComparisonChartComponent implements OnChanges {
       const entry2 = map2.get(day);
 
       const refDate = entry1?.date || entry2?.date || new Date();
-      const label = refDate.toLocaleDateString('fr-FR', {
+      const label = refDate.toLocaleDateString(this.locale, {
         day: '2-digit',
         month: '2-digit'
       });
@@ -344,7 +352,7 @@ export class ComparisonChartComponent implements OnChanges {
     // Show activity dates in DD/MM format
     const labels = sorted.map(a => {
       const activityDate = new Date(a.start_date);
-      return activityDate.toLocaleDateString('fr-FR', {
+      return activityDate.toLocaleDateString(this.locale, {
         day: '2-digit',
         month: '2-digit'
       });
