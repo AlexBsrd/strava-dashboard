@@ -269,11 +269,11 @@
   "share_modal": {
     "title": "Create Instagram Story",
     "cancel": "Cancel",
-    "download": "Download",
+    "download": "Share",
     "themes": {
-      "modern": "Modern",
-      "minimal": "Minimal",
-      "dark": "Dark"
+      "dark": "Dark",
+      "light": "Light",
+      "orange": "Orange"
     }
   },
   "chart": {
@@ -514,7 +514,8 @@
       "text": "{{count}} activities on {{days}} different days.",
       "hint": "Tap the screen to continue →",
       "empty": "No activity this year yet.",
-      "year": "Choose the year"
+      "year": "Choose the year",
+      "locked": "Your {{year}} recap opens on December 1. Meanwhile, relive {{previous}}."
     },
     "distance": {
       "kicker": "You covered",
@@ -549,7 +550,7 @@
     },
     "share": {
       "kicker": "My year in sport",
-      "favorite": "Favorite sport:"
+      "favorite": "Favorite sport"
     }
   }
 }
