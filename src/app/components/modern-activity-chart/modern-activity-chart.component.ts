@@ -242,7 +242,7 @@ export class ModernActivityChartComponent implements OnChanges, OnInit {
 
       const existingData = weeklyMap.get(weekNumber)!;
       existingData.totalDistance += activity.distance;
-      existingData.totalDuration += activity.elapsed_time;
+      existingData.totalDuration += activity.moving_time;
       existingData.totalElevation += activity.total_elevation_gain;
       existingData.activitiesCount += 1;
       existingData.activities.push({
@@ -276,7 +276,7 @@ export class ModernActivityChartComponent implements OnChanges, OnInit {
       if (!monthlyMap.has(monthKey)) {
         const monthStart = new Date(year, monthNumber, 1);
         const monthEnd = new Date(year, monthNumber + 1, 0); // Last day of the month
-        const monthLabel = monthStart.toLocaleDateString('fr-FR', { month: 'long' });
+        const monthLabel = monthStart.toLocaleDateString(this.getLocale(), { month: 'long' });
 
         monthlyMap.set(monthKey, {
           monthNumber: monthNumber,
@@ -294,7 +294,7 @@ export class ModernActivityChartComponent implements OnChanges, OnInit {
 
       const existingData = monthlyMap.get(monthKey)!;
       existingData.totalDistance += activity.distance;
-      existingData.totalDuration += activity.elapsed_time;
+      existingData.totalDuration += activity.moving_time;
       existingData.totalElevation += activity.total_elevation_gain;
       existingData.activitiesCount += 1;
       existingData.activities.push({
@@ -393,7 +393,7 @@ export class ModernActivityChartComponent implements OnChanges, OnInit {
 
         if (weekData) {
           weekData.totalDistance += activity.distance;
-          weekData.totalDuration += activity.elapsed_time;
+          weekData.totalDuration += activity.moving_time;
           weekData.totalElevation += activity.total_elevation_gain;
           weekData.activitiesCount += 1;
           weekData.activities.push({
@@ -419,7 +419,7 @@ export class ModernActivityChartComponent implements OnChanges, OnInit {
       for (let month = 0; month < 12; month++) {
         const monthStart = new Date(targetYear, month, 1);
         const monthEnd = new Date(targetYear, month + 1, 0);
-        const monthLabel = monthStart.toLocaleDateString('fr-FR', { month: 'long' });
+        const monthLabel = monthStart.toLocaleDateString(this.getLocale(), { month: 'long' });
 
         allMonths.push({
           monthNumber: month,
@@ -444,7 +444,7 @@ export class ModernActivityChartComponent implements OnChanges, OnInit {
 
         if (monthData) {
           monthData.totalDistance += activity.distance;
-          monthData.totalDuration += activity.elapsed_time;
+          monthData.totalDuration += activity.moving_time;
           monthData.totalElevation += activity.total_elevation_gain;
           monthData.activitiesCount += 1;
           monthData.activities.push({
@@ -521,11 +521,27 @@ export class ModernActivityChartComponent implements OnChanges, OnInit {
         const activityDate = new Date(activity.start_date);
         // Clé AAAA-MM-JJ en heure locale (toISOString passerait en UTC et décalerait le jour)
         const dateKey = activityDate.toLocaleDateString('sv-SE');
-        dataMap.set(dateKey, activity);
+        // Plusieurs activités le même jour : on les cumule au lieu de garder la dernière
+        const sameDay = dataMap.get(dateKey) as Activity | undefined;
+        dataMap.set(dateKey, sameDay ? this.mergeActivities(sameDay, activity) : activity);
       });
     }
 
     return dataMap;
+  }
+
+  private mergeActivities(a: Activity, b: Activity): Activity {
+    const distance = a.distance + b.distance;
+    const movingTime = a.moving_time + b.moving_time;
+    return {
+      ...a,
+      name: `${a.name}\n${b.name}`,
+      distance,
+      moving_time: movingTime,
+      elapsed_time: a.elapsed_time + b.elapsed_time,
+      total_elevation_gain: a.total_elevation_gain + b.total_elevation_gain,
+      average_speed: movingTime ? distance / (movingTime / 3600) : 0
+    };
   }
 
   private formatDuration(hours: number): string {
@@ -576,7 +592,7 @@ export class ModernActivityChartComponent implements OnChanges, OnInit {
         case 'elevation':
           return activityData.total_elevation_gain;
         case 'duration':
-          return activityData.elapsed_time / 3600;
+          return activityData.moving_time / 3600;
         default:
           return null;
       }

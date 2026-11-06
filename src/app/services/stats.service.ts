@@ -34,8 +34,13 @@ export class StatsService {
 
     const averageDistance = totalDistance / activities.length;
 
-    const averageSpeed = activities.reduce((sum, activity) =>
-      sum + activity.average_speed, 0) / activities.length;
+    // Distance totale / temps en mouvement total : une moyenne des vitesses donnerait
+    // autant de poids à un footing de 10 min qu'à un marathon.
+    // Les activités sans distance (muscu, yoga…) sont exclues pour ne pas diluer la vitesse.
+    const withDistance = activities.filter(activity => activity.distance > 0);
+    const distanceForSpeed = withDistance.reduce((sum, activity) => sum + activity.distance, 0);
+    const movingTimeForSpeed = withDistance.reduce((sum, activity) => sum + activity.moving_time, 0);
+    const averageSpeed = movingTimeForSpeed ? distanceForSpeed / (movingTimeForSpeed / 3600) : 0;
 
     const averageElevation = totalElevation / activities.length;
 
