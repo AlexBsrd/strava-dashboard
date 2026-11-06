@@ -1,24 +1,11 @@
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {Observable, of, throwError} from 'rxjs';
-import {catchError, finalize, map, tap} from 'rxjs/operators';
+import {HttpClient} from '@angular/common/http';
+import {Observable, of} from 'rxjs';
+import {map, switchMap, tap} from 'rxjs/operators';
 import {Activity} from '../models/activity';
 import {environment} from "../environments/environment";
 import {ActivityCacheService} from "./activity-cache.service";
-import {SessionService} from "./session.service";
-import {Router} from '@angular/router';
 import {PeriodType, getYearFromPeriod} from "../types/period";
-
-interface TokenResponse {
-  access_token: string;
-  refresh_token: string;
-  expires_at: number;
-  athlete: {
-    id: number;
-    firstname: string;
-    lastname: string;
-  };
-}
 
 @Injectable({
   providedIn: 'root'
@@ -26,62 +13,23 @@ interface TokenResponse {
 export class StravaService {
   private apiUrl = 'https://www.strava.com/api/v3';
   private clientId = environment.stravaClientId;
-  private clientSecret = environment.stravaClientSecret;
   private redirectUri = environment.redirectUri;
 
   constructor(
     private http: HttpClient,
-    private activityCache: ActivityCacheService,
-    private sessionService: SessionService,
-    private router: Router
+    private activityCache: ActivityCacheService
   ) {
   }
 
-  checkTokenExpiration() {
-    const expiresAt = localStorage.getItem('strava_token_expires_at');
-    if (expiresAt && Date.now() / 1000 > Number(expiresAt)) {
-      localStorage.clear();
-      this.router.navigate(['/login']);
-      return true;
-    }
-    return false;
-  }
-
   getActivities(period: PeriodType): Observable<Activity[]> {
-    if (this.checkTokenExpiration()) {
-      return throwError(() => new Error('Token expired'));
-    }
-
-    const athlete = {
-      id: localStorage.getItem('strava_athlete_id'),
-      accessToken: localStorage.getItem('strava_token'),
-      refreshToken: localStorage.getItem('strava_refresh_token'),
-      expiresAt: localStorage.getItem('strava_token_expires_at'),
-    };
-
-    if (athlete.id && athlete.accessToken && athlete.refreshToken && athlete.expiresAt) {
-      this.sessionService.startSession({
-        athlete: {id: athlete.id},
-        access_token: athlete.accessToken,
-        refresh_token: athlete.refreshToken,
-        expires_at: Number(athlete.expiresAt)
-      }).subscribe();
-    }
-
     if (!this.activityCache.needsRefresh(period)) {
       return of(this.activityCache.getFilteredActivities(period));
     }
 
-    const headers = new HttpHeaders().set(
-      'Authorization',
-      `Bearer ${athlete.accessToken}`
-    );
-
     // Période déjà en cache mais synchro ancienne : ne récupérer que les activités récentes
     if (this.activityCache.isPeriodCovered(period)) {
-      return this.syncRecentActivities(headers).pipe(
-        map(() => this.activityCache.getFilteredActivities(period)),
-        catchError(error => this.handleFetchError(error))
+      return this.syncRecentActivities().pipe(
+        map(() => this.activityCache.getFilteredActivities(period))
       );
     }
 
@@ -123,14 +71,9 @@ export class StravaService {
       }
     }
 
-    return this.getAllActivities(after, headers, before).pipe(
-      tap(activities => {
-        this.activityCache.setActivities(activities, period);
-      }),
-      map(activities => {
-        return this.activityCache.getFilteredActivities(period);
-      }),
-      catchError(error => this.handleFetchError(error))
+    return this.getAllActivities(after, before).pipe(
+      tap(activities => this.activityCache.setActivities(activities, period)),
+      map(() => this.activityCache.getFilteredActivities(period))
     );
   }
 
@@ -138,22 +81,12 @@ export class StravaService {
    * Récupère uniquement les activités depuis la plus récente du cache.
    * Marge de 2 jours pour capter les activités modifiées ou synchronisées en retard.
    */
-  private syncRecentActivities(headers: HttpHeaders): Observable<Activity[]> {
+  private syncRecentActivities(): Observable<Activity[]> {
     const after = this.activityCache.getNewestActivityDate() ?? new Date();
     after.setDate(after.getDate() - 2);
-    return this.getAllActivities(after, headers).pipe(
+    return this.getAllActivities(after).pipe(
       tap(activities => this.activityCache.setActivities(activities, 'week'))
     );
-  }
-
-  private handleFetchError(error: any): Observable<never> {
-    // Si l'erreur est liée à l'authentification
-    if (error.status === 401 ||
-      (error.error && error.error.message && error.error.message.includes('Authorization Error'))) {
-      localStorage.clear();
-      this.router.navigate(['/login']);
-    }
-    return throwError(() => error);
   }
 
   authenticate(): void {
@@ -163,30 +96,7 @@ export class StravaService {
       `&redirect_uri=${this.redirectUri}&response_type=code&scope=${scope}`;
   }
 
-  handleAuthCallback(code: string): Observable<TokenResponse> {
-    return this.http.post<TokenResponse>(`${this.apiUrl}/oauth/token`, {
-      client_id: this.clientId,
-      client_secret: this.clientSecret,
-      code,
-      grant_type: 'authorization_code'
-    }).pipe(
-      tap(response => {
-        localStorage.setItem('strava_token', response.access_token);
-        localStorage.setItem('strava_refresh_token', response.refresh_token);
-        localStorage.setItem('strava_token_expires_at', response.expires_at.toString());
-        localStorage.setItem('strava_athlete_id', response.athlete.id.toString());
-
-        this.sessionService.startSession(response).subscribe();
-      }),
-      catchError(error => {
-        console.error('Erreur lors de l\'authentification:', error);
-        this.router.navigate(['/login']);
-        return throwError(() => error);
-      })
-    );
-  }
-
-  private getActivitiesPage(after: Date, page: number = 1, headers: HttpHeaders, before?: Date): Observable<Activity[]> {
+  private getActivitiesPage(after: Date, page: number, before?: Date): Observable<Activity[]> {
     const params: any = {
       after: Math.floor(after.getTime() / 1000).toString(),
       per_page: '200',
@@ -199,10 +109,7 @@ export class StravaService {
     }
 
     return this.http
-      .get<Activity[]>(`${this.apiUrl}/athlete/activities`, {
-        headers,
-        params
-      })
+      .get<Activity[]>(`${this.apiUrl}/athlete/activities`, {params})
       .pipe(
         map(activities => activities.map(activity => ({
           id: activity.id,
@@ -219,10 +126,10 @@ export class StravaService {
       );
   }
 
-  private getAllActivities(after: Date, headers: HttpHeaders, before?: Date): Observable<Activity[]> {
+  private getAllActivities(after: Date, before?: Date): Observable<Activity[]> {
     return new Observable<Activity[]>(subscriber => {
       const fetchPage = (page: number, accumulatedActivities: Activity[] = []) => {
-        this.getActivitiesPage(after, page, headers, before).subscribe({
+        this.getActivitiesPage(after, page, before).subscribe({
           next: (activities) => {
             if (activities.length === 0) {
               // Plus de pages à charger, émettre le résultat final
@@ -250,52 +157,35 @@ export class StravaService {
    * @param force ignore le cache et recharge tout (rafraîchissement manuel)
    */
   loadAllRecentActivities(force = false): Observable<Activity[]> {
-    if (this.checkTokenExpiration()) {
-      return throwError(() => new Error('Token expired'));
+    if (!force && this.activityCache.hasRecentFullLoad()) {
+      const sync$ = this.activityCache.isStale() ? this.syncRecentActivities() : of([]);
+      return sync$.pipe(map(() => this.activityCache.getAllActivities()));
     }
 
-    const athlete = {
-      id: localStorage.getItem('strava_athlete_id'),
-      accessToken: localStorage.getItem('strava_token'),
-      refreshToken: localStorage.getItem('strava_refresh_token'),
-      expiresAt: localStorage.getItem('strava_token_expires_at'),
-    };
-
-    if (!athlete.id || !athlete.accessToken || !athlete.refreshToken || !athlete.expiresAt) {
-      return throwError(() => new Error('Missing athlete data'));
-    }
-
-    // Démarrer la session avec le backend
-    this.sessionService.startSession({
-      athlete: {id: athlete.id},
-      access_token: athlete.accessToken,
-      refresh_token: athlete.refreshToken,
-      expires_at: Number(athlete.expiresAt)
-    }).subscribe();
-
-    // Calculer la date d'il y a 2 ans
     const twoYearsAgo = new Date();
     twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 2);
 
-    const headers = new HttpHeaders().set(
-      'Authorization',
-      `Bearer ${athlete.accessToken}`
+    return this.getAllActivities(twoYearsAgo).pipe(
+      // Sauvegarder dans le cache pour toutes les périodes, en remplaçant les 2 dernières années
+      tap(activities => this.activityCache.setActivities(activities, 'current_year', twoYearsAgo))
     );
+  }
 
-    if (!force && this.activityCache.hasRecentFullLoad()) {
-      const sync$ = this.activityCache.isStale() ? this.syncRecentActivities(headers) : of([]);
-      return sync$.pipe(
-        map(() => this.activityCache.getAllActivities()),
-        catchError(error => this.handleFetchError(error))
-      );
-    }
-
-    return this.getAllActivities(twoYearsAgo, headers).pipe(
-      tap(activities => {
-        // Sauvegarder dans le cache pour toutes les périodes, en remplaçant les 2 dernières années
-        this.activityCache.setActivities(activities, 'current_year', twoYearsAgo);
-      }),
-      catchError(error => this.handleFetchError(error))
+  /**
+   * Historique complet (page Profil : totaux et records de tous les temps).
+   * Les activités antérieures au cache ne sont téléchargées qu'une fois, puis conservées dans le cache.
+   */
+  loadFullHistory(): Observable<Activity[]> {
+    return this.loadAllRecentActivities().pipe(
+      switchMap(() => {
+        if (this.activityCache.isHistoryComplete()) {
+          return of(this.activityCache.getAllActivities());
+        }
+        return this.getAllActivities(new Date(0), this.activityCache.getOldestActivityDate() ?? undefined).pipe(
+          tap(older => this.activityCache.addOlderActivities(older)),
+          map(() => this.activityCache.getAllActivities())
+        );
+      })
     );
   }
 }

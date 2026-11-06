@@ -5,6 +5,7 @@ import {Router} from '@angular/router';
 import {Subject, takeUntil, distinctUntilChanged} from 'rxjs';
 import {TranslateModule, TranslateService} from '@ngx-translate/core';
 import {StravaService} from '../../services/strava.service';
+import {AuthService} from '../../services/auth.service';
 import {StatsService} from '../../services/stats.service';
 import {Stats} from "../../models/stats";
 import {StatsListComponent} from "../stats-list/stats-list.component";
@@ -87,6 +88,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   constructor(
     private stravaService: StravaService,
+    private authService: AuthService,
     private statsService: StatsService,
     private router: Router,
     private activityCache: ActivityCacheService,
@@ -181,7 +183,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   reconnectToStrava() {
-    localStorage.clear();
     this.stravaService.authenticate();
   }
 
@@ -350,9 +351,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private checkAuth(): boolean {
-    const token = localStorage.getItem('strava_token');
-    const expiresAt = localStorage.getItem('strava_token_expires_at');
-    if (!token || !expiresAt || Date.now() / 1000 > Number(expiresAt)) {
+    if (!this.authService.hasSession()) {
       this.handleAuthError();
       return false;
     }

@@ -3,6 +3,7 @@ import {HttpClient} from '@angular/common/http';
 import {Observable, throwError} from 'rxjs';
 import {catchError, map} from 'rxjs/operators';
 import {Activity} from '../models/activity';
+import {StravaService} from './strava.service';
 
 export interface AthleteProfile {
   id: number;
@@ -62,7 +63,7 @@ export interface AthleteSummary {
 export class AthleteService {
   private apiUrl = 'https://www.strava.com/api/v3';
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private stravaService: StravaService) {
   }
 
   getAthleteProfile(): Observable<AthleteProfile> {
@@ -75,13 +76,9 @@ export class AthleteService {
       );
   }
 
+  /** Totaux et records calculés sur l'historique complet, servi par le cache d'activités */
   getAthleteSummary(): Observable<AthleteSummary> {
-    const athleteId = localStorage.getItem('strava_athlete_id');
-    if (!athleteId) {
-      return throwError(() => new Error('ID de l\'athlète non trouvé'));
-    }
-
-    return this.getAllActivities().pipe(
+    return this.stravaService.loadFullHistory().pipe(
       map(activities => {
         const currentYear = new Date().getFullYear();
         const currentYearActivities = activities.filter(a =>
@@ -185,33 +182,6 @@ export class AthleteService {
         return throwError(() => new Error('Impossible de récupérer les statistiques de l\'athlète'));
       })
     );
-  }
-
-  private getAllActivities(): Observable<Activity[]> {
-    return new Observable<Activity[]>(subscriber => {
-      const fetchPage = (page: number, accumulatedActivities: Activity[] = []) => {
-        this.http.get<Activity[]>(`${this.apiUrl}/athlete/activities`, {
-          params: {
-            per_page: '200',
-            page: page.toString()
-          }
-        }).subscribe({
-          next: (activities) => {
-            if (activities.length === 0) {
-              // Plus d'activités à récupérer
-              subscriber.next(accumulatedActivities);
-              subscriber.complete();
-            } else {
-              // Récupérer la page suivante
-              fetchPage(page + 1, [...accumulatedActivities, ...activities]);
-            }
-          },
-          error: (error) => subscriber.error(error)
-        });
-      };
-
-      fetchPage(1); // Commencer à la première page
-    });
   }
 
   private filterCurrentYear(activities: Activity[]): Activity[] {

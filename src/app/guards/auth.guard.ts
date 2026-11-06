@@ -1,53 +1,34 @@
 import {Injectable} from '@angular/core';
-import {CanActivate, Router} from '@angular/router';
-import {StravaService} from '../services/strava.service';
+import {CanActivate} from '@angular/router';
 import {SessionService} from '../services/session.service';
+import {AuthService} from '../services/auth.service';
 import {Observable, of} from 'rxjs';
-import {catchError, map, tap} from 'rxjs/operators';
+import {catchError, map, switchMap} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthGuard implements CanActivate {
   constructor(
-    private router: Router,
-    private stravaService: StravaService,
+    private authService: AuthService,
     private sessionService: SessionService
   ) {
   }
 
   canActivate(): Observable<boolean> {
-    const token = localStorage.getItem('strava_token');
-    const expiresAt = localStorage.getItem('strava_token_expires_at');
-    const athleteId = localStorage.getItem('strava_athlete_id');
-
-    if (!token || !expiresAt || !athleteId) {
-      this.cleanAndRedirect();
+    if (!this.authService.hasSession()) {
+      this.authService.logout();
       return of(false);
     }
 
-    // Vérifier si le token est expiré
-    if (Date.now() / 1000 > Number(expiresAt)) {
-      this.cleanAndRedirect();
-      return of(false);
-    }
-
-    // Vérifier la session
-    return this.sessionService.checkSession(athleteId).pipe(
-      tap(() => {
-        // Rafraîchir l'activité de l'utilisateur
-        this.sessionService.updateActivity().subscribe();
-      }),
+    // Token rafraîchi si expiré, puis vérification de la session backend (met aussi à jour lastActivity)
+    return this.authService.getValidToken().pipe(
+      switchMap(() => this.sessionService.checkSession(localStorage.getItem('strava_athlete_id')!)),
       map(() => true),
       catchError(() => {
-        this.cleanAndRedirect();
+        this.authService.logout();
         return of(false);
       })
     );
-  }
-
-  private cleanAndRedirect(): void {
-    localStorage.clear();
-    this.router.navigate(['/login']);
   }
 }

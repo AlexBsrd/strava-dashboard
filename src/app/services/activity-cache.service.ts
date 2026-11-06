@@ -9,6 +9,7 @@ interface CachedData {
   athleteId: string;
   oldestActivityDate: string | null;
   fullLoadAt?: number;
+  historyComplete?: boolean;
 }
 
 @Injectable({
@@ -27,6 +28,8 @@ export class ActivityCacheService {
   private isPreloading = false;
   private oldestActivityDate: Date | null = null;
   private fullLoadAt: number | null = null;
+  /** Vrai une fois l'historique antérieur au cache téléchargé (page Profil) */
+  private historyComplete = false;
 
   constructor() {
     this.loadFromLocalStorage();
@@ -173,7 +176,8 @@ export class ActivityCacheService {
         timestamp: Date.now(),
         athleteId: athleteId,
         oldestActivityDate: this.oldestActivityDate?.toISOString() ?? null,
-        fullLoadAt: this.fullLoadAt ?? undefined
+        fullLoadAt: this.fullLoadAt ?? undefined,
+        historyComplete: this.historyComplete
       };
 
       localStorage.setItem(this.CACHE_KEY, JSON.stringify(cachedData));
@@ -207,6 +211,7 @@ export class ActivityCacheService {
         ? new Date(cachedData.oldestActivityDate)
         : null;
       this.fullLoadAt = cachedData.fullLoadAt ?? null;
+      this.historyComplete = cachedData.historyComplete ?? false;
       this.activitiesSubject.next(this.activities);
     } catch (error) {
       // Si erreur de parsing, on nettoie le cache
@@ -223,6 +228,7 @@ export class ActivityCacheService {
       this.currentPeriod = null;
       this.oldestActivityDate = null;
       this.fullLoadAt = null;
+      this.historyComplete = false;
     } catch (error) {
       console.warn('Failed to clear localStorage cache:', error);
     }
@@ -245,6 +251,16 @@ export class ActivityCacheService {
 
   getLastUpdate(): Date | null {
     return this.lastUpdate;
+  }
+
+  isHistoryComplete(): boolean {
+    return this.historyComplete;
+  }
+
+  /** Ajoute les activités antérieures au cache ; les chargements complets suivants les conservent */
+  addOlderActivities(activities: Activity[]): void {
+    this.historyComplete = true;
+    this.setActivities(activities, this.currentPeriod ?? 'current_year');
   }
 
   /** Vrai si le dernier chargement complet date de moins de 24h (une synchro incrémentale suffit) */

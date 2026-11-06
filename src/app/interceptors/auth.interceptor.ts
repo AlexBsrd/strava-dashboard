@@ -1,46 +1,38 @@
 import {HttpInterceptorFn} from '@angular/common/http';
 import {environment} from '../environments/environment';
-import {Router} from '@angular/router';
 import {inject} from '@angular/core';
-import {catchError} from 'rxjs/operators';
+import {catchError, switchMap} from 'rxjs/operators';
 import {throwError} from 'rxjs';
+import {AuthService} from '../services/auth.service';
+
+const STRAVA_API = 'https://www.strava.com/api/';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  const router = inject(Router);
-
   // Pour l'API backend
   if (req.url.startsWith(environment.apiUrl)) {
-    const cloned = req.clone({
-      setHeaders: {
-        'x-api-key': environment.apiKey
-      }
-    });
-    return next(cloned);
+    return next(req.clone({setHeaders: {'x-api-key': environment.apiKey}}));
   }
 
-  // Pour les requêtes vers Strava
-  const token = localStorage.getItem('strava_token');
-  if (token) {
-    const cloned = req.clone({
-      setHeaders: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-
-    return next(cloned).pipe(
-      catchError(error => {
-        // Si l'erreur est 401 (non autorisé) ou une erreur liée à l'authentification Strava
-        if (error.status === 401 ||
-          (error.error && error.error.message && error.error.message.includes('Authorization Error'))) {
-          // Nettoyer le localStorage
-          localStorage.clear();
-          // Rediriger vers la page de login
-          router.navigate(['/login']);
-        }
-        return throwError(() => error);
-      })
-    );
+  if (!req.url.startsWith(STRAVA_API)) {
+    return next(req);
   }
 
-  return next(req);
+  // Pour l'API Strava : token rafraîchi avant expiration, et un nouvel essai si Strava le refuse (401)
+  const auth = inject(AuthService);
+  const withToken = (token: string) => next(req.clone({setHeaders: {Authorization: `Bearer ${token}`}}));
+
+  return auth.getValidToken().pipe(
+    switchMap(token => withToken(token).pipe(
+      catchError(error => error.status === 401
+        ? auth.refresh().pipe(switchMap(withToken))
+        : throwError(() => error))
+    )),
+    catchError(error => {
+      // Refresh token révoqué ou absent : il faut se reconnecter
+      if (error.status === 401) {
+        auth.logout();
+      }
+      return throwError(() => error);
+    })
+  );
 };

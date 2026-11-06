@@ -64,8 +64,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  formatDistance(meters: number): string {
-    return (meters / 1000).toFixed(1) + ' km';
+  formatDistance(km: number): string {
+    return km.toFixed(1) + ' km';
   }
 
   formatDuration(seconds: number): string {

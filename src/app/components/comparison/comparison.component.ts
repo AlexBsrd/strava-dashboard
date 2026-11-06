@@ -7,6 +7,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ComparisonPeriod, ComparisonPreset, StatsComparison } from '../../types/comparison';
 import { ComparisonService } from '../../services/comparison.service';
 import { StravaService } from '../../services/strava.service';
+import { AuthService } from '../../services/auth.service';
 import { StatsService } from '../../services/stats.service';
 import { Activity } from '../../models/activity';
 import { ComparisonStatsGridComponent } from '../comparison-stats-grid/comparison-stats-grid.component';
@@ -68,6 +69,7 @@ export class ComparisonComponent implements OnInit, OnDestroy {
   constructor(
     private comparisonService: ComparisonService,
     private stravaService: StravaService,
+    private authService: AuthService,
     private statsService: StatsService,
     private router: Router,
     private sportConfigService: SportConfigService,
@@ -326,9 +328,7 @@ export class ComparisonComponent implements OnInit, OnDestroy {
   }
 
   private checkAuth(): boolean {
-    const token = localStorage.getItem('strava_token');
-    const expiresAt = localStorage.getItem('strava_token_expires_at');
-    if (!token || !expiresAt || Date.now() / 1000 > Number(expiresAt)) {
+    if (!this.authService.hasSession()) {
       this.handleAuthError();
       return false;
     }
@@ -342,7 +342,6 @@ export class ComparisonComponent implements OnInit, OnDestroy {
   }
 
   reconnectToStrava() {
-    localStorage.clear();
     this.stravaService.authenticate();
   }
 
