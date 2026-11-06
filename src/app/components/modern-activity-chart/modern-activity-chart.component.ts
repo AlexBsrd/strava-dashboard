@@ -707,6 +707,17 @@ export class ModernActivityChartComponent implements OnChanges, OnInit {
       };
     });
 
+    // Liste plafonnée : un mois chargé produisait une info-bulle plus haute que le graphique
+    const MAX_LISTED = 6;
+    const listActivities = (activities: { name: string; date: Date }[]) => {
+      const lines = activities.slice(0, MAX_LISTED)
+        .map(activity => `- ${activity.date.toLocaleDateString(locale)}: ${activity.name}`);
+      if (activities.length > MAX_LISTED) {
+        lines.push(this.translateService.instant('chart.more_activities', {count: activities.length - MAX_LISTED}));
+      }
+      return lines.join('\n');
+    };
+
     const generateTitle = (date: Date, dataMap: Map<string, Activity | WeeklyData | MonthlyData>) => {
       if (this.groupingType === 'week') {
         const weekNum = this.getWeekNumber(date);
@@ -719,11 +730,8 @@ export class ModernActivityChartComponent implements OnChanges, OnInit {
         const activitiesLabel = this.translateService.instant('chart.activities_of_week');
         let title = `${weekLabel} ${weekData.weekNumber}\n`;
         title += `${fromLabel} ${weekData.weekStart.toLocaleDateString(locale)} ${toLabel} ${weekData.weekEnd.toLocaleDateString(locale)}\n\n`;
-        title += `${activitiesLabel}:\n`;
-        weekData.activities.forEach(activity => {
-          title += `- ${activity.date.toLocaleDateString(locale)}: ${activity.name}\n`;
-        });
-        return title;
+        title += `${activitiesLabel} (${weekData.activities.length}):\n`;
+        return title + listActivities(weekData.activities);
       } else if (this.groupingType === 'month') {
         const monthNum = date.getMonth();
         const monthData = dataMap.get(monthNum.toString()) as MonthlyData;
@@ -734,11 +742,8 @@ export class ModernActivityChartComponent implements OnChanges, OnInit {
         const activitiesLabel = this.translateService.instant('chart.activities_of_month');
         let title = `${monthData.monthLabel.charAt(0).toUpperCase() + monthData.monthLabel.slice(1)}\n`;
         title += `${fromLabel} ${monthData.monthStart.toLocaleDateString(locale)} ${toLabel} ${monthData.monthEnd.toLocaleDateString(locale)}\n\n`;
-        title += `${activitiesLabel}:\n`;
-        monthData.activities.forEach(activity => {
-          title += `- ${activity.date.toLocaleDateString(locale)}: ${activity.name}\n`;
-        });
-        return title;
+        title += `${activitiesLabel} (${monthData.activities.length}):\n`;
+        return title + listActivities(monthData.activities);
       } else {
         const key = date.toLocaleDateString('sv-SE');
         const activity = dataMap.get(key) as Activity;
