@@ -334,7 +334,9 @@
   },
   "metrics": {
     "labels": {
-      "totalElapsedTime": "Temps total",
+      "totalElapsedTime": "Temps",
+      "movingTime": "Temps en mouvement",
+      "elapsedTotal": "Total : {{time}}",
       "averageSpeed": "Vitesse moyenne",
       "totalDistance": "Distance totale",
       "averageDistance": "Distance moyenne/sortie",
