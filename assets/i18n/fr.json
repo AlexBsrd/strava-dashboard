@@ -302,7 +302,8 @@
     "trend": "Tendance",
     "axis_distance": "Distance (km)",
     "axis_pace": "Allure (min/km)",
-    "date": "Date"
+    "date": "Date",
+    "more_activities": "… et {{count}} autres"
   },
   "sports": {
     "types": {
