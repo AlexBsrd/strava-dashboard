@@ -1,3 +1,4 @@
+import {testProviders} from '../../testing/test-providers';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ModernActivityChartComponent } from './modern-activity-chart.component';
@@ -8,7 +9,8 @@ describe('ModernActivityChartComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ModernActivityChartComponent]
+      imports: [ModernActivityChartComponent],
+      providers: testProviders
     })
     .compileComponents();
 

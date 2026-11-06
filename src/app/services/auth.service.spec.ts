@@ -1,7 +1,7 @@
 import {TestBed} from '@angular/core/testing';
 import {HttpClient, provideHttpClient, withInterceptors} from '@angular/common/http';
 import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
-import {provideRouter} from '@angular/router';
+import {provideRouter, Router} from '@angular/router';
 import {AuthService} from './auth.service';
 import {authInterceptor} from '../interceptors/auth.interceptor';
 import {environment} from '../environments/environment';
@@ -27,6 +27,8 @@ describe('AuthService', () => {
         provideRouter([])
       ]
     });
+    // La déconnexion navigue vers /login : sans espion, la navigation finirait après la destruction du TestBed
+    spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true);
     service = TestBed.inject(AuthService);
     http = TestBed.inject(HttpClient);
     httpMock = TestBed.inject(HttpTestingController);
