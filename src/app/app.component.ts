@@ -12,6 +12,7 @@ import { ActivityCacheService } from './services/activity-cache.service';
 import { PeriodStateService } from './services/period-state.service';
 import { Activity } from './models/activity';
 import { PeriodType } from './types/period';
+import { IconComponent } from './components/icon/icon.component';
 
 const STORAGE_KEY = 'strava_language';
 const SUPPORTED_LANGS = ['fr', 'en'];
@@ -26,7 +27,8 @@ const DEFAULT_LANG = 'fr';
     RouterLink,
     RouterLinkActive,
     SportSidebarComponent,
-    TranslateModule
+    TranslateModule,
+    IconComponent
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']

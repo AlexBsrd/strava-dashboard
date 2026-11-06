@@ -7,25 +7,38 @@ import {ActivityCacheService} from '../../services/activity-cache.service';
 import {StravaService} from '../../services/strava.service';
 import {Activity} from '../../models/activity';
 import {SpinnerComponent} from '../spinner/spinner.component';
-import {EARTH_KM, EVEREST_M, yearRecap, YearRecap} from '../../utils/highlights';
+import {EARTH_KM, EVEREST_M, latestRecapYear, yearRecap, YearRecap} from '../../utils/highlights';
+import {getSportMetadata} from '../../types/sport-config';
+import {IconComponent} from '../icon/icon.component';
+import {
+  display, drawBackdrop, drawBrand, drawStripes, loadFonts, loadIcon, PALETTES,
+  roundRect, shareOrDownload, sportIcon, STORY_H, STORY_W, text
+} from '../../utils/share-image';
 
 type SlideId = 'intro' | 'distance' | 'elevation' | 'sports' | 'month' | 'longest' | 'summary';
 
+// Orange Strava et vert « allure » du site, en alternance
 const SLIDE_COLORS: Record<SlideId, string> = {
   intro: '#fc5200',
-  distance: '#2563eb',
-  elevation: '#0f9d6e',
-  sports: '#9333ea',
-  month: '#e11d48',
-  longest: '#ea580c',
+  distance: '#fc5200',
+  elevation: '#26c48a',
+  sports: '#ff6a1f',
+  month: '#26c48a',
+  longest: '#fc5200',
   summary: '#fc5200'
 };
 
+const SLIDE_ICONS: Partial<Record<SlideId, string>> = {
+  distance: 'route',
+  elevation: 'mountain',
+  month: 'calendar-event',
+  longest: 'trophy'
+};
 /** Bilan de l'année en diapos, façon « stories » */
 @Component({
   selector: 'app-recap',
   standalone: true,
-  imports: [CommonModule, TranslateModule, SpinnerComponent],
+  imports: [CommonModule, TranslateModule, SpinnerComponent, IconComponent],
   templateUrl: './recap.component.html',
   styleUrls: ['./recap.component.css']
 })
@@ -38,18 +51,23 @@ export class RecapComponent implements OnInit {
 
   private activities: Activity[] = [];
   years: number[] = [];
-  year = new Date().getMonth() === 0 ? new Date().getFullYear() - 1 : new Date().getFullYear();
+  year = latestRecapYear();
+  /** Année en cours, tant que son bilan n'est pas ouvert (avant le 1er décembre) */
+  readonly lockedYear = this.year < new Date().getFullYear() ? new Date().getFullYear() : null;
   recap: YearRecap | null = null;
   slides: SlideId[] = [];
   index = 0;
   loading = true;
+  sharing = false;
 
   ngOnInit() {
     this.cache.activities$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(activities => {
         this.activities = activities;
-        this.years = [...new Set(activities.map(a => new Date(a.start_date).getFullYear()))].sort((a, b) => b - a);
+        this.years = [...new Set(activities.map(a => new Date(a.start_date).getFullYear()))]
+          .filter(y => y <= latestRecapYear())
+          .sort((a, b) => b - a);
         if (activities.length) {
           this.loading = false;
           this.build();
@@ -125,6 +143,23 @@ export class RecapComponent implements OnInit {
     return (this.recap?.elevation ?? 0) / EVEREST_M;
   }
 
+  /** Icône de la diapo ; le sport préféré pour l'intro, les sports et le résumé */
+  get slideIcon(): string {
+    return SLIDE_ICONS[this.slide] ?? this.iconFor(this.recap?.sports[0]?.type);
+  }
+
+  iconFor(type?: string): string {
+    return type ? sportIcon(getSportMetadata(type).icon) : 'activity';
+  }
+
+  /** Un sommet par Everest gravi (10 max), le dernier estompé s'il est partiel */
+  get everestPeaks(): number[] {
+    const n = Math.min(this.everests, 10);
+    const peaks = new Array(Math.floor(n)).fill(1);
+    if (n % 1 > 0.05) peaks.push(0.35);
+    return peaks;
+  }
+
   get topSportShare(): number {
     return this.recap?.sports[0]?.count ?? 1;
   }
@@ -154,64 +189,97 @@ export class RecapComponent implements OnInit {
   async share(event: Event) {
     event.stopPropagation();
     const r = this.recap;
-    if (!r) return;
+    if (!r || this.sharing) return;
+    this.sharing = true;
+    try {
+      await shareOrDownload(await this.drawShareCard(r), `bilan-${r.year}.png`);
+    } finally {
+      this.sharing = false;
+    }
+  }
+
+  private async drawShareCard(r: YearRecap): Promise<HTMLCanvasElement> {
     const t = (key: string, params?: object) => this.translate.instant(`recap.${key}`, params);
+    const p = PALETTES.dark;
+    const top = r.sports[0];
+    const topIcon = this.iconFor(top?.type);
+    const rows: [string, string, string][] = [
+      ['activity', this.num(r.count), t('summary.activities')],
+      ['route', this.num(r.distance), t('summary.distance')],
+      ['clock-hour-4', this.hours(r.movingTime), t('summary.time')],
+      ['mountain', this.num(r.elevation), t('summary.elevation')],
+      ['calendar-event', this.num(r.activeDays), t('summary.active_days')],
+      ['flame', this.num(r.longestStreak), t('summary.streak')]
+    ];
+    const [ghost, badge, ...icons] = await Promise.all([
+      loadIcon(topIcon, '#ffffff', 0.5),
+      loadIcon(topIcon, '#ffffff'),
+      ...rows.map(([icon]) => loadIcon(icon, p.accent)),
+      loadFonts()
+    ]) as HTMLImageElement[];
 
     const canvas = document.createElement('canvas');
-    canvas.width = 1080;
-    canvas.height = 1920;
+    canvas.width = STORY_W;
+    canvas.height = STORY_H;
     const ctx = canvas.getContext('2d')!;
-    const bg = ctx.createLinearGradient(0, 0, 1080, 1920);
-    bg.addColorStop(0, '#fc5200');
-    bg.addColorStop(0.55, '#7a2900');
-    bg.addColorStop(1, '#111827');
-    ctx.fillStyle = bg;
-    ctx.fillRect(0, 0, 1080, 1920);
-
-    const font = (size: number, weight = 700) => `${weight} ${size}px 'Barlow Semi Condensed', Inter, sans-serif`;
-    ctx.fillStyle = '#fff';
-    ctx.textAlign = 'left';
-    ctx.font = font(56, 600);
-    ctx.globalAlpha = 0.8;
-    ctx.fillText(t('share.kicker').toUpperCase(), 96, 220);
+    drawBackdrop(ctx, p);
+    ctx.globalAlpha = 0.09;
+    ctx.drawImage(ghost, 420, 160, 900, 900);
     ctx.globalAlpha = 1;
-    ctx.font = font(260, 800);
-    ctx.fillText(String(r.year), 84, 470);
+    drawBrand(ctx, p);
 
-    const rows: [string, string][] = [
-      [this.num(r.count), t('summary.activities')],
-      [this.num(r.distance), t('summary.distance')],
-      [this.hours(r.movingTime), t('summary.time')],
-      [this.num(r.elevation), t('summary.elevation')],
-      [this.num(r.activeDays), t('summary.active_days')],
-      [this.num(r.longestStreak), t('summary.streak')]
-    ];
-    rows.forEach(([value, label], i) => {
-      const y = 720 + i * 180;
-      ctx.font = font(110, 800);
-      ctx.fillText(value, 96, y);
-      ctx.font = font(44, 500);
-      ctx.globalAlpha = 0.75;
-      ctx.fillText(label, 96, y + 56);
-      ctx.globalAlpha = 1;
+    ctx.fillStyle = p.accent;
+    ctx.font = text(38, 600);
+    ctx.letterSpacing = '8px';
+    ctx.fillText(t('share.kicker').toUpperCase(), 96, 380);
+    ctx.letterSpacing = '0px';
+    ctx.fillStyle = p.ink;
+    ctx.font = display(380);
+    ctx.fillText(String(r.year), 78, 700);
+    drawStripes(ctx, 104, 748, p.bar, [140, 76, 36], 16);
+
+    rows.forEach(([, value, label], i) => {
+      const x = 96 + (i % 2) * 464;
+      const y = 860 + Math.floor(i / 2) * 260;
+      ctx.fillStyle = p.line;
+      ctx.fillRect(x, y, 424, 2);
+      ctx.drawImage(icons[i], x, y + 36, 50, 50);
+      ctx.fillStyle = p.ink;
+      ctx.font = display(118);
+      ctx.fillText(value, x - 4, y + 196);
+      ctx.fillStyle = p.muted;
+      ctx.font = text(31);
+      ctx.fillText(label, x, y + 240);
     });
 
-    if (r.sports[0]) {
-      ctx.font = font(48, 600);
-      ctx.fillText(`${t('share.favorite')} ${this.translate.instant(r.sports[0].labelKey)}`, 96, 1800);
+    if (top) {
+      const y = 1672;
+      roundRect(ctx, 96, y, 888, 156, 32);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+      ctx.fill();
+      ctx.strokeStyle = p.line;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      roundRect(ctx, 126, y + 30, 96, 96, 24);
+      ctx.fillStyle = p.bar;
+      ctx.fill();
+      ctx.drawImage(badge, 144, y + 48, 60, 60);
+      ctx.fillStyle = p.muted;
+      ctx.font = text(26, 600);
+      ctx.letterSpacing = '5px';
+      ctx.fillText(t('share.favorite').toUpperCase(), 254, y + 64);
+      ctx.letterSpacing = '0px';
+      ctx.fillStyle = p.ink;
+      ctx.font = display(64, 600, false);
+      ctx.fillText(this.translate.instant(top.labelKey), 252, y + 124);
+      ctx.textAlign = 'right';
+      ctx.font = display(84);
+      ctx.fillText(this.num(top.count), 950, y + 104);
+      ctx.fillStyle = p.muted;
+      ctx.font = text(26);
+      ctx.fillText(t('summary.activities'), 950, y + 136);
+      ctx.textAlign = 'left';
     }
-
-    const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/png'));
-    if (!blob) return;
-    const file = new File([blob], `bilan-${r.year}.png`, {type: 'image/png'});
-    if (navigator.canShare?.({files: [file]})) {
-      await navigator.share({files: [file]}).catch(() => undefined); // annulation par l'utilisateur
-      return;
-    }
-    const link = document.createElement('a');
-    link.download = file.name;
-    link.href = URL.createObjectURL(blob);
-    link.click();
-    setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+    return canvas;
   }
 }

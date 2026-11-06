@@ -1,5 +1,5 @@
 import {Activity} from '../models/activity';
-import {longestStreak, nextDistanceStep, recentRecords, weekSummary, yearRecap} from './highlights';
+import {latestRecapYear, longestStreak, nextDistanceStep, recentRecords, weekSummary, yearRecap} from './highlights';
 
 const act = (date: string, distance: number, sport = 'Run', elevation = 0): Activity => ({
   id: Math.random(), name: `${sport} ${date}`, distance, moving_time: 3600, elapsed_time: 3600,
@@ -43,6 +43,12 @@ describe('highlights', () => {
       act('2026-01-30T08:00', 1), act('2026-01-31T08:00', 1), act('2026-01-31T18:00', 1),
       act('2026-02-01T08:00', 1), act('2026-02-05T08:00', 1)
     ])).toBe(3);
+  });
+
+  it('opens the current year recap on December 1', () => {
+    expect(latestRecapYear(new Date(2026, 10, 30))).toBe(2025);
+    expect(latestRecapYear(new Date(2026, 11, 1))).toBe(2026);
+    expect(latestRecapYear(new Date(2027, 0, 15))).toBe(2026);
   });
 
   it('builds a year recap', () => {

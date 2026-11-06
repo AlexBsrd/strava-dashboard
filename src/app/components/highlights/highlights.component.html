@@ -23,7 +23,7 @@
     </p>
 
     <p class="goal" *ngIf="closestGoal as g">
-      🎯 {{ g.goal.name }}
+      <app-icon name="target"></app-icon>{{ g.goal.name }}
       <span class="goal-bar"><span [style.width.%]="g.percentage"></span></span>
       <strong>{{ num(g.percentage) }} %</strong>
     </p>
@@ -31,7 +31,7 @@
 
   <article class="hl-card records" *ngIf="records.length">
     <header>
-      <h2>🏆 {{ 'highlights.records.title' | translate }}</h2>
+      <h2><app-icon name="trophy"></app-icon>{{ 'highlights.records.title' | translate }}</h2>
       <span class="hl-sub">{{ 'highlights.records.subtitle' | translate }}</span>
     </header>
     <ul>
@@ -56,13 +56,13 @@
     </p>
     <div class="step-bar"><span [style.width.%]="stepProgress"></span></div>
     <p class="fact" *ngIf="yearTotals.elevation > 0">
-      ⛰️ {{ 'highlights.milestones.everest' | translate:{ elevation: num(yearTotals.elevation), count: num(everests, 1) } }}
+      <app-icon name="mountain"></app-icon>{{ 'highlights.milestones.everest' | translate:{ elevation: num(yearTotals.elevation), count: num(everests, 1) } }}
     </p>
     <p class="fact" *ngIf="allTimeDistance">
-      🌍 {{ 'highlights.milestones.earth' | translate:{ distance: num(allTimeDistance), percent: num(earthPercent, 1) } }}
+      <app-icon name="world"></app-icon>{{ 'highlights.milestones.earth' | translate:{ distance: num(allTimeDistance), percent: num(earthPercent, 1) } }}
     </p>
     <a *ngIf="showRecapTeaser" class="recap-teaser" routerLink="/recap">
-      ✨ {{ 'highlights.recap_teaser' | translate:{ year: recapYear } }} →
+      <app-icon name="sparkles"></app-icon>{{ 'highlights.recap_teaser' | translate:{ year: recapYear } }} →
     </a>
   </article>
 </section>

@@ -1,292 +1,135 @@
 import {AfterViewInit, Component, ElementRef, Input, ViewChild, inject} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
-import {CommonModule} from '@angular/common';
 import {Stats} from '../../models/stats';
+import {
+  display, drawBackdrop, drawBrand, drawStripes, loadFonts, loadIcon, Palette, PALETTES,
+  roundRect, shareOrDownload, sportIcon, STORY_H, STORY_W, text
+} from '../../utils/share-image';
 
-interface Theme {
-  value: string;
-  label: string;
-  colors: {
-    background: string[];
-    card: string;
-    cardBorder: string;
-    text: string;
-    textSecondary: string;
-    accent: string;
-    accentGradient: string[];
-  };
-}
+export type CardTheme = keyof typeof PALETTES;
 
+/** Story 1080×1920 des stats d'un sport sur la période affichée */
 @Component({
   selector: 'app-instagram-card',
   standalone: true,
-  imports: [CommonModule],
   templateUrl: './instagram-card.component.html',
   styleUrls: ['./instagram-card.component.css']
 })
 export class InstagramCardComponent implements AfterViewInit {
-  private translateService = inject(TranslateService);
+  private translate = inject(TranslateService);
   @ViewChild('canvas') canvasRef!: ElementRef<HTMLCanvasElement>;
   @Input() stats!: Stats;
   @Input() title!: string;
-  @Input() period: string = '7 derniers jours';
-  @Input() selectedTheme = 'modern';
-  
-  themes: { value: string; label: string; }[] = [
-    {value: 'modern', label: 'Moderne'},
-    {value: 'minimal', label: 'Minimal'},
-    {value: 'dark', label: 'Sombre'}
-  ];
+  @Input() period = '';
+  @Input() icon?: string;
+  @Input() selectedTheme: CardTheme = 'dark';
 
-  private readonly CANVAS_WIDTH = 1080;
-  private readonly CANVAS_HEIGHT = 1920;
-
-  private themeConfigs: { [key: string]: Theme } = {
-    modern: {
-      value: 'modern',
-      label: 'Moderne',
-      colors: {
-        background: ['#F8F9FF', '#E8EFFF'],
-        card: '#FFFFFF',
-        cardBorder: 'rgba(147, 157, 255, 0.2)',
-        text: '#1E2243',
-        textSecondary: '#626894',
-        accent: '#5B6CFF',
-        accentGradient: ['#5B6CFF', '#8595FF']
-      }
-    },
-    minimal: {
-      value: 'minimal',
-      label: 'Minimal',
-      colors: {
-        background: ['#FFFFFF', '#F5F5F5'],
-        card: '#FFFFFF',
-        cardBorder: 'rgba(0, 0, 0, 0.1)',
-        text: '#2C2C2C',
-        textSecondary: '#757575',
-        accent: '#FC5200',
-        accentGradient: ['#FC5200', '#FF9E6B']
-      }
-    },
-    dark: {
-      value: 'dark',
-      label: 'Sombre',
-      colors: {
-        background: ['#13141C', '#1C1E2C'],
-        card: '#242736',
-        cardBorder: 'rgba(255, 255, 255, 0.1)',
-        text: '#FFFFFF',
-        textSecondary: '#A0A5BD',
-        accent: '#7C85FF',
-        accentGradient: ['#7C85FF', '#5B6CFF']
-      }
-    }
-  };
+  private drawId = 0;
 
   ngAfterViewInit() {
     this.drawCard();
   }
 
-  changeTheme(theme: string) {
+  changeTheme(theme: CardTheme) {
     this.selectedTheme = theme;
     this.drawCard();
   }
 
   generateAndDownload() {
-    const canvas = this.canvasRef.nativeElement;
-    const link = document.createElement('a');
-    link.download = `strava-stats-${Date.now()}.png`;
-    link.href = canvas.toDataURL('image/png');
-    link.click();
+    return shareOrDownload(this.canvasRef.nativeElement, `strava-stats-${Date.now()}.png`);
   }
 
-  private createRoundRect(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, radius: number) {
-    ctx.beginPath();
-    ctx.moveTo(x + radius, y);
-    ctx.lineTo(x + width - radius, y);
-    ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-    ctx.lineTo(x + width, y + height - radius);
-    ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-    ctx.lineTo(x + radius, y + height);
-    ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-    ctx.lineTo(x, y + radius);
-    ctx.quadraticCurveTo(x, y, x + radius, y);
-    ctx.closePath();
-  }
-
-  private drawCard() {
-    const canvas = this.canvasRef.nativeElement;
-    const ctx = canvas.getContext('2d')!;
-    const theme = this.themeConfigs[this.selectedTheme];
-
-    canvas.width = this.CANVAS_WIDTH;
-    canvas.height = this.CANVAS_HEIGHT;
-
-    // Background gradient
-    const bgGradient = ctx.createLinearGradient(0, 0, 0, this.CANVAS_HEIGHT);
-    bgGradient.addColorStop(0, theme.colors.background[0]);
-    bgGradient.addColorStop(1, theme.colors.background[1]);
-    ctx.fillStyle = bgGradient;
-    ctx.fillRect(0, 0, this.CANVAS_WIDTH, this.CANVAS_HEIGHT);
-
-    // Add subtle texture
-    this.drawTexture(ctx, theme);
-
-    // Draw header with logo
-    this.drawHeader(ctx, theme);
-
-    // Draw stats
-    this.drawStats(ctx, theme);
-
-    // Draw footer
-    this.drawFooter(ctx, theme);
-  }
-
-  private drawTexture(ctx: CanvasRenderingContext2D, theme: Theme) {
-    ctx.save();
-    ctx.globalAlpha = 0.03;
-    for (let i = 0; i < this.CANVAS_HEIGHT; i += 30) {
-      ctx.beginPath();
-      ctx.moveTo(0, i);
-      ctx.lineTo(this.CANVAS_WIDTH, i);
-      ctx.strokeStyle = theme.colors.text;
-      ctx.lineWidth = 1;
-      ctx.stroke();
-    }
-    ctx.restore();
-  }
-
-  private drawHeader(ctx: CanvasRenderingContext2D, theme: Theme) {
-    // Draw decorative circles
-    ctx.save();
-    ctx.globalAlpha = 0.1;
-    ctx.fillStyle = theme.colors.accent;
-    ctx.beginPath();
-    ctx.arc(100, 100, 300, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(this.CANVAS_WIDTH - 150, 250, 200, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
-
-    // Draw title
-    ctx.save();
-    ctx.font = 'bold 92px Inter';
-    ctx.fillStyle = theme.colors.text;
-    ctx.textAlign = 'center';
-    ctx.fillText(this.title.toUpperCase(), this.CANVAS_WIDTH / 2, 200);
-
-    // Draw period
-    ctx.font = '40px Inter';
-    ctx.fillStyle = theme.colors.textSecondary;
-    ctx.fillText(this.period, this.CANVAS_WIDTH / 2, 280);
-    ctx.restore();
-  }
-
-  private label(key: string): string {
-    return this.translateService.instant(`metrics.short_labels.${key}`);
-  }
-
-  private drawStats(ctx: CanvasRenderingContext2D, theme: Theme) {
-    const stats = [
-      {label: this.label('distance'), value: this.formatDistance(this.stats.totalDistance), icon: '🏃'},
-      {label: this.label('time'), value: this.formatDuration(this.stats.totalMovingTime), icon: '⏱️'},
-      {label: this.label('speed'), value: this.formatSpeed(this.stats.averageSpeed), icon: '⚡'},
-      {label: this.label('elevation'), value: this.formatElevation(this.stats.totalElevation), icon: '⛰️'}
+  private async drawCard() {
+    const id = ++this.drawId;
+    const p: Palette = PALETTES[this.selectedTheme] ?? PALETTES.dark;
+    const s = this.stats;
+    const sport = sportIcon(this.icon);
+    const label = (key: string) => this.translate.instant(`metrics.short_labels.${key}`);
+    const hours = Math.floor(s.totalMovingTime / 3600);
+    const minutes = String(Math.floor(s.totalMovingTime % 3600 / 60)).padStart(2, '0');
+    const cells: [string, string, string, string][] = [
+      ['clock-hour-4', `${hours}h${minutes}`, '', label('time')],
+      ['bolt', this.num(s.averageSpeed, 1), 'km/h', label('speed')],
+      ['mountain', this.num(s.totalElevation), 'm', label('elevation')],
+      ['activity', this.num(s.numberOfActivities), '', this.translate.instant('recap.summary.activities')]
     ];
+    const [ghost, badge, ...icons] = await Promise.all([
+      loadIcon(sport, p.ink, 0.5),
+      loadIcon(sport, '#ffffff'),
+      ...cells.map(([icon]) => loadIcon(icon, p.accent)),
+      loadFonts()
+    ]) as HTMLImageElement[];
+    if (id !== this.drawId) return; // un autre thème a été choisi entre-temps
 
-    const startY = 500;
-    const cardHeight = 220;
-    const gap = 40;
+    const canvas = this.canvasRef.nativeElement;
+    canvas.width = STORY_W;
+    canvas.height = STORY_H;
+    const ctx = canvas.getContext('2d')!;
+    drawBackdrop(ctx, p);
+    ctx.globalAlpha = this.selectedTheme === 'orange' ? 0.2 : 0.09;
+    ctx.drawImage(ghost, 400, 120, 920, 920);
+    ctx.globalAlpha = 1;
+    drawBrand(ctx, p);
 
-    stats.forEach((stat, index) => {
-      const y = startY + (cardHeight + gap) * index;
+    // Sport et période
+    roundRect(ctx, 96, 290, 132, 132, 34);
+    ctx.fillStyle = p.bar;
+    ctx.fill();
+    ctx.drawImage(badge, 120, 314, 84, 84);
+    ctx.fillStyle = p.ink;
+    ctx.font = text(54, 700);
+    ctx.fillText(this.title.toUpperCase(), 264, 348);
+    ctx.fillStyle = p.muted;
+    ctx.font = text(36);
+    ctx.fillText(this.period, 264, 404);
 
-      // Draw card background
-      ctx.save();
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.1)';
-      ctx.shadowBlur = 20;
-      ctx.shadowOffsetY = 10;
+    // Distance en vedette
+    ctx.fillStyle = p.accent;
+    ctx.font = text(34, 600);
+    ctx.letterSpacing = '8px';
+    ctx.fillText(label('distance').toUpperCase(), 96, 640);
+    ctx.letterSpacing = '0px';
+    const distance = this.num(s.totalDistance, 1);
+    ctx.fillStyle = p.ink;
+    ctx.font = display(this.fit(ctx, distance, 300, 760));
+    ctx.fillText(distance, 82, 920);
+    const end = 82 + ctx.measureText(distance).width;
+    ctx.fillStyle = p.accent;
+    ctx.font = display(96, 600, false);
+    ctx.fillText('km', end + 24, 920);
+    drawStripes(ctx, 104, 974, p.bar, [140, 76, 36], 16);
 
-      this.createRoundRect(ctx, 120, y, this.CANVAS_WIDTH - 240, cardHeight, 30);
-      ctx.fillStyle = theme.colors.card;
-      ctx.fill();
-
-      // Draw card border
-      ctx.strokeStyle = theme.colors.cardBorder;
-      ctx.lineWidth = 2;
-      ctx.stroke();
-      ctx.restore();
-
-      // Draw icon background
-      ctx.save();
-      const iconX = 180;
-      const iconY = y + cardHeight / 2 - 30;
-      const iconGradient = ctx.createLinearGradient(iconX, iconY, iconX, iconY + 60);
-      iconGradient.addColorStop(0, theme.colors.accentGradient[0]);
-      iconGradient.addColorStop(1, theme.colors.accentGradient[1]);
-
-      this.createRoundRect(ctx, iconX, iconY, 60, 60, 15);
-      ctx.fillStyle = iconGradient;
-      ctx.fill();
-      ctx.restore();
-
-      // Draw icon
-      ctx.font = '30px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(stat.icon, iconX + 30, iconY + 30);
-
-      // Draw stat value
-      ctx.font = 'bold 64px Inter';
-      ctx.fillStyle = theme.colors.text;
-      ctx.textAlign = 'right';
-      ctx.fillText(stat.value, this.CANVAS_WIDTH - 180, y + cardHeight / 2 - 10);
-
-      // Draw stat label
-      ctx.font = '32px Inter';
-      ctx.fillStyle = theme.colors.textSecondary;
-      ctx.fillText(stat.label, this.CANVAS_WIDTH - 180, y + cardHeight / 2 + 40);
+    // Grille d'instrument 2×2
+    cells.forEach(([, value, unit, name], i) => {
+      const x = 96 + (i % 2) * 464;
+      const y = 1150 + Math.floor(i / 2) * 320;
+      ctx.fillStyle = p.line;
+      ctx.fillRect(x, y, 424, 2);
+      ctx.drawImage(icons[i], x, y + 40, 54, 54);
+      ctx.fillStyle = p.ink;
+      ctx.font = display(this.fit(ctx, value, 132, unit ? 300 : 410));
+      ctx.fillText(value, x - 4, y + 214);
+      if (unit) {
+        const w = ctx.measureText(value).width;
+        ctx.fillStyle = p.muted;
+        ctx.font = display(50, 600, false);
+        ctx.fillText(unit, x + w + 10, y + 214);
+      }
+      ctx.fillStyle = p.muted;
+      ctx.font = text(32);
+      ctx.fillText(name.charAt(0).toUpperCase() + name.slice(1), x, y + 262);
     });
   }
 
-  private drawFooter(ctx: CanvasRenderingContext2D, theme: Theme) {
-    ctx.font = '32px Inter';
-    ctx.fillStyle = theme.colors.textSecondary;
-    ctx.textAlign = 'center';
-
-    const footerY = this.CANVAS_HEIGHT - 100;
-
-    // Draw logo and text
-    ctx.save();
-    const gradient = ctx.createLinearGradient(
-      this.CANVAS_WIDTH / 2 - 100, footerY,
-      this.CANVAS_WIDTH / 2 + 100, footerY
-    );
-    gradient.addColorStop(0, theme.colors.accentGradient[0]);
-    gradient.addColorStop(1, theme.colors.accentGradient[1]);
-
-    ctx.fillStyle = gradient;
-    ctx.font = 'bold 36px Inter';
-    ctx.fillText('STRAVA DASHBOARD', this.CANVAS_WIDTH / 2, footerY);
-    ctx.restore();
+  /** Taille de police qui fait tenir `value` dans `maxWidth` */
+  private fit(ctx: CanvasRenderingContext2D, value: string, size: number, maxWidth: number): number {
+    ctx.font = display(size);
+    return Math.min(size, Math.floor(size * maxWidth / ctx.measureText(value).width));
   }
 
-  private formatDistance(km: number): string {
-    return `${km.toFixed(1)} km`;
-  }
-
-  private formatDuration(seconds: number): string {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    return `${hours}h ${minutes}min`;
-  }
-
-  private formatSpeed(kmh: number): string {
-    return `${kmh.toFixed(1)} km/h`;
-  }
-
-  private formatElevation(meters: number): string {
-    return `${Math.round(meters)}m`;
+  private num(value: number, digits = 0): string {
+    return value.toLocaleString(this.translate.currentLang || 'fr', {
+      minimumFractionDigits: digits, maximumFractionDigits: digits
+    });
   }
 }

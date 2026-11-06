@@ -187,3 +187,14 @@
 .recap-teaser:hover {
   text-decoration: underline;
 }
+
+/* Icônes Tabler devant les textes : couleur de l'accent, alignées sur la ligne */
+.hl-card app-icon {
+  margin-right: 0.35em;
+  vertical-align: -0.15em;
+  color: var(--primary-500);
+}
+
+.goal app-icon {
+  margin-right: 0;
+}

@@ -69,6 +69,12 @@ h1 {
   font-weight: 500;
 }
 
+.nav-link app-icon {
+  margin-right: 0.35em;
+  vertical-align: -0.15em;
+  color: var(--primary-500);
+}
+
 .nav-link:hover {
   background-color: var(--gray-100);
   color: var(--text-primary);

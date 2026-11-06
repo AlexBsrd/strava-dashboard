@@ -269,11 +269,11 @@
   "share_modal": {
     "title": "Créer une story Instagram",
     "cancel": "Annuler",
-    "download": "Télécharger",
+    "download": "Partager",
     "themes": {
-      "modern": "Moderne",
-      "minimal": "Minimal",
-      "dark": "Sombre"
+      "dark": "Sombre",
+      "light": "Clair",
+      "orange": "Orange"
     }
   },
   "chart": {
@@ -514,7 +514,8 @@
       "text": "{{count}} activités sur {{days}} jours différents.",
       "hint": "Touche l'écran pour continuer →",
       "empty": "Aucune activité cette année pour l'instant.",
-      "year": "Choisir l'année"
+      "year": "Choisir l'année",
+      "locked": "Ton bilan {{year}} ouvrira le 1er décembre. En attendant, revis ton année {{previous}}."
     },
     "distance": {
       "kicker": "Tu as parcouru",
@@ -549,7 +550,7 @@
     },
     "share": {
       "kicker": "Mon année en sport",
-      "favorite": "Sport préféré :"
+      "favorite": "Sport préféré"
     }
   }
 }

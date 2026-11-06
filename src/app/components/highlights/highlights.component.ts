@@ -5,15 +5,16 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {TranslateModule, TranslateService} from '@ngx-translate/core';
 import {ActivityCacheService} from '../../services/activity-cache.service';
 import {GoalProgress} from '../../models/goal';
+import {IconComponent} from '../icon/icon.component';
 import {
-  EARTH_KM, EVEREST_M, nextDistanceStep, RecentRecord, recentRecords, Totals, totals, weekSummary
+  EARTH_KM, EVEREST_M, latestRecapYear, nextDistanceStep, RecentRecord, recentRecords, Totals, totals, weekSummary
 } from '../../utils/highlights';
 
 /** Bloc d'accueil du tableau de bord : la semaine, les records récents et les paliers de l'année */
 @Component({
   selector: 'app-highlights',
   standalone: true,
-  imports: [CommonModule, RouterLink, TranslateModule],
+  imports: [CommonModule, RouterLink, TranslateModule, IconComponent],
   templateUrl: './highlights.component.html',
   styleUrls: ['./highlights.component.css']
 })
@@ -26,7 +27,7 @@ export class HighlightsComponent implements OnInit {
 
   readonly year = new Date().getFullYear();
   /** Le bilan de l'année est mis en avant en décembre, et celui de l'année passée en janvier */
-  readonly recapYear = new Date().getMonth() === 0 ? this.year - 1 : this.year;
+  readonly recapYear = latestRecapYear();
   readonly showRecapTeaser = [0, 11].includes(new Date().getMonth());
 
   week!: { current: Totals; previous: Totals };

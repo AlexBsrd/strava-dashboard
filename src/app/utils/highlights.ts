@@ -113,10 +113,15 @@ export interface YearRecap extends Totals {
   activeDays: number;
   longestStreak: number;
   bestMonth: { month: number; distance: number } | null;
+  months: number[];               // distance (km) par mois
   sports: { type: string; labelKey: string; count: number; distance: number }[];
   longest: Activity | null;
   biggestClimb: Activity | null;
 }
+
+/** Dernière année dont le bilan est ouvert : l'année en cours à partir du 1er décembre */
+export const latestRecapYear = (now = new Date()): number =>
+  now.getMonth() === 11 ? now.getFullYear() : now.getFullYear() - 1;
 
 export function yearRecap(activities: Activity[], year: number): YearRecap {
   const list = activities.filter(a => new Date(a.start_date).getFullYear() === year);
@@ -143,6 +148,7 @@ export function yearRecap(activities: Activity[], year: number): YearRecap {
     activeDays: new Set(list.map(a => dayKey(a.start_date))).size,
     longestStreak: longestStreak(list),
     bestMonth: months[bestMonthIndex] > 0 ? {month: bestMonthIndex, distance: months[bestMonthIndex]} : null,
+    months,
     sports: [...sports.values()].sort((a, b) => b.count - a.count),
     longest: max('distance'),
     biggestClimb: max('total_elevation_gain')
