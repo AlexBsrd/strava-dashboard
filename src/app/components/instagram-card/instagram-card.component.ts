@@ -1,4 +1,5 @@
-import {AfterViewInit, Component, ElementRef, Input, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, Input, ViewChild, inject} from '@angular/core';
+import {TranslateService} from '@ngx-translate/core';
 import {CommonModule} from '@angular/common';
 import {Stats} from '../../models/stats';
 
@@ -24,6 +25,7 @@ interface Theme {
   styleUrls: ['./instagram-card.component.css']
 })
 export class InstagramCardComponent implements AfterViewInit {
+  private translateService = inject(TranslateService);
   @ViewChild('canvas') canvasRef!: ElementRef<HTMLCanvasElement>;
   @Input() stats!: Stats;
   @Input() title!: string;
@@ -181,12 +183,16 @@ export class InstagramCardComponent implements AfterViewInit {
     ctx.restore();
   }
 
+  private label(key: string): string {
+    return this.translateService.instant(`metrics.short_labels.${key}`);
+  }
+
   private drawStats(ctx: CanvasRenderingContext2D, theme: Theme) {
     const stats = [
-      {label: 'Distance', value: this.formatDistance(this.stats.totalDistance), icon: '🏃'},
-      {label: 'Temps', value: this.formatDuration(this.stats.totalMovingTime), icon: '⏱️'},
-      {label: 'Vitesse', value: this.formatSpeed(this.stats.averageSpeed), icon: '⚡'},
-      {label: 'Dénivelé', value: this.formatElevation(this.stats.totalElevation), icon: '⛰️'}
+      {label: this.label('distance'), value: this.formatDistance(this.stats.totalDistance), icon: '🏃'},
+      {label: this.label('time'), value: this.formatDuration(this.stats.totalMovingTime), icon: '⏱️'},
+      {label: this.label('speed'), value: this.formatSpeed(this.stats.averageSpeed), icon: '⚡'},
+      {label: this.label('elevation'), value: this.formatElevation(this.stats.totalElevation), icon: '⛰️'}
     ];
 
     const startY = 500;

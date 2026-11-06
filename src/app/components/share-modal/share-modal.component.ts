@@ -1,3 +1,4 @@
+import {TranslateModule} from '@ngx-translate/core';
 import {Component, EventEmitter, Input, Output, ViewChild} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {Stats} from '../../models/stats';
@@ -6,7 +7,7 @@ import {InstagramCardComponent} from '../instagram-card/instagram-card.component
 @Component({
   selector: 'app-share-modal',
   standalone: true,
-  imports: [CommonModule, InstagramCardComponent],
+  imports: [CommonModule, InstagramCardComponent, TranslateModule],
   templateUrl: './share-modal.component.html',
   styleUrls: ['./share-modal.component.css']
 })

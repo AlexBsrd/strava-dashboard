@@ -30,7 +30,7 @@
         <button
           class="language-toggle"
           (click)="toggleLanguage()"
-          [attr.aria-label]="'Switch language to ' + (currentLang === 'fr' ? 'English' : 'Français')"
+          [attr.aria-label]="'navigation.a11y.switch_language' | translate"
         >
           {{ currentLang | uppercase }}
         </button>
@@ -38,7 +38,7 @@
           class="theme-toggle"
           [class.dark]="isDarkTheme"
           (click)="toggleTheme()"
-          [attr.aria-label]="'Basculer vers le thème ' + (isDarkTheme ? 'clair' : 'sombre')"
+          [attr.aria-label]="(isDarkTheme ? 'navigation.a11y.theme_to_light' : 'navigation.a11y.theme_to_dark') | translate"
         >
           <div class="toggle-track">
             <div class="toggle-thumb">

@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, ViewChild, ElementRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
@@ -26,6 +26,8 @@ export class ComparisonChartComponent implements OnChanges {
   @Input() period2: ComparisonPeriod | null = null;
   @Input() activityType: string = 'Run';
   @Input() groupColor?: string;
+
+  private translateService = inject(TranslateService);
 
   selectedMetric: MetricType = 'distance';
   chart: Chart | null = null;
@@ -70,7 +72,7 @@ export class ComparisonChartComponent implements OnChanges {
         labels: alignedData.labels,
         datasets: [
           {
-            label: this.period1?.label || 'Période 1',
+            label: this.period1?.label || this.translateService.instant('comparison.period_selector.period_1'),
             data: alignedData.data1,
             borderColor: 'rgba(156, 163, 175, 0.8)',
             backgroundColor: 'rgba(156, 163, 175, 0.1)',
@@ -82,7 +84,7 @@ export class ComparisonChartComponent implements OnChanges {
             spanGaps: true
           },
           {
-            label: this.period2?.label || 'Période 2',
+            label: this.period2?.label || this.translateService.instant('comparison.period_selector.period_2'),
             data: alignedData.data2,
             borderColor: 'rgba(252, 76, 2, 0.8)',
             backgroundColor: 'rgba(252, 76, 2, 0.1)',
@@ -141,7 +143,7 @@ export class ComparisonChartComponent implements OnChanges {
                 }
                 const value = context.parsed.y;
                 if (value === null) {
-                  label += 'Pas de données';
+                  label += this.translateService.instant('common.no_data');
                 } else {
                   label += this.formatValue(value);
                 }

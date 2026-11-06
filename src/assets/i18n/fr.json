@@ -21,6 +21,11 @@
     },
     "footer": {
       "powered_by": "Powered with 🧡 by Strava API"
+    },
+    "a11y": {
+      "theme_to_light": "Passer au thème clair",
+      "theme_to_dark": "Passer au thème sombre",
+      "switch_language": "Passer en anglais"
     }
   },
   "dashboard": {
@@ -226,7 +231,8 @@
       "distance_covered": "distance parcourue",
       "max_elevation": "Plus grand dénivelé",
       "longest_outing": "Plus longue sortie"
-    }
+    },
+    "no_activity": "Aucune activité"
   },
   "performance": {
     "title": "Records Personnels (sur la période)",
@@ -255,7 +261,13 @@
   },
   "share_modal": {
     "title": "Créer une story Instagram",
-    "cancel": "Annuler"
+    "cancel": "Annuler",
+    "download": "Télécharger",
+    "themes": {
+      "modern": "Moderne",
+      "minimal": "Minimal",
+      "dark": "Sombre"
+    }
   },
   "chart": {
     "none": "Aucun",
@@ -279,7 +291,8 @@
       "elevation": "Dénivelé (m)",
       "duration": "Durée (h)"
     },
-    "reset_zoom": "Réinitialiser le zoom"
+    "reset_zoom": "Réinitialiser le zoom",
+    "pace_vs_distance": "Distance vs Allure"
   },
   "sports": {
     "types": {

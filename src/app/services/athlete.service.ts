@@ -115,14 +115,14 @@ export class AthleteService {
             biggest_climb: {
               value: yearClimb?.total_elevation_gain || 0,
               activity_type: yearClimb?.type || '',
-              activity_name: yearClimb?.name || 'Aucune activité',
+              activity_name: yearClimb?.name || '',
               activity_date: yearClimb?.start_date.toString() || '',
               activity_period: 'current_year' as const  // Forcer le type littéral
             },
             longest_run: {
               value: yearRun?.distance || 0,
               activity_type: yearRun?.type || '',
-              activity_name: yearRun?.name || 'Aucune activité',
+              activity_name: yearRun?.name || '',
               activity_date: yearRun?.start_date.toString() || '',
               activity_period: 'current_year' as const  // Forcer le type littéral
             }
@@ -131,14 +131,14 @@ export class AthleteService {
             biggest_climb: {
               value: allTimeClimb?.total_elevation_gain || 0,
               activity_type: allTimeClimb?.type || '',
-              activity_name: allTimeClimb?.name || 'Aucune activité',
+              activity_name: allTimeClimb?.name || '',
               activity_date: allTimeClimb?.start_date.toString() || '',
               activity_period: 'all_time' as const  // Forcer le type littéral
             },
             longest_run: {
               value: allTimeRun?.distance || 0,
               activity_type: allTimeRun?.type || '',
-              activity_name: allTimeRun?.name || 'Aucune activité',
+              activity_name: allTimeRun?.name || '',
               activity_date: allTimeRun?.start_date.toString() || '',
               activity_period: 'all_time' as const  // Forcer le type littéral
             }
@@ -147,14 +147,14 @@ export class AthleteService {
             biggest_climb: {
               value: yearRideClimb?.total_elevation_gain || 0,
               activity_type: yearRideClimb?.type || '',
-              activity_name: yearRideClimb?.name || 'Aucune activité',
+              activity_name: yearRideClimb?.name || '',
               activity_date: yearRideClimb?.start_date.toString() || '',
               activity_period: 'current_year' as const
             },
             longest_ride: {
               value: yearLongestRide?.distance || 0,
               activity_type: yearLongestRide?.type || '',
-              activity_name: yearLongestRide?.name || 'Aucune activité',
+              activity_name: yearLongestRide?.name || '',
               activity_date: yearLongestRide?.start_date.toString() || '',
               activity_period: 'current_year' as const
             }
@@ -163,14 +163,14 @@ export class AthleteService {
             biggest_climb: {
               value: allTimeRideClimb?.total_elevation_gain || 0,
               activity_type: allTimeRideClimb?.type || '',
-              activity_name: allTimeRideClimb?.name || 'Aucune activité',
+              activity_name: allTimeRideClimb?.name || '',
               activity_date: allTimeRideClimb?.start_date.toString() || '',
               activity_period: 'all_time' as const
             },
             longest_ride: {
               value: allTimeLongestRide?.distance || 0,
               activity_type: allTimeLongestRide?.type || '',
-              activity_name: allTimeLongestRide?.name || 'Aucune activité',
+              activity_name: allTimeLongestRide?.name || '',
               activity_date: allTimeLongestRide?.start_date.toString() || '',
               activity_period: 'all_time' as const
             }

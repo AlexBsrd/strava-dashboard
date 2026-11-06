@@ -1,3 +1,4 @@
+import {TranslateModule} from '@ngx-translate/core';
 import {Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
@@ -38,7 +39,7 @@ interface ScatterPoint {
 @Component({
   selector: 'app-pace-scatter',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './pace-scatter.component.html',
   styleUrls: ['./pace-scatter.component.css']
 })

@@ -1,7 +1,7 @@
 <div class="modal-overlay" *ngIf="isOpen" (click)="close()">
   <div class="modal-content" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h2 class="modal-title">Créer une story Instagram</h2>
+      <h2 class="modal-title">{{ 'share_modal.title' | translate }}</h2>
       <button class="close-button" (click)="close()">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -17,7 +17,7 @@
         class="theme-button"
         [class.active]="selectedTheme === theme.value"
         (click)="changeTheme(theme.value)">
-        {{ theme.label }}
+        {{ ('share_modal.themes.' + theme.value) | translate }}
       </button>
     </div>
 
@@ -31,8 +31,8 @@
     </div>
 
     <div class="action-buttons">
-      <button class="cancel-btn" (click)="close()">Annuler</button>
-      <button class="generate-btn" (click)="download()">Télécharger</button>
+      <button class="cancel-btn" (click)="close()">{{ 'share_modal.cancel' | translate }}</button>
+      <button class="generate-btn" (click)="download()">{{ 'share_modal.download' | translate }}</button>
     </div>
   </div>
 </div>

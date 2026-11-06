@@ -197,7 +197,7 @@
               <span class="record-title">{{ 'profile.stats.max_elevation' | translate }}</span>
               <span class="record-value">{{ formatElevation(summary.all_time_records.biggest_climb.value) }}</span>
               <span class="record-details">
-                {{ summary.all_time_records.biggest_climb.activity_name }}
+                {{ summary.all_time_records.biggest_climb.activity_name || ('profile.no_activity' | translate) }}
                 ({{ summary.all_time_records.biggest_climb.activity_type }})
               </span>
               <span class="record-date">{{ formatDate(summary.all_time_records.biggest_climb.activity_date) }}</span>
@@ -208,7 +208,7 @@
               <span class="record-title">{{ 'profile.stats.longest_outing' | translate }}</span>
               <span class="record-value">{{ formatDistance(summary.all_time_records.longest_run.value) }}</span>
               <span class="record-details">
-                {{ summary.all_time_records.longest_run.activity_name }}
+                {{ summary.all_time_records.longest_run.activity_name || ('profile.no_activity' | translate) }}
                 ({{ summary.all_time_records.longest_run.activity_type }})
               </span>
               <span class="record-date">{{ formatDate(summary.all_time_records.longest_run.activity_date) }}</span>
@@ -286,7 +286,7 @@
               <span class="record-title">{{ 'profile.stats.max_elevation' | translate }}</span>
               <span class="record-value">{{ formatElevation(summary.all_time_ride_records.biggest_climb.value) }}</span>
               <span class="record-details">
-                {{ summary.all_time_ride_records.biggest_climb.activity_name }}
+                {{ summary.all_time_ride_records.biggest_climb.activity_name || ('profile.no_activity' | translate) }}
                 ({{ summary.all_time_ride_records.biggest_climb.activity_type }})
               </span>
               <span class="record-date">{{ formatDate(summary.all_time_ride_records.biggest_climb.activity_date) }}</span>
@@ -297,7 +297,7 @@
               <span class="record-title">{{ 'profile.stats.longest_outing' | translate }}</span>
               <span class="record-value">{{ formatDistance(summary.all_time_ride_records.longest_ride.value) }}</span>
               <span class="record-details">
-                {{ summary.all_time_ride_records.longest_ride.activity_name }}
+                {{ summary.all_time_ride_records.longest_ride.activity_name || ('profile.no_activity' | translate) }}
                 ({{ summary.all_time_ride_records.longest_ride.activity_type }})
               </span>
               <span class="record-date">{{ formatDate(summary.all_time_ride_records.longest_ride.activity_date) }}</span>
