@@ -86,6 +86,9 @@ export class ActivityHeatmapComponent implements OnChanges, OnInit, AfterViewIni
         intensity: `intensity-${Math.min(count, 3)}`
       });
     }
+    // Un libellé collé au bord droit déborderait de la grille (et créerait un défilement inutile)
+    this.monthLabels = this.monthLabels.filter(month => month.weekIndex <= this.weeks.length - 3);
+
     // Dernière semaine incomplète : cases futures masquées
     const lastWeek = this.weeks[this.weeks.length - 1];
     while (lastWeek.length < 7) lastWeek.push(null);

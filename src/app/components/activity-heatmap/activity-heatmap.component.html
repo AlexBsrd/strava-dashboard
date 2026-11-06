@@ -12,31 +12,32 @@
   </div>
 
   <div class="heatmap-content" #scroller>
-    <div class="heatmap-months">
+    <!-- Une seule grille : ligne 1 = mois, colonne 1 = jours de la semaine, puis une colonne par semaine -->
+    <div class="heatmap-calendar">
       <div class="month-label"
            *ngFor="let month of monthLabels"
-           [style.grid-column]="month.weekIndex + 1">
+           [style.grid-column]="month.weekIndex + 2">
         {{ month.label }}
       </div>
-    </div>
 
-    <div class="heatmap-grid">
-      <div class="heatmap-weekdays">
-        <div class="weekday-label" *ngFor="let day of weekdays; let i = index"
-             [class.hide-label]="i % 2 === 0">
-          {{ day }}
-        </div>
+      <div class="weekday-label"
+           *ngFor="let day of weekdays; let i = index"
+           [style.grid-row]="i + 2"
+           [class.hide-label]="i % 2 === 0">
+        {{ day }}
       </div>
 
-      <div class="heatmap-weeks">
-        <div class="heatmap-week" *ngFor="let week of weeks">
+      <ng-container *ngFor="let week of weeks; let w = index">
+        <ng-container *ngFor="let day of week; let d = index">
           <div class="heatmap-day"
-               *ngFor="let day of week"
-               [ngClass]="day ? day.intensity : 'empty-day'"
-               [attr.title]="day?.title">
+               *ngIf="day"
+               [ngClass]="day.intensity"
+               [style.grid-column]="w + 2"
+               [style.grid-row]="d + 2"
+               [attr.title]="day.title">
           </div>
-        </div>
-      </div>
+        </ng-container>
+      </ng-container>
     </div>
   </div>
 </div>
