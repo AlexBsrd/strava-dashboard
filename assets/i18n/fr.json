@@ -21,6 +21,11 @@
     },
     "footer": {
       "powered_by": "Powered with 🧡 by Strava API"
+    },
+    "a11y": {
+      "theme_to_light": "Passer au thème clair",
+      "theme_to_dark": "Passer au thème sombre",
+      "switch_language": "Passer en anglais"
     }
   },
   "dashboard": {
@@ -201,10 +206,18 @@
       "duration": "Durée",
       "avg_speed": "Vitesse moy.",
       "elevation": "Dénivelé",
-      "session_duration": "Durée de séance"
+      "session_duration": "Durée de séance",
+      "avg_pace": "Allure moy."
     },
     "count_one": "{{count}} activité",
-    "count_other": "{{count}} activités"
+    "count_other": "{{count}} activités",
+    "filters": {
+      "search": "Rechercher une activité",
+      "sport": "Sport",
+      "all_sports": "Tous les sports",
+      "no_results": "Aucune activité ne correspond à ces filtres"
+    },
+    "view_on_strava": "Voir sur Strava"
   },
   "profile": {
     "member_since": "Membre depuis {{date}}",
@@ -226,7 +239,8 @@
       "distance_covered": "distance parcourue",
       "max_elevation": "Plus grand dénivelé",
       "longest_outing": "Plus longue sortie"
-    }
+    },
+    "no_activity": "Aucune activité"
   },
   "performance": {
     "title": "Records Personnels (sur la période)",
@@ -241,8 +255,6 @@
   },
   "heatmap": {
     "title": "Activité sur les 12 derniers mois",
-    "loading": "Chargement du calendrier...",
-    "no_data": "Aucune donnée disponible pour afficher le calendrier d'activité.",
     "no_activity": "Aucune activité",
     "less": "Moins",
     "more": "Plus",
@@ -255,7 +267,13 @@
   },
   "share_modal": {
     "title": "Créer une story Instagram",
-    "cancel": "Annuler"
+    "cancel": "Annuler",
+    "download": "Télécharger",
+    "themes": {
+      "modern": "Moderne",
+      "minimal": "Minimal",
+      "dark": "Sombre"
+    }
   },
   "chart": {
     "none": "Aucun",
@@ -279,7 +297,8 @@
       "elevation": "Dénivelé (m)",
       "duration": "Durée (h)"
     },
-    "reset_zoom": "Réinitialiser le zoom"
+    "reset_zoom": "Réinitialiser le zoom",
+    "pace_vs_distance": "Distance vs Allure"
   },
   "sports": {
     "types": {
@@ -342,7 +361,8 @@
       "averageDistance": "Distance moyenne/sortie",
       "totalElevation": "Dénivelé total",
       "averageElevation": "Dénivelé moyen/sortie",
-      "numberOfActivities": "Nombre d'activités"
+      "numberOfActivities": "Nombre d'activités",
+      "averagePace": "Allure moyenne"
     },
     "short_labels": {
       "distance": "Distance",
