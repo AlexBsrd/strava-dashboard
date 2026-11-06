@@ -1,0 +1,1 @@
+import{w as n}from"./chunk-WS6U4HAG.js";function a(r){if(!(r>0))return"\u2013";let t=Math.round(3600/r);return`${Math.floor(t/60)}'${String(t%60).padStart(2,"0")}"`}function e(r){let t=n(r).category;return t==="running"||t==="walking"}export{a,e as b};
