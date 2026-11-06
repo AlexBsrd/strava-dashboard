@@ -25,9 +25,15 @@ export class AuthGuard implements CanActivate {
     return this.authService.getValidToken().pipe(
       switchMap(() => this.sessionService.checkSession(localStorage.getItem('strava_athlete_id')!)),
       map(() => true),
-      catchError(() => {
-        this.authService.logout();
-        return of(false);
+      catchError(error => {
+        // Session inconnue ou refresh refusé : reconnexion nécessaire
+        if (error.status === 401 || error.status === 404) {
+          this.authService.logout();
+          return of(false);
+        }
+        // Backend injoignable (réseau, démarrage à froid de Vercel) : on laisse passer,
+        // les appels Strava gèrent eux-mêmes leurs erreurs
+        return of(true);
       })
     );
   }

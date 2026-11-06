@@ -12,13 +12,6 @@ export class SessionService {
   constructor(private http: HttpClient) {
   }
 
-  updateActivity(): Observable<void> {
-    const athleteId = localStorage.getItem('strava_athlete_id');
-    if (!athleteId) return new Observable();
-
-    return this.http.post<void>(`${this.apiUrl}/sessions/${athleteId}/activity`, {});
-  }
-
   checkSession(athleteId: string): Observable<void> {
     return this.http.get<void>(`${this.apiUrl}/sessions/${athleteId}/check`);
   }

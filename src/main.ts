@@ -5,7 +5,6 @@ import {routes} from './app/app.routes';
 import {provideHttpClient, withInterceptors} from '@angular/common/http';
 import {authInterceptor} from './app/interceptors/auth.interceptor';
 import {provideAnimations} from "@angular/platform-browser/animations";
-import {activityInterceptor} from "./app/interceptors/activity.interceptor";
 import {provideTranslateService} from '@ngx-translate/core';
 import {provideTranslateHttpLoader} from '@ngx-translate/http-loader';
 
@@ -13,7 +12,7 @@ bootstrapApplication(AppComponent, {
   providers: [
     provideRouter(routes),
     provideHttpClient(
-      withInterceptors([authInterceptor, activityInterceptor])
+      withInterceptors([authInterceptor])
     ),
     provideAnimations(),
     provideTranslateService({
