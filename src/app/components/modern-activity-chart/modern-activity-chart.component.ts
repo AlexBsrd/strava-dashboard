@@ -789,7 +789,14 @@ export class ModernActivityChartComponent implements OnChanges, OnInit {
           const [point] = chart.getElementsAtEventForMode(event as unknown as Event, 'index', {intersect: false}, true);
           const date = point && dateLabels[point.index];
           const detail = date ? describe(date) : null;
-          if (!detail?.activities.length) return;
+          if (!detail?.activities.length) {
+            // Toucher une zone vide du graphique referme le panneau
+            if (this.detail) {
+              this.detail = null;
+              this.cdr.detectChanges();
+            }
+            return;
+          }
           this.detail = detail;
           chart.tooltip?.setActiveElements([], {x: 0, y: 0});
           chart.update('none');
