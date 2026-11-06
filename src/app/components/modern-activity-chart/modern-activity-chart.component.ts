@@ -1,4 +1,4 @@
-import {Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, HostListener, inject, Input, OnChanges, OnInit, SimpleChanges, ViewChild} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {TranslateModule, TranslateService} from '@ngx-translate/core';
@@ -47,6 +47,14 @@ interface WeeklyData {
   activities: Array<{ name: string, date: Date }>;
 }
 
+/** Détail d'un point du graphique, affiché dans un panneau au clic (liste complète, fermable) */
+interface ChartDetail {
+  title: string;
+  subtitle: string;
+  listLabel: string;
+  activities: { name: string; dateLabel: string }[];
+}
+
 interface MonthlyData {
   monthNumber: number;
   monthLabel: string;
@@ -89,6 +97,10 @@ export class ModernActivityChartComponent implements OnChanges, OnInit {
 
   @ViewChild('chartContainer') chartContainer!: ElementRef;
   isFullscreen$;
+  detail: ChartDetail | null = null;
+  /** Écran tactile : pas d'info-bulle (impossible à refermer), le toucher ouvre directement le panneau */
+  readonly isTouch = typeof window !== 'undefined' && window.matchMedia?.('(hover: none)').matches;
+  private cdr = inject(ChangeDetectorRef);
 
   constructor(
     private fullscreenService: FullscreenService,
@@ -606,7 +618,13 @@ export class ModernActivityChartComponent implements OnChanges, OnInit {
     }
   }
 
+  @HostListener('document:keydown.escape')
+  closeDetail(): void {
+    this.detail = null;
+  }
+
   private updateChart() {
+    this.detail = null;
     if (this.chart) {
       this.chart.destroy();
     }
@@ -707,54 +725,58 @@ export class ModernActivityChartComponent implements OnChanges, OnInit {
       };
     });
 
-    // Liste plafonnée : un mois chargé produisait une info-bulle plus haute que le graphique
-    const MAX_LISTED = 6;
-    const listActivities = (activities: { name: string; date: Date }[]) => {
-      const lines = activities.slice(0, MAX_LISTED)
-        .map(activity => `- ${activity.date.toLocaleDateString(locale)}: ${activity.name}`);
-      if (activities.length > MAX_LISTED) {
-        lines.push(this.translateService.instant('chart.more_activities', {count: activities.length - MAX_LISTED}));
+    const t = (key: string, params?: object) => this.translateService.instant(key, params);
+    const toItems = (activities: { name: string; date: Date }[]) =>
+      activities.map(activity => ({name: activity.name, dateLabel: activity.date.toLocaleDateString(locale)}));
+
+    const describe = (date: Date): ChartDetail | null => {
+      if (this.groupingType === 'week') {
+        const weekData = dataMap.get(this.getWeekNumber(date).toString()) as WeeklyData;
+        if (!weekData) return null;
+        return {
+          title: `${t('chart.week')} ${weekData.weekNumber}`,
+          subtitle: `${t('chart.from')} ${weekData.weekStart.toLocaleDateString(locale)} ${t('chart.to')} ${weekData.weekEnd.toLocaleDateString(locale)}`,
+          listLabel: `${t('chart.activities_of_week')} (${weekData.activities.length})`,
+          activities: toItems(weekData.activities)
+        };
       }
-      return lines.join('\n');
+      if (this.groupingType === 'month') {
+        const monthData = dataMap.get(date.getMonth().toString()) as MonthlyData;
+        if (!monthData) return null;
+        return {
+          title: monthData.monthLabel.charAt(0).toUpperCase() + monthData.monthLabel.slice(1),
+          subtitle: `${t('chart.from')} ${monthData.monthStart.toLocaleDateString(locale)} ${t('chart.to')} ${monthData.monthEnd.toLocaleDateString(locale)}`,
+          listLabel: `${t('chart.activities_of_month')} (${monthData.activities.length})`,
+          activities: toItems(monthData.activities)
+        };
+      }
+      const key = date.toLocaleDateString('sv-SE');
+      if (!dataMap.get(key)) return null;
+      const dayActivities = this.getFilteredActivities()
+        .filter(activity => new Date(activity.start_date).toLocaleDateString('sv-SE') === key)
+        .map(activity => ({name: activity.name, date: new Date(activity.start_date)}));
+      return {
+        title: date.toLocaleDateString(locale, {weekday: 'long', day: 'numeric', month: 'long'}),
+        subtitle: '',
+        listLabel: '',
+        activities: toItems(dayActivities)
+      };
     };
 
-    const generateTitle = (date: Date, dataMap: Map<string, Activity | WeeklyData | MonthlyData>) => {
-      if (this.groupingType === 'week') {
-        const weekNum = this.getWeekNumber(date);
-        const weekData = dataMap.get(weekNum.toString()) as WeeklyData;
-        if (!weekData) return '';
-
-        const weekLabel = this.translateService.instant('chart.week');
-        const fromLabel = this.translateService.instant('chart.from');
-        const toLabel = this.translateService.instant('chart.to');
-        const activitiesLabel = this.translateService.instant('chart.activities_of_week');
-        let title = `${weekLabel} ${weekData.weekNumber}\n`;
-        title += `${fromLabel} ${weekData.weekStart.toLocaleDateString(locale)} ${toLabel} ${weekData.weekEnd.toLocaleDateString(locale)}\n\n`;
-        title += `${activitiesLabel} (${weekData.activities.length}):\n`;
-        return title + listActivities(weekData.activities);
-      } else if (this.groupingType === 'month') {
-        const monthNum = date.getMonth();
-        const monthData = dataMap.get(monthNum.toString()) as MonthlyData;
-        if (!monthData) return '';
-
-        const fromLabel = this.translateService.instant('chart.from');
-        const toLabel = this.translateService.instant('chart.to');
-        const activitiesLabel = this.translateService.instant('chart.activities_of_month');
-        let title = `${monthData.monthLabel.charAt(0).toUpperCase() + monthData.monthLabel.slice(1)}\n`;
-        title += `${fromLabel} ${monthData.monthStart.toLocaleDateString(locale)} ${toLabel} ${monthData.monthEnd.toLocaleDateString(locale)}\n\n`;
-        title += `${activitiesLabel} (${monthData.activities.length}):\n`;
-        return title + listActivities(monthData.activities);
-      } else {
-        const key = date.toLocaleDateString('sv-SE');
-        const activity = dataMap.get(key) as Activity;
-        if (!activity) return '';
-
-        return `${date.toLocaleDateString(locale, {
-          weekday: 'long',
-          day: 'numeric',
-          month: 'long'
-        })}\n${activity.name}`;
+    // Info-bulle courte : le détail complet s'ouvre au clic (un mois chargé dépassait du graphique)
+    const MAX_LISTED = 5;
+    const tooltipTitle = (date: Date) => {
+      const detail = describe(date);
+      if (!detail) return '';
+      const lines = [detail.title];
+      if (detail.subtitle) lines.push(detail.subtitle);
+      if (detail.listLabel) lines.push('', `${detail.listLabel}:`);
+      lines.push(...detail.activities.slice(0, MAX_LISTED).map(a => detail.listLabel ? `- ${a.dateLabel}: ${a.name}` : a.name));
+      if (detail.activities.length > MAX_LISTED) {
+        lines.push(t('chart.more_activities', {count: detail.activities.length - MAX_LISTED}));
       }
+      if (detail.listLabel) lines.push('', t('chart.click_for_details'));
+      return lines.join('\n');
     };
 
     this.chart = new Chart(canvas, {
@@ -763,6 +785,16 @@ export class ModernActivityChartComponent implements OnChanges, OnInit {
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        onClick: (event, _elements, chart) => {
+          const [point] = chart.getElementsAtEventForMode(event as unknown as Event, 'index', {intersect: false}, true);
+          const date = point && dateLabels[point.index];
+          const detail = date ? describe(date) : null;
+          if (!detail?.activities.length) return;
+          this.detail = detail;
+          chart.tooltip?.setActiveElements([], {x: 0, y: 0});
+          chart.update('none');
+          this.cdr.detectChanges();
+        },
         plugins: {
           legend: {
             display: true,
@@ -770,6 +802,7 @@ export class ModernActivityChartComponent implements OnChanges, OnInit {
             onClick: (e, legendItem) => this.handleLegendClick(e, legendItem)
           },
           tooltip: {
+            enabled: !this.isTouch,
             mode: 'index',
             intersect: false,
             backgroundColor: 'rgba(255, 255, 255, 0.9)',
@@ -782,7 +815,7 @@ export class ModernActivityChartComponent implements OnChanges, OnInit {
                 const dataIndex = tooltipItems[0].dataIndex;
                 if (!dateLabels[dataIndex]) return '';
 
-                return generateTitle(dateLabels[dataIndex], dataMap);
+                return tooltipTitle(dateLabels[dataIndex]);
               },
               label: (context) => {
                 const value = context.raw as number;

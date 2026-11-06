@@ -303,7 +303,8 @@
     "axis_distance": "Distance (km)",
     "axis_pace": "Allure (min/km)",
     "date": "Date",
-    "more_activities": "… et {{count}} autres"
+    "more_activities": "… et {{count}} autres",
+    "click_for_details": "Cliquez pour voir le détail"
   },
   "sports": {
     "types": {

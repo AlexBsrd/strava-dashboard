@@ -95,6 +95,28 @@
         </svg>
       </button>
       <canvas id="activityChart"></canvas>
+
+      <div class="chart-detail" *ngIf="detail" role="dialog" [attr.aria-label]="detail.title">
+        <div class="chart-detail-header">
+          <div>
+            <div class="chart-detail-title">{{ detail.title }}</div>
+            <div class="chart-detail-subtitle" *ngIf="detail.subtitle">{{ detail.subtitle }}</div>
+            <div class="chart-detail-subtitle" *ngIf="detail.listLabel">{{ detail.listLabel }}</div>
+          </div>
+          <button class="chart-detail-close" (click)="closeDetail()" [attr.aria-label]="'buttons.close' | translate">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        <ul class="chart-detail-list">
+          <li *ngFor="let activity of detail.activities">
+            <span class="chart-detail-date" *ngIf="detail.listLabel">{{ activity.dateLabel }}</span>
+            <span>{{ activity.name }}</span>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 </div>
