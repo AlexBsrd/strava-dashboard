@@ -17,7 +17,8 @@
       "activities": "Activities",
       "profile": "Profile",
       "dashboard": "Dashboard",
-      "configuration": "Configuration"
+      "configuration": "Configuration",
+      "recap": "Recap"
     },
     "footer": {
       "powered_by": "Powered with 🧡 by Strava API"
@@ -473,5 +474,82 @@
     "info_distance": "Cumulative distance displayed",
     "info_speed": "Weighted average speed displayed",
     "info_elevation": "Cumulative elevation displayed"
+  },
+  "highlights": {
+    "week": {
+      "title": "Your week",
+      "since_monday": "since Monday",
+      "activity": "activity",
+      "activities": "activities",
+      "moving": "moving",
+      "empty": "No activity yet this week. Time to get going!",
+      "vs_last": "vs last week at this point"
+    },
+    "records": {
+      "title": "New records",
+      "subtitle": "Last 7 days",
+      "before": "previous: {{value}}",
+      "distance": {
+        "running": "Longest run",
+        "cycling": "Longest ride",
+        "walking": "Longest walk"
+      },
+      "elevation": {
+        "running": "Biggest climb on a run",
+        "cycling": "Biggest climb on a bike",
+        "walking": "Biggest climb on a walk"
+      }
+    },
+    "milestones": {
+      "title": "{{year}} milestones",
+      "to_next": "{{remaining}} km to go before {{step}} km",
+      "everest": "{{elevation}} m of climbing this year, {{count}} times Everest",
+      "earth": "{{distance}} km since you started, {{percent}}% of the way around the Earth"
+    },
+    "recap_teaser": "Your {{year}} recap is ready"
+  },
+  "recap": {
+    "intro": {
+      "kicker": "Your year in sport",
+      "text": "{{count}} activities on {{days}} different days.",
+      "hint": "Tap the screen to continue →",
+      "empty": "No activity this year yet.",
+      "year": "Choose the year"
+    },
+    "distance": {
+      "kicker": "You covered",
+      "time": "in {{hours}} hours of moving time",
+      "earth": "That's {{percent}}% of the way around the Earth"
+    },
+    "elevation": {
+      "kicker": "You climbed",
+      "everest": "That's {{count}} times Everest"
+    },
+    "sports": {
+      "kicker": "Your favorite sport"
+    },
+    "month": {
+      "kicker": "Your best month",
+      "streak": "Longest streak: {{count}} days in a row"
+    },
+    "longest": {
+      "kicker": "Your longest outing",
+      "climb": "Biggest climb: {{elevation}} m, \"{{name}}\""
+    },
+    "summary": {
+      "kicker": "{{year}} in a nutshell",
+      "activities": "activities",
+      "distance": "kilometers",
+      "time": "hours",
+      "elevation": "meters climbed",
+      "active_days": "active days",
+      "streak": "days in a row (record)",
+      "share": "Share",
+      "replay": "Replay"
+    },
+    "share": {
+      "kicker": "My year in sport",
+      "favorite": "Favorite sport:"
+    }
   }
 }
