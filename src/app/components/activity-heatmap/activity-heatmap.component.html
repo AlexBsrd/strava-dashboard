@@ -1,0 +1,42 @@
+<div class="heatmap-container">
+  <div class="heatmap-header">
+    <h3 class="heatmap-title">{{ 'heatmap.title' | translate }}</h3>
+    <div class="heatmap-legend">
+      <span class="legend-label">{{ 'heatmap.less' | translate }}</span>
+      <div class="legend-box intensity-0" [title]="'heatmap.legend.zero' | translate"></div>
+      <div class="legend-box intensity-1" [title]="'heatmap.legend.one' | translate"></div>
+      <div class="legend-box intensity-2" [title]="'heatmap.legend.two' | translate"></div>
+      <div class="legend-box intensity-3" [title]="'heatmap.legend.three_plus' | translate"></div>
+      <span class="legend-label">{{ 'heatmap.more' | translate }}</span>
+    </div>
+  </div>
+
+  <div class="heatmap-content" #scroller>
+    <div class="heatmap-months">
+      <div class="month-label"
+           *ngFor="let month of monthLabels"
+           [style.grid-column]="month.weekIndex + 1">
+        {{ month.label }}
+      </div>
+    </div>
+
+    <div class="heatmap-grid">
+      <div class="heatmap-weekdays">
+        <div class="weekday-label" *ngFor="let day of weekdays; let i = index"
+             [class.hide-label]="i % 2 === 0">
+          {{ day }}
+        </div>
+      </div>
+
+      <div class="heatmap-weeks">
+        <div class="heatmap-week" *ngFor="let week of weeks">
+          <div class="heatmap-day"
+               *ngFor="let day of week"
+               [ngClass]="day ? day.intensity : 'empty-day'"
+               [attr.title]="day?.title">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

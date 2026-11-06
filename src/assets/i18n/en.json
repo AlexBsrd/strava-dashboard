@@ -255,8 +255,6 @@
   },
   "heatmap": {
     "title": "Activity over the last 12 months",
-    "loading": "Loading calendar...",
-    "no_data": "No data available to display the activity calendar.",
     "no_activity": "No activity",
     "less": "Less",
     "more": "More",

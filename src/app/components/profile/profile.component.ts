@@ -9,6 +9,9 @@ import {StravaService} from "../../services/strava.service";
 import {animate, style, transition, trigger} from '@angular/animations';
 import {ProfileSkeletonComponent} from "./skeleton/profile-skeleton.component";
 import {SportIconComponent} from "../sport-icon/sport-icon.component";
+import {ActivityHeatmapComponent} from "../activity-heatmap/activity-heatmap.component";
+import {ActivityCacheService} from "../../services/activity-cache.service";
+import {Activity} from "../../models/activity";
 
 export const fadeIn = trigger('fadeIn', [
   transition(':enter', [
@@ -20,13 +23,14 @@ export const fadeIn = trigger('fadeIn', [
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, TranslateModule, ProfileSkeletonComponent, SportIconComponent],
+  imports: [CommonModule, TranslateModule, ProfileSkeletonComponent, SportIconComponent, ActivityHeatmapComponent],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css']
 })
 export class ProfileComponent implements OnInit, OnDestroy {
   profile: AthleteProfile | null = null;
   summary: AthleteSummary | null = null;
+  heatmapActivities: Activity[] = [];
   isLoadingProfile = true;
   isLoadingSummary = true;
   error: string | null = null;
@@ -36,7 +40,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
     private athleteService: AthleteService,
     private profileCache: ProfileCacheService,
     private stravaService: StravaService,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private activityCache: ActivityCacheService
   ) {
   }
 
@@ -55,6 +60,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
           this.isLoadingSummary = false;
         }
       });
+
+    // Calendrier : alimenté par le cache d'activités (2 ans), mis à jour à chaque synchro
+    this.activityCache.activities$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(activities => this.heatmapActivities = activities);
 
     this.loadProfile();
   }

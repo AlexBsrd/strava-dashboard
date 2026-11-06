@@ -1,0 +1,144 @@
+.heatmap-container {
+  --cell: 12px;
+  --gap: 3px;
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  box-shadow: var(--glass-shadow), var(--glass-inset);
+  padding: 1.5rem;
+  width: 100%;
+  min-width: 0;
+}
+
+.heatmap-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.heatmap-title {
+  color: var(--text-primary);
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.heatmap-legend {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.legend-label {
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  margin: 0 0.25rem;
+}
+
+.legend-box,
+.heatmap-day {
+  width: var(--cell);
+  height: var(--cell);
+  border-radius: 2px;
+}
+
+/* Défilement horizontal sur petit écran (positionné sur les semaines récentes au chargement) */
+.heatmap-content {
+  overflow-x: auto;
+}
+
+.heatmap-months {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: var(--cell);
+  gap: var(--gap);
+  margin-bottom: 0.5rem;
+  margin-left: calc(var(--weekday-width, 40px) + 0.5rem);
+}
+
+.month-label {
+  color: var(--text-secondary);
+  font-size: 0.625rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.heatmap-grid {
+  display: flex;
+  gap: 0.5rem;
+  width: max-content;
+}
+
+.heatmap-weekdays {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+  width: var(--weekday-width, 40px);
+  flex-shrink: 0;
+}
+
+.weekday-label {
+  height: var(--cell);
+  color: var(--text-secondary);
+  font-size: 0.625rem;
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+}
+
+.weekday-label.hide-label {
+  visibility: hidden;
+}
+
+.heatmap-weeks,
+.heatmap-week {
+  display: flex;
+  gap: var(--gap);
+}
+
+.heatmap-week {
+  flex-direction: column;
+}
+
+.heatmap-day.empty-day {
+  visibility: hidden;
+}
+
+/* Échelle d'intensité sur la couleur principale (orange Strava, adaptée au thème sombre) */
+.intensity-0 {
+  background-color: var(--gray-200);
+}
+
+.intensity-1 {
+  background-color: color-mix(in srgb, var(--primary-500) 35%, transparent);
+}
+
+.intensity-2 {
+  background-color: color-mix(in srgb, var(--primary-500) 65%, transparent);
+}
+
+.intensity-3 {
+  background-color: var(--primary-500);
+}
+
+@media (max-width: 768px) {
+  .heatmap-container {
+    --cell: 10px;
+    --gap: 2px;
+    --weekday-width: 30px;
+    padding: 1rem;
+  }
+
+  .heatmap-title {
+    font-size: 1rem;
+  }
+
+  .weekday-label {
+    font-size: 0.5rem;
+  }
+}

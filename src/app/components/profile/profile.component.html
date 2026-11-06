@@ -43,6 +43,8 @@
       </div>
     </div>
 
+    <app-activity-heatmap [activities]="heatmapActivities"></app-activity-heatmap>
+
     <!-- Loading message for statistics -->
     <div *ngIf="isLoadingSummary" class="loading-stats-message" @fadeIn>
       <div class="loading-stats-content">
