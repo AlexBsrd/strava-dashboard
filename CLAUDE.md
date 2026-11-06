@@ -46,10 +46,16 @@ npm run deploy                 # Deploy to GitHub Pages with auto-commit message
 ### Core Services
 
 **StravaService** ([strava.service.ts](src/app/services/strava.service.ts))
-- Handles OAuth authentication flow with Strava API
+- Redirects to Strava OAuth (`authenticate()`)
 - Fetches activities from Strava API v3 with pagination support
-- Manages token expiration and automatic logout
 - Coordinates with ActivityCacheService for caching
+- `loadFullHistory()` downloads activities older than the cache once (Profile page), then keeps them in the cache
+
+**AuthService** ([auth.service.ts](src/app/services/auth.service.ts))
+- Exchanges the OAuth code and refreshes the access token through the backend (`/auth/token`, `/auth/refresh`): the Strava client secret never reaches the browser
+- `getValidToken()` refreshes silently 5 min before expiry (Strava tokens last 6h); concurrent calls share one refresh
+- `logout()` removes only the `strava_*` auth keys: goals, sport config, theme and activity cache survive
+- The functional `authInterceptor` adds the token to Strava API calls, retries once after a 401 and logs out if the refresh fails
 
 **ActivityCacheService** ([activity-cache.service.ts](src/app/services/activity-cache.service.ts))
 - Caches activities for 15 minutes to reduce API calls
@@ -60,7 +66,7 @@ npm run deploy                 # Deploy to GitHub Pages with auto-commit message
 **SessionService** ([session.service.ts](src/app/services/session.service.ts))
 - Communicates with the backend API for session management
 - Tracks user activity and session lifecycle
-- Checks session validity via backend
+- Checks session validity via backend (sessions are created by the backend during the code exchange)
 
 **StatsService** ([stats.service.ts](src/app/services/stats.service.ts))
 - Calculates aggregate statistics from activities
@@ -77,13 +83,6 @@ npm run deploy                 # Deploy to GitHub Pages with auto-commit message
 - Persists theme preference in localStorage
 - Supports system preference detection
 
-**StreakService** ([streak.service.ts](src/app/services/streak.service.ts))
-- Calculates current and longest activity streaks
-- Generates heatmap data for calendar visualization
-- Groups activities by date (ignoring time)
-- Provides helpers to check if activities exist on specific dates
-- Supports both yearly and monthly heatmap generation
-
 **GoalService** ([goal.service.ts](src/app/services/goal.service.ts))
 - Manages user-defined fitness goals (CRUD operations)
 - Calculates real-time progress and projections for goals
@@ -98,10 +97,9 @@ npm run deploy                 # Deploy to GitHub Pages with auto-commit message
 1. User initiates login via LoginComponent
 2. StravaService redirects to Strava OAuth with required scopes (`read,activity:read_all`)
 3. Strava redirects to `/callback` with authorization code
-4. AuthCallbackComponent exchanges code for access/refresh tokens via StravaService
+4. AuthCallbackComponent sends the code to the backend (`POST /auth/token`), which exchanges it with Strava and creates the session
 5. Tokens stored in localStorage (strava_token, strava_refresh_token, strava_token_expires_at, strava_athlete_id)
-6. SessionService registers session with backend API
-7. AuthGuard protects routes by validating tokens and checking backend session
+6. AuthGuard refreshes the token if needed (`POST /auth/refresh`) and checks the backend session
 
 ### Data Flow
 
@@ -118,10 +116,6 @@ npm run deploy                 # Deploy to GitHub Pages with auto-commit message
 - Main view combining stats cards, charts, and period selector
 - Filters activities by type (running, biking, walking)
 - Orchestrates data loading and error handling
-
-**PeriodSelectorComponent** ([period-selector](src/app/components/period-selector))
-- Allows switching between week, month, current_year, and 2024 views
-- Emits period changes to parent components
 
 **Chart Components**
 - ModernActivityChartComponent: Time-series activity visualization
@@ -141,15 +135,9 @@ npm run deploy                 # Deploy to GitHub Pages with auto-commit message
 - Includes comparison charts with overlaid data for both periods
 
 **Comparison Sub-components**
-- ComparisonPeriodSelectorComponent: Dual period selector with presets and custom dates
 - ComparisonStatsGridComponent: Grid of comparison cards for one activity type
 - ComparisonStatsCardComponent: Individual metric comparison with delta visualization
 - ComparisonChartComponent: Chart.js time-series comparison with metric selection
-
-**Streak & Consistency Components**
-- StreakBadgeComponent: Displays current streak and longest streak with date ranges
-- Both components support theme switching and responsive design
-- Integrated into DashboardComponent for immediate visibility
 
 **Goal Tracking Components**
 - GoalCardComponent: Displays goal progress with animated progress bar, projection, and status
@@ -169,7 +157,6 @@ Environment configuration is managed via `.env` file and generated into [src/app
 Required variables:
 ```
 STRAVA_CLIENT_ID=           # From Strava API settings
-STRAVA_CLIENT_SECRET=       # From Strava API settings
 REDIRECT_URI=               # OAuth callback URL (e.g., http://localhost:4200/callback)
 API_URL=                    # Backend API URL (e.g., http://localhost:3000/api)
 API_KEY=                    # Backend API authentication key
@@ -183,7 +170,7 @@ IS_PRODUCTION=              # true/false (only for production builds)
 This frontend requires the strava-dashboard-api backend to be running for:
 - Session management and validation
 - Activity tracking
-- Token refresh coordination
+- OAuth code exchange and token refresh (holds the Strava client secret)
 
 Ensure the backend is running on the URL specified in API_URL before starting development.
 
@@ -212,7 +199,7 @@ The app auto-deploys to GitHub Pages on push to master via [.github/workflows/de
 3. Production build with base-href `/strava-dashboard/`
 4. Deploy via angular-cli-ghpages
 
-Required GitHub secrets: STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET, REDIRECT_URI, IS_PRODUCTION, API_URL, API_KEY
+Required GitHub secrets: STRAVA_CLIENT_ID, REDIRECT_URI, IS_PRODUCTION, API_URL, API_KEY
 
 ## Common Patterns
 
@@ -232,7 +219,7 @@ Required GitHub secrets: STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET, REDIRECT_URI, I
 1. Update PeriodType in [src/app/types/period.ts](src/app/types/period.ts)
 2. Add period logic in ActivityCacheService.getFilteredActivities()
 3. Update cache refresh logic in ActivityCacheService.needsRefresh()
-4. Add UI option in PeriodSelectorComponent
+4. Add UI option in the dashboard period bar and the sidebar
 
 ### Using the Period Comparison Feature
 The comparison feature ([/compare](src/app/components/comparison)) allows users to compare statistics between two time periods:
