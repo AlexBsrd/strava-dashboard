@@ -1,0 +1,246 @@
+.recap {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  background: #0b0f19;
+  color: #fff;
+}
+
+.story {
+  position: relative;
+  width: 100vw;
+  height: 100dvh;
+  overflow: hidden;
+  background:
+    radial-gradient(120% 80% at 0% 0%, var(--accent) 0%, transparent 65%),
+    radial-gradient(90% 60% at 100% 100%, color-mix(in srgb, var(--accent) 55%, transparent) 0%, transparent 70%),
+    #111827;
+  transition: background 0.6s ease;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (min-width: 600px) {
+  .story {
+    height: min(92dvh, calc(100vw * 16 / 9));
+    width: min(100vw, calc(92dvh * 9 / 16));
+    border-radius: 24px;
+    box-shadow: 0 30px 80px rgb(0 0 0 / 0.5);
+  }
+}
+
+.progress {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  right: 56px;
+  display: flex;
+  gap: 4px;
+  z-index: 2;
+}
+
+.progress span {
+  flex: 1;
+  height: 3px;
+  border-radius: 2px;
+  background: rgb(255 255 255 / 0.3);
+  transition: background 0.3s ease;
+}
+
+.progress span.done {
+  background: #fff;
+}
+
+.close {
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  z-index: 2;
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  color: #fff;
+  font-size: 1.3rem;
+  cursor: pointer;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  padding: 72px 28px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.9rem;
+}
+
+.slide.center {
+  align-items: center;
+}
+
+.slide > * {
+  margin: 0;
+  animation: rise 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.slide > :nth-child(2) { animation-delay: 0.12s; }
+.slide > :nth-child(3) { animation-delay: 0.45s; }
+.slide > :nth-child(4) { animation-delay: 0.7s; }
+.slide > :nth-child(5) { animation-delay: 0.9s; }
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: none; }
+}
+
+.kicker {
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.huge,
+.big {
+  font-family: var(--font-display);
+  font-weight: 800;
+  line-height: 0.95;
+  overflow-wrap: anywhere;
+}
+
+.huge { font-size: clamp(5rem, 26vw, 9rem); }
+.big { font-size: clamp(3rem, 15vw, 5.5rem); }
+
+.big small {
+  font-size: 0.45em;
+  font-weight: 700;
+}
+
+.sub {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.fact {
+  font-size: 1.05rem;
+  line-height: 1.4;
+  padding: 0.8rem 1rem;
+  border-radius: 14px;
+  background: rgb(255 255 255 / 0.12);
+}
+
+.hint {
+  font-size: 0.9rem;
+  opacity: 0.7;
+}
+
+.year-select {
+  align-self: flex-start;
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid rgb(255 255 255 / 0.4);
+  background: rgb(0 0 0 / 0.25);
+  color: #fff;
+  font-weight: 600;
+}
+
+.bars {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.bars li {
+  display: grid;
+  grid-template-columns: minmax(0, 7.5rem) 1fr auto;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 600;
+}
+
+.bar-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bar {
+  height: 10px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.15);
+  overflow: hidden;
+}
+
+.bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #fff;
+  transform-origin: left;
+  animation: grow 0.9s 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes grow {
+  from { transform: scaleX(0); }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem 1rem;
+}
+
+.grid div {
+  display: flex;
+  flex-direction: column;
+}
+
+.grid strong {
+  font-family: var(--font-display);
+  font-size: 2.6rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.grid span {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.actions button {
+  flex: 1;
+  padding: 0.85rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgb(255 255 255 / 0.5);
+  background: transparent;
+  color: #fff;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.actions button.primary {
+  background: #fff;
+  color: #111827;
+  border-color: #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slide > *,
+  .bar span {
+    animation: none;
+  }
+}

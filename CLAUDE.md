@@ -139,6 +139,15 @@ npm run deploy                 # Deploy to GitHub Pages with auto-commit message
 - ComparisonStatsCardComponent: Individual metric comparison with delta visualization
 - ComparisonChartComponent: Chart.js time-series comparison with metric selection
 
+**HighlightsComponent** ([highlights](src/app/components/highlights))
+- Top of the dashboard: current week vs last week at the same point, closest goal, records of the last 7 days (shown only once the full history is cached), yearly distance milestones and Everest/Earth equivalents
+- Pure calculations live in [utils/highlights.ts](src/app/utils/highlights.ts) (also used by the recap)
+- The dashboard triggers `loadFullHistory()` once in the background so records are all-time
+
+**RecapComponent** ([recap](src/app/components/recap))
+- `/recap`: full-screen "stories" of the year (tap right/left or arrow keys, Escape closes), app chrome hidden
+- Last slide shares a 1080×1920 PNG via the native share sheet, or downloads it
+
 **Goal Tracking Components**
 - GoalCardComponent: Displays goal progress with animated progress bar, projection, and status
 - Shows current vs target, percentage complete, and days remaining
@@ -181,8 +190,13 @@ Routes use lazy loading for all components ([app.routes.ts](src/app/app.routes.t
 - `/compare` - Period comparison (protected by AuthGuard)
 - `/activities` - Activities list (protected by AuthGuard)
 - `/profile` - User profile (protected by AuthGuard)
+- `/recap` - Year recap stories (protected by AuthGuard)
 - `/login` - OAuth login page
 - `/callback` - OAuth callback handler
+
+## Installable app
+
+[src/manifest.webmanifest](src/manifest.webmanifest) plus the meta tags in `index.html` make the site installable on a phone home screen (icons in `src/assets/icons`). There is no service worker, so there is no offline mode.
 
 ## TypeScript Configuration
 

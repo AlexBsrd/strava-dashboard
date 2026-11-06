@@ -25,6 +25,7 @@ import {Goal, GoalProgress} from "../../models/goal";
 import {GoalCardComponent} from "../goal-card/goal-card.component";
 import {GoalFormComponent} from "../goal-form/goal-form.component";
 import {DisplayPreferencesService, DisplayPreferences} from "../../services/display-preferences.service";
+import {HighlightsComponent} from "../highlights/highlights.component";
 
 /** Interface pour les données groupées par sport */
 interface GroupedStatsData {
@@ -45,7 +46,8 @@ interface GroupedStatsData {
     ModernActivityChartComponent,
     PaceScatterComponent,
     GoalCardComponent,
-    GoalFormComponent
+    GoalFormComponent,
+    HighlightsComponent
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
@@ -198,6 +200,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.isLoading = false;
       this.isInitialLoad = false;
       if (!forceFullReload && !this.activityCache.needsRefresh(this.selectedPeriod)) {
+        this.ensureFullHistory();
         return;
       }
     } else {
@@ -214,6 +217,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.isLoading = false;
         this.isInitialLoad = false;
         this.isSyncing = false;
+        this.ensureFullHistory();
       },
       error: (error) => {
         console.error('Error loading activities:', error);
@@ -235,6 +239,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
   /** Rafraîchissement manuel : recharge complètement les 2 dernières années depuis Strava */
   refreshActivities() {
     this.loadInitialData(true);
+  }
+
+  /** Les records « de tous les temps » ont besoin de l'historique complet, téléchargé une seule fois */
+  private ensureFullHistory() {
+    if (!this.activityCache.isHistoryComplete()) {
+      this.stravaService.loadFullHistory().subscribe({
+        error: error => console.warn('Full history load failed:', error)
+      });
+    }
   }
 
   get lastSync(): Date | null {

@@ -1,0 +1,95 @@
+<div class="recap" [style.--accent]="color">
+  <div class="story" (click)="onTap($event)">
+    <div class="progress" *ngIf="slides.length > 1">
+      <span *ngFor="let s of slides; let i = index" [class.done]="i <= index"></span>
+    </div>
+    <button class="close" (click)="close(); $event.stopPropagation()" [attr.aria-label]="'buttons.close' | translate">✕</button>
+
+    <div *ngIf="loading" class="slide center"><app-spinner></app-spinner></div>
+
+    @if (recap && !loading) {
+      @switch (slide) {
+        @case ('intro') {
+          <div class="slide">
+            <p class="kicker">{{ 'recap.intro.kicker' | translate }}</p>
+            <p class="huge">{{ recap.year }}</p>
+            @if (recap.count > 0) {
+              <p class="sub">{{ 'recap.intro.text' | translate:{ count: num(recap.count), days: num(recap.activeDays) } }}</p>
+              <p class="hint">{{ 'recap.intro.hint' | translate }}</p>
+            } @else {
+              <p class="sub">{{ 'recap.intro.empty' | translate }}</p>
+            }
+            <select *ngIf="years.length > 1" class="year-select" [value]="year"
+                    (click)="$event.stopPropagation()" (change)="selectYear(+$any($event.target).value)"
+                    [attr.aria-label]="'recap.intro.year' | translate">
+              <option *ngFor="let y of years" [value]="y">{{ y }}</option>
+            </select>
+          </div>
+        }
+        @case ('distance') {
+          <div class="slide">
+            <p class="kicker">{{ 'recap.distance.kicker' | translate }}</p>
+            <p class="big">{{ num(recap.distance) }} <small>km</small></p>
+            <p class="sub">{{ 'recap.distance.time' | translate:{ hours: hours(recap.movingTime) } }}</p>
+            <p class="fact">🌍 {{ 'recap.distance.earth' | translate:{ percent: num(earthPercent, 1) } }}</p>
+          </div>
+        }
+        @case ('elevation') {
+          <div class="slide">
+            <p class="kicker">{{ 'recap.elevation.kicker' | translate }}</p>
+            <p class="big">{{ num(recap.elevation) }} <small>m</small></p>
+            <p class="fact">⛰️ {{ 'recap.elevation.everest' | translate:{ count: num(everests, 1) } }}</p>
+          </div>
+        }
+        @case ('sports') {
+          <div class="slide">
+            <p class="kicker">{{ 'recap.sports.kicker' | translate }}</p>
+            <p class="big">{{ recap.sports[0].labelKey | translate }}</p>
+            <ul class="bars">
+              <li *ngFor="let s of recap.sports.slice(0, 4)">
+                <span class="bar-label">{{ s.labelKey | translate }}</span>
+                <span class="bar"><span [style.width.%]="s.count / topSportShare * 100"></span></span>
+                <span class="bar-value">{{ s.count }}</span>
+              </li>
+            </ul>
+          </div>
+        }
+        @case ('month') {
+          <div class="slide">
+            <p class="kicker">{{ 'recap.month.kicker' | translate }}</p>
+            <p class="big">{{ monthName(recap.bestMonth!.month) }}</p>
+            <p class="sub">{{ num(recap.bestMonth!.distance) }} km</p>
+            <p class="fact" *ngIf="recap.longestStreak > 1">🔥 {{ 'recap.month.streak' | translate:{ count: recap.longestStreak } }}</p>
+          </div>
+        }
+        @case ('longest') {
+          <div class="slide">
+            <p class="kicker">{{ 'recap.longest.kicker' | translate }}</p>
+            <p class="big">{{ num(recap.longest!.distance, 1) }} <small>km</small></p>
+            <p class="sub">{{ recap.longest!.name }} · {{ date(recap.longest!) }}</p>
+            <p class="fact" *ngIf="recap.biggestClimb && recap.biggestClimb.id !== recap.longest!.id && recap.biggestClimb.total_elevation_gain > 0">
+              ⛰️ {{ 'recap.longest.climb' | translate:{ elevation: num(recap.biggestClimb.total_elevation_gain), name: recap.biggestClimb.name } }}
+            </p>
+          </div>
+        }
+        @case ('summary') {
+          <div class="slide">
+            <p class="kicker">{{ 'recap.summary.kicker' | translate:{ year: recap.year } }}</p>
+            <div class="grid">
+              <div><strong>{{ num(recap.count) }}</strong><span>{{ 'recap.summary.activities' | translate }}</span></div>
+              <div><strong>{{ num(recap.distance) }}</strong><span>{{ 'recap.summary.distance' | translate }}</span></div>
+              <div><strong>{{ hours(recap.movingTime) }}</strong><span>{{ 'recap.summary.time' | translate }}</span></div>
+              <div><strong>{{ num(recap.elevation) }}</strong><span>{{ 'recap.summary.elevation' | translate }}</span></div>
+              <div><strong>{{ num(recap.activeDays) }}</strong><span>{{ 'recap.summary.active_days' | translate }}</span></div>
+              <div><strong>{{ num(recap.longestStreak) }}</strong><span>{{ 'recap.summary.streak' | translate }}</span></div>
+            </div>
+            <div class="actions">
+              <button class="primary" (click)="share($event)">{{ 'recap.summary.share' | translate }}</button>
+              <button (click)="restart(); $event.stopPropagation()">{{ 'recap.summary.replay' | translate }}</button>
+            </div>
+          </div>
+        }
+      }
+    }
+  </div>
+</div>

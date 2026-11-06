@@ -144,7 +144,7 @@ export class AppComponent implements OnInit, OnDestroy {
    * On le masque sur les pages d'authentification pour un écran propre. */
   get showChrome(): boolean {
     const route = this.currentRoute || '';
-    return !(route.startsWith('/login') || route.startsWith('/callback'));
+    return !['/login', '/callback', '/recap'].some(prefix => route.startsWith(prefix));
   }
 
   toggleSportConfig() {

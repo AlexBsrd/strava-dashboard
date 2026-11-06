@@ -1,0 +1,68 @@
+<section class="highlights" *ngIf="week">
+  <article class="hl-card week">
+    <header>
+      <h2>{{ 'highlights.week.title' | translate }}</h2>
+      <span class="hl-sub">{{ 'highlights.week.since_monday' | translate }}</span>
+    </header>
+
+    <ng-container *ngIf="week.current.count > 0; else emptyWeek">
+      <div class="figures">
+        <div><strong>{{ week.current.count }}</strong><span>{{ (week.current.count > 1 ? 'highlights.week.activities' : 'highlights.week.activity') | translate }}</span></div>
+        <div><strong>{{ num(week.current.distance, 1) }}</strong><span>km</span></div>
+        <div><strong>{{ duration(week.current.movingTime) }}</strong><span>{{ 'highlights.week.moving' | translate }}</span></div>
+      </div>
+    </ng-container>
+    <ng-template #emptyWeek>
+      <p class="empty">{{ 'highlights.week.empty' | translate }}</p>
+    </ng-template>
+
+    <p class="delta" *ngIf="week.current.distance > 0 || week.previous.distance > 0"
+       [class.up]="weekDelta > 0" [class.down]="weekDelta < 0">
+      {{ (weekDelta >= 0 ? '+' : '−') + num(weekDelta < 0 ? -weekDelta : weekDelta, 1) }} km
+      <span>{{ 'highlights.week.vs_last' | translate }}</span>
+    </p>
+
+    <p class="goal" *ngIf="closestGoal as g">
+      🎯 {{ g.goal.name }}
+      <span class="goal-bar"><span [style.width.%]="g.percentage"></span></span>
+      <strong>{{ num(g.percentage) }} %</strong>
+    </p>
+  </article>
+
+  <article class="hl-card records" *ngIf="records.length">
+    <header>
+      <h2>🏆 {{ 'highlights.records.title' | translate }}</h2>
+      <span class="hl-sub">{{ 'highlights.records.subtitle' | translate }}</span>
+    </header>
+    <ul>
+      <li *ngFor="let r of records">
+        <span class="record-label">{{ 'highlights.records.' + r.kind + '.' + r.category | translate }}</span>
+        <strong>{{ recordValue(r) }}</strong>
+        <span class="record-meta">
+          {{ 'highlights.records.before' | translate:{ value: recordPrevious(r) } }} ·
+          <a [href]="'https://www.strava.com/activities/' + r.activity.id" target="_blank" rel="noopener">{{ r.activity.name }}</a>
+        </span>
+      </li>
+    </ul>
+  </article>
+
+  <article class="hl-card milestones">
+    <header>
+      <h2>{{ 'highlights.milestones.title' | translate:{ year: year } }}</h2>
+    </header>
+    <p class="step">
+      <strong>{{ num(yearTotals.distance) }} km</strong>
+      <span>{{ 'highlights.milestones.to_next' | translate:{ remaining: num(nextStep - yearTotals.distance), step: num(nextStep) } }}</span>
+    </p>
+    <div class="step-bar"><span [style.width.%]="stepProgress"></span></div>
+    <p class="fact" *ngIf="yearTotals.elevation > 0">
+      ⛰️ {{ 'highlights.milestones.everest' | translate:{ elevation: num(yearTotals.elevation), count: num(everests, 1) } }}
+    </p>
+    <p class="fact" *ngIf="allTimeDistance">
+      🌍 {{ 'highlights.milestones.earth' | translate:{ distance: num(allTimeDistance), percent: num(earthPercent, 1) } }}
+    </p>
+    <a *ngIf="showRecapTeaser" class="recap-teaser" routerLink="/recap">
+      ✨ {{ 'highlights.recap_teaser' | translate:{ year: recapYear } }} →
+    </a>
+  </article>
+</section>

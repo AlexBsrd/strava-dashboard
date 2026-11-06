@@ -17,7 +17,8 @@
       "activities": "Activités",
       "profile": "Profil",
       "dashboard": "Dashboard",
-      "configuration": "Configuration"
+      "configuration": "Configuration",
+      "recap": "Bilan"
     },
     "footer": {
       "powered_by": "Powered with 🧡 by Strava API"
@@ -473,5 +474,82 @@
     "info_distance": "Distance cumulée affichée",
     "info_speed": "Vitesse moyenne pondérée affichée",
     "info_elevation": "Dénivelé cumulé affiché"
+  },
+  "highlights": {
+    "week": {
+      "title": "Ta semaine",
+      "since_monday": "depuis lundi",
+      "activity": "activité",
+      "activities": "activités",
+      "moving": "en mouvement",
+      "empty": "Pas encore d'activité cette semaine. C'est le moment de s'y mettre !",
+      "vs_last": "par rapport à la semaine dernière au même moment"
+    },
+    "records": {
+      "title": "Nouveaux records",
+      "subtitle": "7 derniers jours",
+      "before": "avant : {{value}}",
+      "distance": {
+        "running": "Plus longue course",
+        "cycling": "Plus longue sortie vélo",
+        "walking": "Plus longue marche"
+      },
+      "elevation": {
+        "running": "Plus gros dénivelé en course",
+        "cycling": "Plus gros dénivelé à vélo",
+        "walking": "Plus gros dénivelé à pied"
+      }
+    },
+    "milestones": {
+      "title": "Paliers {{year}}",
+      "to_next": "encore {{remaining}} km avant {{step}} km",
+      "everest": "{{elevation}} m de dénivelé cette année, soit {{count}} fois l'Everest",
+      "earth": "{{distance}} km depuis tes débuts, soit {{percent}} % du tour de la Terre"
+    },
+    "recap_teaser": "Ton bilan {{year}} est prêt"
+  },
+  "recap": {
+    "intro": {
+      "kicker": "Ton année en sport",
+      "text": "{{count}} activités sur {{days}} jours différents.",
+      "hint": "Touche l'écran pour continuer →",
+      "empty": "Aucune activité cette année pour l'instant.",
+      "year": "Choisir l'année"
+    },
+    "distance": {
+      "kicker": "Tu as parcouru",
+      "time": "en {{hours}} heures de mouvement",
+      "earth": "Soit {{percent}} % du tour de la Terre"
+    },
+    "elevation": {
+      "kicker": "Tu as grimpé",
+      "everest": "Soit {{count}} fois l'Everest"
+    },
+    "sports": {
+      "kicker": "Ton sport préféré"
+    },
+    "month": {
+      "kicker": "Ton meilleur mois",
+      "streak": "Plus longue série : {{count}} jours d'affilée"
+    },
+    "longest": {
+      "kicker": "Ta plus longue sortie",
+      "climb": "Plus gros dénivelé : {{elevation}} m, « {{name}} »"
+    },
+    "summary": {
+      "kicker": "{{year}} en résumé",
+      "activities": "activités",
+      "distance": "kilomètres",
+      "time": "heures",
+      "elevation": "mètres de dénivelé",
+      "active_days": "jours actifs",
+      "streak": "jours d'affilée (record)",
+      "share": "Partager",
+      "replay": "Revoir"
+    },
+    "share": {
+      "kicker": "Mon année en sport",
+      "favorite": "Sport préféré :"
+    }
   }
 }
