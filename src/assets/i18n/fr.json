@@ -206,10 +206,18 @@
       "duration": "Durée",
       "avg_speed": "Vitesse moy.",
       "elevation": "Dénivelé",
-      "session_duration": "Durée de séance"
+      "session_duration": "Durée de séance",
+      "avg_pace": "Allure moy."
     },
     "count_one": "{{count}} activité",
-    "count_other": "{{count}} activités"
+    "count_other": "{{count}} activités",
+    "filters": {
+      "search": "Rechercher une activité",
+      "sport": "Sport",
+      "all_sports": "Tous les sports",
+      "no_results": "Aucune activité ne correspond à ces filtres"
+    },
+    "view_on_strava": "Voir sur Strava"
   },
   "profile": {
     "member_since": "Membre depuis {{date}}",
@@ -355,7 +363,8 @@
       "averageDistance": "Distance moyenne/sortie",
       "totalElevation": "Dénivelé total",
       "averageElevation": "Dénivelé moyen/sortie",
-      "numberOfActivities": "Nombre d'activités"
+      "numberOfActivities": "Nombre d'activités",
+      "averagePace": "Allure moyenne"
     },
     "short_labels": {
       "distance": "Distance",

@@ -8,7 +8,28 @@
   <div *ngIf="!isLoading && !error">
     <header class="activities-header">
       <h1>{{ 'activities.title' | translate }}</h1>
+      <div class="activities-filters">
+        <input
+          type="search"
+          class="filter-search"
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="applyFilters()"
+          [placeholder]="'activities.filters.search' | translate"
+          [attr.aria-label]="'activities.filters.search' | translate">
+        <select
+          class="filter-sport"
+          [(ngModel)]="sportFilter"
+          (ngModelChange)="applyFilters()"
+          [attr.aria-label]="'activities.filters.sport' | translate">
+          <option value="">{{ 'activities.filters.all_sports' | translate }}</option>
+          <option *ngFor="let sport of availableSports" [value]="sport">{{ sportKey(sport) | translate }}</option>
+        </select>
+      </div>
     </header>
+
+    <p *ngIf="!hasResults" class="no-results">
+      {{ (activities.length ? 'activities.filters.no_results' : 'activities.no_activities') | translate }}
+    </p>
 
     <div class="timeline">
       <div *ngFor="let day of groupedActivities | keyvalue: reverseOrder" class="day-group">
@@ -44,13 +65,19 @@
                     {{ 'metrics.labels.elapsedTotal' | translate:{ time: formatDuration(activity.elapsed_time) } }}
                   </span>
                 </div>
-                <div class="stat">
-                  <span class="stat-label">{{ 'activities.table.avg_speed' | translate }}</span>
-                  <span class="stat-value">{{ activity.average_speed.toFixed(1) }} km/h</span>
+                <div class="stat" *ngIf="usesPace(activity); else speedStat">
+                  <span class="stat-label">{{ 'activities.table.avg_pace' | translate }}</span>
+                  <span class="stat-value">{{ formatPace(activity.average_speed) }} /km</span>
                 </div>
+                <ng-template #speedStat>
+                  <div class="stat">
+                    <span class="stat-label">{{ 'activities.table.avg_speed' | translate }}</span>
+                    <span class="stat-value">{{ activity.average_speed.toFixed(1) }} km/h</span>
+                  </div>
+                </ng-template>
                 <div class="stat">
                   <span class="stat-label">{{ 'activities.table.elevation' | translate }}</span>
-                  <span class="stat-value">{{ activity.total_elevation_gain }}m</span>
+                  <span class="stat-value">{{ activity.total_elevation_gain | number:'1.0-0' }} m</span>
                 </div>
               </ng-container>
 
@@ -61,6 +88,11 @@
                 </div>
               </ng-container>
             </div>
+
+            <a class="strava-link"
+               [href]="'https://www.strava.com/activities/' + activity.id"
+               target="_blank"
+               rel="noopener">{{ 'activities.view_on_strava' | translate }}</a>
           </div>
         </div>
       </div>

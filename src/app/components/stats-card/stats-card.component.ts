@@ -1,5 +1,6 @@
 import {AfterViewInit, Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
 import {CommonModule} from '@angular/common';
+import {formatPace} from '../../utils/pace';
 
 interface TimeValues {
   hours: number;
@@ -20,6 +21,8 @@ export class StatsCardComponent implements OnInit, OnChanges, AfterViewInit, OnD
   @Input() isTime: boolean = false;
   /** Ligne secondaire sous la valeur (ex. temps total sous le temps en mouvement) */
   @Input() subtitle: string = '';
+  /** La valeur est une vitesse (km/h) affichée en allure min/km */
+  @Input() isPace: boolean = false;
 
   currentValue: number = 0;
   animationFrameId: number | null = null;
@@ -42,6 +45,7 @@ export class StatsCardComponent implements OnInit, OnChanges, AfterViewInit, OnD
 
   get formattedValue(): string {
     if (this.isTime) return '';
+    if (this.isPace) return formatPace(this.currentValue);
     return this.currentValue.toFixed(1);
   }
 

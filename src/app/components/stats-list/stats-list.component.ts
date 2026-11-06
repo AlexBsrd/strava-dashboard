@@ -28,6 +28,8 @@ export class StatsListComponent {
   @Input() groupColor?: string;
   @Input() groupIcon?: string;
   @Input() visibleMetrics?: MetricKey[];
+  /** Groupe de course ou de marche : vitesse affichée en allure */
+  @Input() showPace = false;
 
   showShareModal = false;
 

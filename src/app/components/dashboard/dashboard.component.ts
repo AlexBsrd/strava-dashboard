@@ -6,6 +6,7 @@ import {Subject, takeUntil, distinctUntilChanged} from 'rxjs';
 import {TranslateModule, TranslateService} from '@ngx-translate/core';
 import {StravaService} from '../../services/strava.service';
 import {AuthService} from '../../services/auth.service';
+import {usesPace} from '../../utils/pace';
 import {StatsService} from '../../services/stats.service';
 import {Stats} from "../../models/stats";
 import {StatsListComponent} from "../stats-list/stats-list.component";
@@ -343,6 +344,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
       'other': '#f97316'
     };
     return colors[category] || '#6b7280';
+  }
+
+  /** Allure plutôt que vitesse si le groupe ne contient que de la course ou de la marche */
+  groupUsesPace(group: SportGroup): boolean {
+    return group.types.length > 0 && group.types.every(usesPace);
   }
 
   /** Helper pour le trackBy dans le template */

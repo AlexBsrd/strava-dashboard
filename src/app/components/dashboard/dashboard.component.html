@@ -100,7 +100,8 @@
             [selectedPeriod]="selectedPeriod"
             [groupColor]="groupData.group.color"
             [groupIcon]="groupData.group.icon"
-            [visibleMetrics]="groupData.group.visibleMetrics">
+            [visibleMetrics]="groupData.group.visibleMetrics"
+            [showPace]="groupUsesPace(groupData.group)">
           </app-stats-list>
         </ng-container>
 

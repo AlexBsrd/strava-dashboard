@@ -206,10 +206,18 @@
       "duration": "Duration",
       "avg_speed": "Avg. Speed",
       "elevation": "Elevation",
-      "session_duration": "Session Duration"
+      "session_duration": "Session Duration",
+      "avg_pace": "Avg pace"
     },
     "count_one": "{{count}} activity",
-    "count_other": "{{count}} activities"
+    "count_other": "{{count}} activities",
+    "filters": {
+      "search": "Search activities",
+      "sport": "Sport",
+      "all_sports": "All sports",
+      "no_results": "No activity matches these filters"
+    },
+    "view_on_strava": "View on Strava"
   },
   "profile": {
     "member_since": "Member since {{date}}",
@@ -355,7 +363,8 @@
       "averageDistance": "Avg distance/outing",
       "totalElevation": "Total elevation",
       "averageElevation": "Avg elevation/outing",
-      "numberOfActivities": "Number of activities"
+      "numberOfActivities": "Number of activities",
+      "averagePace": "Average pace"
     },
     "short_labels": {
       "distance": "Distance",

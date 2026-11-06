@@ -1,5 +1,6 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {TranslateModule, TranslateService} from '@ngx-translate/core';
@@ -9,12 +10,14 @@ import {Activity} from '../../models/activity';
 import {SpinnerComponent} from '../spinner/spinner.component';
 import {PeriodType} from "../../types/period";
 import {getSportMetadata} from "../../types/sport-config";
+import {formatPace, usesPace} from "../../utils/pace";
 
 @Component({
   selector: 'app-activities',
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     TranslateModule,
     SpinnerComponent
   ],
@@ -27,6 +30,10 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
   isLoading = false;
   error: string | null = null;
   selectedPeriod: PeriodType = 'week';
+  searchTerm = '';
+  sportFilter = '';
+  availableSports: string[] = [];
+  readonly formatPace = formatPace;
 
   private readonly cardioActivities = ['RUN', 'RIDE', 'WALK', 'HIKE', 'ALPINESKI', 'BACKCOUNTRYSKI'];
   private destroy$ = new Subject<void>();
@@ -55,7 +62,29 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
 
   /** Clé de traduction du sport précis (Trail, VTT…) ; un type inconnu s'affiche tel quel */
   sportLabelKey(activity: Activity): string {
-    return getSportMetadata(activity.sport_type || activity.type).labelKey;
+    return this.sportKey(activity.sport_type || activity.type);
+  }
+
+  sportKey(sportType: string): string {
+    return getSportMetadata(sportType).labelKey;
+  }
+
+  usesPace(activity: Activity): boolean {
+    return usesPace(activity.sport_type || activity.type);
+  }
+
+  /** Filtre la période chargée par nom (sans tenir compte des accents ni de la casse) et par sport */
+  applyFilters(): void {
+    const term = normalize(this.searchTerm.trim());
+    const filtered = this.activities.filter(activity =>
+      (!this.sportFilter || (activity.sport_type || activity.type) === this.sportFilter) &&
+      (!term || normalize(activity.name).includes(term))
+    );
+    this.groupActivitiesByDay(filtered);
+  }
+
+  get hasResults(): boolean {
+    return Object.keys(this.groupedActivities).length > 0;
   }
 
   isCardioActivity(type: string): boolean {
@@ -99,7 +128,11 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
     this.stravaService.getActivities(this.selectedPeriod).subscribe({
       next: (activities) => {
         this.activities = activities;
-        this.groupActivitiesByDay();
+        this.availableSports = [...new Set(activities.map(a => a.sport_type || a.type))].sort();
+        if (!this.availableSports.includes(this.sportFilter)) {
+          this.sportFilter = '';
+        }
+        this.applyFilters();
         this.isLoading = false;
       },
       error: (error) => {
@@ -110,8 +143,8 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
     });
   }
 
-  private groupActivitiesByDay() {
-    this.groupedActivities = this.activities.reduce((groups: { [key: string]: Activity[] }, activity) => {
+  private groupActivitiesByDay(activities: Activity[]) {
+    this.groupedActivities = activities.reduce((groups: { [key: string]: Activity[] }, activity) => {
       // Jour en heure locale, AAAA-MM-JJ (toISOString passerait en UTC et décalerait les sorties nocturnes)
       const day = new Date(activity.start_date).toLocaleDateString('sv-SE');
 
@@ -133,3 +166,5 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
     }, {});
   }
 }
+
+const normalize = (text: string) => text.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();

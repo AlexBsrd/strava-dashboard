@@ -34,9 +34,10 @@
   <app-stats-card
     *ngIf="isMetricVisible('averageSpeed')"
     class="double-row"
-    [title]="'metrics.labels.averageSpeed' | translate"
+    [title]="(showPace ? 'metrics.labels.averagePace' : 'metrics.labels.averageSpeed') | translate"
     [value]="stats.averageSpeed"
-    unit="km/h">
+    [isPace]="showPace"
+    [unit]="showPace ? '/km' : 'km/h'">
   </app-stats-card>
 
   <app-stats-card
