@@ -2,8 +2,7 @@ import {Injectable} from '@angular/core';
 import {CanActivate} from '@angular/router';
 import {SessionService} from '../services/session.service';
 import {AuthService} from '../services/auth.service';
-import {Observable, of} from 'rxjs';
-import {catchError, map, switchMap} from 'rxjs/operators';
+import {switchMap} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -15,26 +14,26 @@ export class AuthGuard implements CanActivate {
   ) {
   }
 
-  canActivate(): Observable<boolean> {
+  canActivate(): boolean {
     if (!this.authService.hasSession()) {
       this.authService.logout();
-      return of(false);
+      return false;
     }
 
-    // Token rafraîchi si expiré, puis vérification de la session backend (met aussi à jour lastActivity)
-    return this.authService.getValidToken().pipe(
-      switchMap(() => this.sessionService.checkSession(localStorage.getItem('strava_athlete_id')!)),
-      map(() => true),
-      catchError(error => {
+    // Session locale présente : la page s'affiche tout de suite (avec le cache d'activités).
+    // Le token et la session backend sont vérifiés en arrière-plan : le backend (Vercel)
+    // peut mettre plusieurs secondes à répondre au démarrage à froid.
+    this.authService.getValidToken().pipe(
+      switchMap(() => this.sessionService.checkSession(localStorage.getItem('strava_athlete_id')!))
+    ).subscribe({
+      error: error => {
         // Session inconnue ou refresh refusé : reconnexion nécessaire
+        // (backend injoignable : on laisse faire, les appels Strava gèrent leurs erreurs)
         if (error.status === 401 || error.status === 404) {
           this.authService.logout();
-          return of(false);
         }
-        // Backend injoignable (réseau, démarrage à froid de Vercel) : on laisse passer,
-        // les appels Strava gèrent eux-mêmes leurs erreurs
-        return of(true);
-      })
-    );
+      }
+    });
+    return true;
   }
 }

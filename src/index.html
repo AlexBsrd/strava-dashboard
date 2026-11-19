@@ -13,8 +13,25 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Dashboard">
+  <script>
+    // Thème appliqué avant le démarrage d'Angular : pas de flash clair en mode sombre
+    try {
+      var t = localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', t);
+    } catch (e) {}
+  </script>
+  <style>
+    /* Écran de démarrage, remplacé par l'application dès qu'Angular est prêt */
+    html { background: #f3f4f6; }
+    html[data-theme="dark"] { background: #1e1f22; }
+    .boot { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
+    .boot__ring { width: 40px; height: 40px; border-radius: 50%; border: 3px solid rgba(252, 82, 0, .2);
+      border-top-color: #fc5200; animation: boot-spin .8s linear infinite; }
+    @keyframes boot-spin { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) { .boot__ring { animation-duration: 2.4s; } }
+  </style>
 </head>
 <body>
-<app-root></app-root>
+<app-root><div class="boot" role="status" aria-label="Chargement…"><div class="boot__ring"></div></div></app-root>
 </body>
 </html>
