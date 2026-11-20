@@ -140,7 +140,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
         if (period !== this.selectedPeriod) {
           this.selectedPeriod = period;
 
-          if (this.allActivities.length > 0) {
+          if (this.isSyncing) {
+            // Synchro en cours : affichage immédiat depuis le cache, la fin de synchro
+            // rafraîchira la période sélectionnée
+            this.updateActivitiesDisplay(this.activityCache.getFilteredActivities(period));
+          } else if (this.activityCache.getAllActivities().length > 0) {
+            // Pas allActivities : il est vide si la période précédente n'avait aucune activité
             this.loadData();
           }
         }
